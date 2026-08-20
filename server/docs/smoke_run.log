@@ -1,0 +1,134 @@
+2026-08-20 22:02:32,526 WARNING __main__ no FCM config - using FakeTransport (dry run)
+2026-08-20 22:02:33,709 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A32%3A33&end=2026-08-20T20%3A02%3A33&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:02:33,712 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A32%3A33&end=2026-08-20T20%3A02%3A33&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A32%3A33&end=2026-08-20T20%3A02%3A33&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:02:33,774 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:02:33,781 INFO tda_server.alert.publisher published usgs:us6000tm93:1787254826040 v1 to 169 cells
+2026-08-20 22:02:33,901 INFO tda_server.adapters.emsc emsc connected
+2026-08-20 22:03:34,150 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A33%3A33&end=2026-08-20T20%3A03%3A33&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:03:34,155 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A33%3A33&end=2026-08-20T20%3A03%3A33&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A33%3A33&end=2026-08-20T20%3A03%3A33&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:03:34,189 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:04:34,540 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A34%3A34&end=2026-08-20T20%3A04%3A34&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:04:34,547 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A34%3A34&end=2026-08-20T20%3A04%3A34&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A34%3A34&end=2026-08-20T20%3A04%3A34&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:04:34,619 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:05:34,830 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A35%3A34&end=2026-08-20T20%3A05%3A34&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:05:34,834 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A35%3A34&end=2026-08-20T20%3A05%3A34&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A35%3A34&end=2026-08-20T20%3A05%3A34&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:05:35,019 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:06:35,220 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A36%3A34&end=2026-08-20T20%3A06%3A34&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:06:35,228 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A36%3A34&end=2026-08-20T20%3A06%3A34&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A36%3A34&end=2026-08-20T20%3A06%3A34&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:06:35,412 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:07:35,494 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A37%3A35&end=2026-08-20T20%3A07%3A35&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:07:35,499 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A37%3A35&end=2026-08-20T20%3A07%3A35&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A37%3A35&end=2026-08-20T20%3A07%3A35&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:07:35,891 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:08:35,820 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A38%3A35&end=2026-08-20T20%3A08%3A35&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:08:35,826 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A38%3A35&end=2026-08-20T20%3A08%3A35&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A38%3A35&end=2026-08-20T20%3A08%3A35&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:08:36,332 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:09:36,213 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A39%3A35&end=2026-08-20T20%3A09%3A35&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:09:36,219 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A39%3A35&end=2026-08-20T20%3A09%3A35&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A39%3A35&end=2026-08-20T20%3A09%3A35&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:09:36,720 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:10:36,463 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A40%3A36&end=2026-08-20T20%3A10%3A36&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:10:36,470 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A40%3A36&end=2026-08-20T20%3A10%3A36&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A40%3A36&end=2026-08-20T20%3A10%3A36&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:10:37,139 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:11:36,779 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A41%3A36&end=2026-08-20T20%3A11%3A36&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:11:36,787 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A41%3A36&end=2026-08-20T20%3A11%3A36&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A41%3A36&end=2026-08-20T20%3A11%3A36&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:11:37,554 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:12:37,132 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A42%3A36&end=2026-08-20T20%3A12%3A36&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:12:37,139 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A42%3A36&end=2026-08-20T20%3A12%3A36&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A42%3A36&end=2026-08-20T20%3A12%3A36&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:12:37,972 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:13:37,635 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A43%3A37&end=2026-08-20T20%3A13%3A37&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:13:37,641 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A43%3A37&end=2026-08-20T20%3A13%3A37&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A43%3A37&end=2026-08-20T20%3A13%3A37&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:13:38,515 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:14:37,940 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A44%3A37&end=2026-08-20T20%3A14%3A37&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:14:37,949 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A44%3A37&end=2026-08-20T20%3A14%3A37&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A44%3A37&end=2026-08-20T20%3A14%3A37&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:14:38,949 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:15:38,218 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A45%3A37&end=2026-08-20T20%3A15%3A37&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:15:38,223 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A45%3A37&end=2026-08-20T20%3A15%3A37&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A45%3A37&end=2026-08-20T20%3A15%3A37&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:15:39,414 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:16:38,463 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A46%3A38&end=2026-08-20T20%3A16%3A38&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:16:38,467 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A46%3A38&end=2026-08-20T20%3A16%3A38&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A46%3A38&end=2026-08-20T20%3A16%3A38&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:16:39,820 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:17:38,699 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A47%3A38&end=2026-08-20T20%3A17%3A38&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:17:38,703 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A47%3A38&end=2026-08-20T20%3A17%3A38&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A47%3A38&end=2026-08-20T20%3A17%3A38&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:17:40,294 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:18:39,012 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A48%3A38&end=2026-08-20T20%3A18%3A38&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:18:39,017 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A48%3A38&end=2026-08-20T20%3A18%3A38&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A48%3A38&end=2026-08-20T20%3A18%3A38&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:18:40,777 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:19:39,332 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A49%3A39&end=2026-08-20T20%3A19%3A39&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:19:39,338 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A49%3A39&end=2026-08-20T20%3A19%3A39&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A49%3A39&end=2026-08-20T20%3A19%3A39&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:19:41,294 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:20:39,583 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A50%3A39&end=2026-08-20T20%3A20%3A39&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:20:39,588 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A50%3A39&end=2026-08-20T20%3A20%3A39&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A50%3A39&end=2026-08-20T20%3A20%3A39&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:20:41,772 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:21:39,900 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A51%3A39&end=2026-08-20T20%3A21%3A39&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:21:39,903 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A51%3A39&end=2026-08-20T20%3A21%3A39&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A51%3A39&end=2026-08-20T20%3A21%3A39&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:21:42,268 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:22:40,222 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A52%3A39&end=2026-08-20T20%3A22%3A39&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:22:40,225 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A52%3A39&end=2026-08-20T20%3A22%3A39&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A52%3A39&end=2026-08-20T20%3A22%3A39&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:22:42,975 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:23:40,544 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A53%3A40&end=2026-08-20T20%3A23%3A40&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:23:40,550 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A53%3A40&end=2026-08-20T20%3A23%3A40&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A53%3A40&end=2026-08-20T20%3A23%3A40&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:23:43,575 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:24:40,821 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A54%3A40&end=2026-08-20T20%3A24%3A40&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:24:40,824 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A54%3A40&end=2026-08-20T20%3A24%3A40&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A54%3A40&end=2026-08-20T20%3A24%3A40&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:24:43,976 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:25:41,108 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A55%3A40&end=2026-08-20T20%3A25%3A40&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:25:41,113 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A55%3A40&end=2026-08-20T20%3A25%3A40&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A55%3A40&end=2026-08-20T20%3A25%3A40&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:25:44,385 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:26:41,429 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A56%3A41&end=2026-08-20T20%3A26%3A41&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:26:41,435 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A56%3A41&end=2026-08-20T20%3A26%3A41&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A56%3A41&end=2026-08-20T20%3A26%3A41&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:26:44,824 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
+2026-08-20 22:27:20,072 INFO tda_server.alert.publisher published emsc:20260808_0000413 v1 to 64 cells
+2026-08-20 22:27:41,691 INFO httpx HTTP Request: GET https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A57%3A41&end=2026-08-20T20%3A27%3A41&minmag=2 "HTTP/1.0 302 Moved Temporarily"
+2026-08-20 22:27:41,695 WARNING tda_server.adapters.afad afad poll failed: Redirect response '302 Moved Temporarily' for url 'https://deprem.afad.gov.tr/apiv2/event/filter?start=2026-08-20T19%3A57%3A41&end=2026-08-20T20%3A27%3A41&minmag=2'
+Redirect location: 'https://servisnet.afad.gov.tr/apigateway/deprem/apiv2/event/filter?start=2026-08-20T19%3A57%3A41&end=2026-08-20T20%3A27%3A41&minmag=2'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-08-20 22:27:45,302 INFO httpx HTTP Request: GET https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson "HTTP/1.1 200 OK"
