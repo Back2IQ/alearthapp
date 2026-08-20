@@ -112,3 +112,33 @@ def test_attention_signal_below_alarm():
         det.observe_trigger(t)
     ev, attn = det.evaluate(now_ms=max(t.trigger_ms for t in trigs) + 500)
     assert ev is None and attn is not None and attn.level >= 1.0
+
+
+def test_second_event_after_aging_uses_fresh_first_hit_not_stale():
+    # FUND 1 regression: P0bDetector._first_hit must age together with the
+    # ScoreWindow. Before the fix it stored the global-minimum trigger_ms per
+    # cell forever, so a second, later earthquake retriggering the SAME cells
+    # inherited the FIRST event's frozen timestamps instead of its own -
+    # wrong origin_time/latency for the follow-up event (and, when cells only
+    # partially overlap, a corrupted mixed-age wavefront that gets rejected
+    # outright).
+    det = build_p0b_detector(BackgroundModel(b0=-8.0, b1=0.005),
+                             nu_per_cell=100, threshold_h=3.0, attn_h=1.0)
+    trigs_a = burst_triggers()                      # event A, t0=100_000
+    for t in trigs_a:
+        det.observe_trigger(t)
+    ev_a, _attn = det.evaluate(now_ms=max(t.trigger_ms for t in trigs_a) + 500)
+    assert isinstance(ev_a, SourceEvent)
+
+    # Time passes far beyond eps_s (default 20s): event A's triggers are now
+    # stale and must no longer influence detection.
+    later_t0 = trigs_a[-1].trigger_ms + 10_000_000
+    trigs_b = burst_triggers(t0=later_t0)           # event B, same cells/region
+    for t in trigs_b:
+        det.observe_trigger(t)
+    ev_b, _attn = det.evaluate(now_ms=max(t.trigger_ms for t in trigs_b) + 500)
+
+    assert isinstance(ev_b, SourceEvent)
+    # B must be timestamped from ITS OWN triggers, not A's stale first_ms.
+    assert ev_b.origin_time != ev_a.origin_time
+    assert abs(ev_b.origin_time.timestamp() * 1000 - later_t0) < 5000

@@ -34,6 +34,22 @@ class ScoreWindow:
             if not dq:
                 del self._ev[cell]
 
+    def earliest(self, cell: str, now_ms: int) -> int | None:
+        """Earliest still-active trigger timestamp for cell, after evicting
+        entries older than eps. None if no active trigger remains - callers
+        must treat that as "cell currently inactive", not "use a stale value".
+        """
+        dq = self._ev.get(cell)
+        if not dq:
+            return None
+        cutoff = now_ms - self.eps_ms
+        while dq and dq[0][0] <= cutoff:
+            dq.popleft()
+        return dq[0][0] if dq else None
+
+    def cells(self) -> list[str]:
+        return list(self._ev)
+
 
 class ScoreDetector:
     def __init__(self, background: BackgroundModel, density: DensityTracker,
@@ -93,27 +109,32 @@ class P0bDetector:
         self.attn_h = attn_h
         self.window = ScoreWindow(eps_s=eps_s)
         self.min_cells = min_cells
-        self._first_hit: dict[str, int] = {}
 
     def observe_trigger(self, t: PhoneTrigger) -> None:
         w = trigger_weight(self.reputation, t.device_hash, t.attest_ok)
         self.window.add(t.cell, t.trigger_ms, w)
-        prev = self._first_hit.get(t.cell)
-        if prev is None or t.trigger_ms < prev:
-            self._first_hit[t.cell] = t.trigger_ms
 
     def evaluate(self, now_ms: int) -> tuple[SourceEvent | None, AttentionSignal | None]:
-        hot: list[tuple[str, float]] = []
+        hot: list[str] = []
         attn: AttentionSignal | None = None
-        for cell in list(self._first_hit):
+        first_hit: dict[str, int] = {}
+        # Only cells with a trigger still active inside the eps window count -
+        # a cell whose triggers have all aged out contributes neither to a
+        # score nor to a stale first_ms (FUND 1: first_hit must age with the
+        # window, or a later event inherits an earlier one's frozen timing).
+        for cell in self.window.cells():
+            fm = self.window.earliest(cell, now_ms)
+            if fm is None:
+                continue
+            first_hit[cell] = fm
             s = self.detector.score(cell, now_ms, self.window)
             if s >= self.attn_h and (attn is None or s > attn.level):
                 attn = AttentionSignal(cell, s, now_ms)
             if s >= self.threshold_h:
-                hot.append((cell, s))
+                hot.append(cell)
         if len(hot) < self.min_cells:
             return None, attn
-        hits = [CellHit(cell, self._first_hit[cell]) for cell, _s in hot]
+        hits = [CellHit(cell, first_hit[cell]) for cell in hot]
         cluster = form_cluster(hits)
         if len(cluster) < self.min_cells or not wavefront_consistent(
                 cluster, min_cells=self.min_cells):
