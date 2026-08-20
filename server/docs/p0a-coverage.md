@@ -157,3 +157,42 @@ throughput is not a stand-in for an Oracle Always-Free ARM core.
 real but explicitly x86_64, not ARM — recorded as a smoke-test data point,
 not a Go decision. ARM re-measurement remains an open action item for
 whoever provisions the target Oracle VM.
+
+## Vor P0a-Scharfschaltung zwingend zu beheben
+
+P0a runs in Schattenbetrieb only (see Coverage decision above); none of the
+following block shadow operation, but ALL must be fixed before any zone is
+scharfgeschaltet (armed for real alerting). Each requires real seismic/
+picker work, not a code-only patch, and is intentionally left unfixed here.
+
+- **FUND 2 — `is_blast` is inert.** The blast/explosion discriminator is
+  gated on `ps_amp_ratio`, but the current picker never populates it — every
+  call sees `ps_amp_ratio=None`, so the blast filter can never fire and
+  quarry/mining blasts are not screened out. Before scharfschalten: compute
+  a real P/S amplitude ratio in the picker (or a downstream enrichment step)
+  and feed it into the discriminator; verify against known regional blast
+  events, not just synthetic ones.
+- **FUND 8 — `plum_triggered` fires on a single MMI2.5+ observation, and
+  mislabels its magnitude as instrumental.** One observation at or above
+  MMI2.5 is enough to trigger the PLUM path today, which is thin evidence
+  for a real felt-intensity confirmation (one noisy/misplaced sensor could
+  trip it). Worse, the resulting event is tagged `mag_type="pd"` —
+  instrumental — even though PLUM's magnitude is intensity-derived, not a
+  Pd/tau_c measurement; after FUND 3's merge-precedence fix
+  (`domain/events.py`), an instrumental mag_type now wins over the p0b
+  proxy by design, so a thinly-evidenced, mislabeled PLUM reading could
+  incorrectly out-rank a real p0b crowd signal too. Before scharfschalten:
+  require a minimum observation count (not a single station/point) for
+  `plum_triggered`, and give PLUM-derived magnitudes an honest
+  intensity-derived `mag_type` distinct from instrumental Pd/tau_c readings.
+- **FUND 9 — the live picker never delivers `pd_cm`.** All P0a magnitude
+  fixtures/replays (e.g. `tests/test_p0a_replay.py`) supply `pd_cm` directly
+  in the picklist, but the real `PhaseNetPicker` wrapper does not extract
+  peak displacement from the waveform — in the live path `pd_cm` is
+  `None`, which drives the Pd-inversion magnitude estimate down to
+  approximately its floor value regardless of the true earthquake size, i.e.
+  a systematic UNDER-warning in production, the opposite failure mode from
+  FUND 8. Before scharfschalten: extract Pd (peak displacement, cm) from the
+  real waveform window in the picker and wire it into the magnitude
+  estimate; verify against a real event with known catalog magnitude, not
+  only against fixture picklists that assume `pd_cm` is already present.
