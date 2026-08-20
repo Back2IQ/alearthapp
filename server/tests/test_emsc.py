@@ -21,3 +21,15 @@ def test_parse_real_create_message():
 def test_parse_garbage_returns_none():
     assert parse_emsc_message("not json", NOW) is None
     assert parse_emsc_message('{"action":"ping"}', NOW) is None
+
+
+def test_delete_action_is_rejected_even_with_full_properties():
+    raw = json.loads(FIX.read_text(encoding="utf-8"))
+    raw["action"] = "delete"
+    assert parse_emsc_message(json.dumps(raw), NOW) is None
+
+
+def test_create_action_still_accepted():
+    raw = json.loads(FIX.read_text(encoding="utf-8"))
+    assert raw["action"] == "create"
+    assert parse_emsc_message(json.dumps(raw), NOW) is not None

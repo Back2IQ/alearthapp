@@ -17,6 +17,10 @@ EMSC_WS_URL = "wss://www.seismicportal.eu/standing_order/websocket"
 def parse_emsc_message(text: str, received_at: datetime) -> SourceEvent | None:
     try:
         msg = json.loads(text)
+        if msg.get("action") not in ("create", "update"):
+            # "delete" (retraction) and unknown actions must not surface
+            # as a valid, alertable/confirmable SourceEvent
+            return None
         props = msg["data"]["properties"]
         origin = datetime.fromisoformat(props["time"].replace("Z", "+00:00"))
         depth = props.get("depth")
