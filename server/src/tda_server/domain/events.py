@@ -61,11 +61,22 @@ class CanonicalEvent:
         """Merge a source reading. Returns True if the alert-relevant estimate
         escalated (magnitude max rose by >= ESCALATION_DELTA). Early magnitudes
         are lower bounds: the max wins, de-escalation needs catalog consensus
-        (handled at P2, not here)."""
+        (handled at P2, not here) - among sources of the SAME precedence
+        class. The p0b felt-area proxy ("p0b_proxy") is a coarse floor, not a
+        measurement: once any instrumental reading exists (any mag_type other
+        than "p0b_proxy"), the canonical magnitude is derived only from the
+        instrumental readings (still escalate-fast max among those), so a
+        more accurate instrumental value can never lose to a louder proxy."""
         self.sources[se.source] = se
-        self.mag_low = min(self.mag_low, se.magnitude)
+        instrumental = [s for s in self.sources.values() if s.mag_type != "p0b_proxy"]
         old_max = self.mag_high
-        self.mag_high = max(self.mag_high, se.magnitude)
+        if instrumental:
+            mags = [s.magnitude for s in instrumental]
+            self.mag_low = min(mags)
+            self.mag_high = max(mags)
+        else:
+            self.mag_low = min(self.mag_low, se.magnitude)
+            self.mag_high = max(self.mag_high, se.magnitude)
         # tolerance guards against binary float error on exact deltas
         # (e.g. 2.3 - 2.1 == 0.19999999999999973)
         escalated = (self.mag_high - old_max) >= self.ESCALATION_DELTA - 1e-9
