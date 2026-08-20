@@ -13,6 +13,19 @@ log = logging.getLogger(__name__)
 USGS_FEED_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
 
 
+def _remember_seen(seen: set[str], event_id: str, cap: int = 10_000) -> bool:
+    """Record event_id in the dedupe set; returns True if it was new.
+    Feeds only ever return a 30-60 min window, so dedupe never needs to
+    recall ids across a reset - a full clear once the set exceeds cap
+    keeps memory bounded without a more elaborate LRU."""
+    if len(seen) > cap:
+        seen.clear()
+    if event_id in seen:
+        return False
+    seen.add(event_id)
+    return True
+
+
 def parse_usgs_feed(doc: dict, received_at: datetime) -> list[SourceEvent]:
     out: list[SourceEvent] = []
     for feat in doc.get("features", []):
@@ -48,8 +61,7 @@ async def run_usgs(stream: EventStream, url: str = USGS_FEED_URL,
                 resp = await client.get(url)
                 resp.raise_for_status()
                 for se in parse_usgs_feed(resp.json(), datetime.now(timezone.utc)):
-                    if se.source_event_id not in seen:
-                        seen.add(se.source_event_id)
+                    if _remember_seen(seen, se.source_event_id):
                         await stream.append(serialize_source_event(se))
             except Exception as exc:  # noqa: BLE001 - poll loop by design
                 log.warning("usgs poll failed: %s", exc)

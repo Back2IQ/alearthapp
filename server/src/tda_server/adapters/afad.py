@@ -21,6 +21,19 @@ AFAD_TZ_OFFSET_H = 3
 AFAD_TZ = timezone(timedelta(hours=AFAD_TZ_OFFSET_H))
 
 
+def _remember_seen(seen: set[str], event_id: str, cap: int = 10_000) -> bool:
+    """Record event_id in the dedupe set; returns True if it was new.
+    Feeds only ever return a 30-60 min window, so dedupe never needs to
+    recall ids across a reset - a full clear once the set exceeds cap
+    keeps memory bounded without a more elaborate LRU."""
+    if len(seen) > cap:
+        seen.clear()
+    if event_id in seen:
+        return False
+    seen.add(event_id)
+    return True
+
+
 def parse_afad_response(items: list[dict], received_at: datetime) -> list[SourceEvent]:
     out: list[SourceEvent] = []
     for it in items:
@@ -64,8 +77,7 @@ async def run_afad(stream: EventStream, url_base: str = AFAD_URL,
                 resp = await client.get(url_base, params=params)
                 resp.raise_for_status()
                 for se in parse_afad_response(resp.json(), now):
-                    if se.source_event_id not in seen:
-                        seen.add(se.source_event_id)
+                    if _remember_seen(seen, se.source_event_id):
                         await stream.append(serialize_source_event(se))
             except Exception as exc:  # noqa: BLE001 - poll loop by design
                 log.warning("afad poll failed: %s", exc)
