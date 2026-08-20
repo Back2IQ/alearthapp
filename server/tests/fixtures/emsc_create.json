@@ -1,0 +1,27 @@
+{"action":"create","data":{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      125.5611,
+      -6.9026,
+      -519.6
+    ]
+  },
+  "id": "20260725_0000424",
+  "properties": {
+    "source_id": "2048609",
+    "source_catalog": "EMSC-RTS",
+    "lastupdate": "2026-08-20T19:54:44.277603Z",
+    "time": "2026-07-25T16:51:34.179Z",
+    "flynn_region": "BANDA SEA",
+    "lat": -6.9026,
+    "lon": 125.5611,
+    "depth": 519.6,
+    "evtype": "ke",
+    "auth": "NEIC",
+    "mag": 4.2,
+    "magtype": "mb",
+    "unid": "20260725_0000424"
+  }
+}}
