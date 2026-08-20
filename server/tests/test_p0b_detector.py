@@ -142,3 +142,34 @@ def test_second_event_after_aging_uses_fresh_first_hit_not_stale():
     # B must be timestamped from ITS OWN triggers, not A's stale first_ms.
     assert ev_b.origin_time != ev_a.origin_time
     assert abs(ev_b.origin_time.timestamp() * 1000 - later_t0) < 5000
+
+
+def test_source_event_id_is_stable_across_hot_cell_order():
+    # FUND 7 regression: source_event_id used cluster[0].cell, an incidental
+    # artifact of the internal hot-cell iteration/insertion order, instead of
+    # the persisting event's actual origin cell (earliest hit). Feed the SAME
+    # earthquake burst to two detectors, once with cells processed in
+    # near-origin-first order and once with cells processed in reverse
+    # (far-cell-first, as e.g. a different network delivery/batching order
+    # would), while keeping each individual cell's own device triggers in
+    # their real chronological order - and require the SAME
+    # source_event_id both times.
+    bg = BackgroundModel(b0=-8.0, b1=0.005)
+    trigs = burst_triggers()
+    now = max(t.trigger_ms for t in trigs) + 500
+    n_per_cell = 8
+    blocks = [trigs[i * n_per_cell:(i + 1) * n_per_cell] for i in range(5)]
+    trigs_cell_reversed = [t for block in reversed(blocks) for t in block]
+
+    det_fwd = build_p0b_detector(bg, nu_per_cell=100, threshold_h=3.0, attn_h=1.0)
+    for t in trigs:
+        det_fwd.observe_trigger(t)
+    ev_fwd, _attn = det_fwd.evaluate(now_ms=now)
+
+    det_rev = build_p0b_detector(bg, nu_per_cell=100, threshold_h=3.0, attn_h=1.0)
+    for t in trigs_cell_reversed:
+        det_rev.observe_trigger(t)
+    ev_rev, _attn = det_rev.evaluate(now_ms=now)
+
+    assert isinstance(ev_fwd, SourceEvent) and isinstance(ev_rev, SourceEvent)
+    assert ev_fwd.source_event_id == ev_rev.source_event_id

@@ -140,9 +140,14 @@ class P0bDetector:
                 cluster, min_cells=self.min_cells):
             return None, attn
         lat, lon, origin_ms = cluster_origin(cluster)
+        # FUND 7: key the ID off the persisting origin cell (earliest hit),
+        # not cluster[0] - the latter is an incidental artifact of hot-cell
+        # iteration/insertion order and can point at a different cell on
+        # every evaluate() call for the same ongoing event.
+        origin_cell = min(cluster, key=lambda h: h.first_ms).cell
         ev = SourceEvent(
             source="p0b",
-            source_event_id=f"p0b:{origin_ms}:{cluster[0].cell}",
+            source_event_id=f"p0b:{origin_ms}:{origin_cell}",
             origin_time=datetime.fromtimestamp(origin_ms / 1000, tz=timezone.utc),
             lat=lat, lon=lon, depth_km=None,
             magnitude=estimate_magnitude(cluster),
