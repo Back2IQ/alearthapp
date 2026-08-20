@@ -1,0 +1,11 @@
+{
+  "_provenance": "Curated pick list for the Plan B Task 12 shadow replay. Origin (37.17N, 37.03E, 2023-02-06T01:17:35 UTC) is the published AFAD/KOERI/USGS epicenter and origin time for the M7.8 Kahramanmaras mainshock. Task 1's coverage probe found no real-time GEOFON/KOERI station within near-field range of this event (GE.ISP, the one reachable Turkish-region GEOFON station, is ~620km away in Isparta) -- so, per the plan's own instruction (Task 12 Step 1: 'Sind reale Pd-Werte nicht verfuegbar, konservative Platzhalter setzen und als solche kennzeichnen'), station coordinates below are placed at plausible near-field distances around the real epicenter to exercise the association+EPIC+replay chain, and Pd values are conservative placeholders, NOT measured amplitudes. This fixture tests the latency/association/cross-confirm chain, not the exact magnitude.",
+  "origin_ms": 1675646255000,
+  "picks": [
+    {"station": "S0", "phase": "P", "lat": 37.17, "lon": 37.03, "pd_cm": 1.5},
+    {"station": "S1", "phase": "P", "lat": 37.40, "lon": 37.10, "pd_cm": 1.5},
+    {"station": "S2", "phase": "P", "lat": 37.00, "lon": 37.20, "pd_cm": 1.5},
+    {"station": "S3", "phase": "P", "lat": 37.10, "lon": 36.80, "pd_cm": 1.5},
+    {"station": "S4", "phase": "P", "lat": 37.30, "lon": 36.90, "pd_cm": 1.5}
+  ]
+}
