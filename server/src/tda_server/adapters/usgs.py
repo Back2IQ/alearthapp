@@ -16,22 +16,26 @@ USGS_FEED_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_h
 def parse_usgs_feed(doc: dict, received_at: datetime) -> list[SourceEvent]:
     out: list[SourceEvent] = []
     for feat in doc.get("features", []):
-        props = feat.get("properties", {})
-        coords = feat.get("geometry", {}).get("coordinates", [None, None, None])
-        if props.get("mag") is None or props.get("time") is None:
+        try:
+            props = feat.get("properties", {}) or {}
+            coords = (feat.get("geometry") or {}).get("coordinates", [None, None, None])
+            if props.get("mag") is None or props.get("time") is None:
+                continue
+            # updated-timestamp in the id makes revisions distinct source events
+            out.append(SourceEvent(
+                source="usgs",
+                source_event_id=f'{feat["id"]}:{props.get("updated", 0)}',
+                origin_time=datetime.fromtimestamp(props["time"] / 1000, tz=timezone.utc),
+                lat=float(coords[1]),
+                lon=float(coords[0]),
+                depth_km=None if coords[2] is None else float(coords[2]),
+                magnitude=float(props["mag"]),
+                mag_type=str(props.get("magType") or ""),
+                received_at=received_at,
+            ))
+        except (KeyError, TypeError, ValueError):
+            # one malformed feature must not take down the whole poll batch
             continue
-        # updated-timestamp in the id makes revisions distinct source events
-        out.append(SourceEvent(
-            source="usgs",
-            source_event_id=f'{feat["id"]}:{props.get("updated", 0)}',
-            origin_time=datetime.fromtimestamp(props["time"] / 1000, tz=timezone.utc),
-            lat=float(coords[1]),
-            lon=float(coords[0]),
-            depth_km=None if coords[2] is None else float(coords[2]),
-            magnitude=float(props["mag"]),
-            mag_type=str(props.get("magType") or ""),
-            received_at=received_at,
-        ))
     return out
 
 

@@ -24,3 +24,17 @@ def test_feature_without_mag_is_skipped():
                                                    "magType": None, "updated": 1},
                          "geometry": {"coordinates": [1.0, 2.0, 3.0]}}]}
     assert parse_usgs_feed(doc, NOW) == []
+
+
+def test_malformed_feature_does_not_crash_whole_batch():
+    doc = {"features": [
+        {"id": "good1", "properties": {"time": 0, "mag": 5.5, "magType": "mww",
+                                        "updated": 1},
+         "geometry": {"coordinates": [29.0, 40.7, 10.0]}},
+        {"id": "bad1", "properties": {"time": 0, "mag": 5.0, "magType": "mww",
+                                       "updated": 1},
+         "geometry": None},
+    ]}
+    events = parse_usgs_feed(doc, NOW)
+    assert len(events) == 1
+    assert events[0].source_event_id.startswith("good1")
