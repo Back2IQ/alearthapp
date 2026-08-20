@@ -55,3 +55,60 @@ def test_score_minus_one_when_no_active_devices():
     w = ScoreWindow(eps_s=20.0)
     w.add("d1_1", 100, 1.0)
     assert det.score("d1_1", 200, w) == -1.0
+
+
+from datetime import timezone
+from tda_server.domain.events import SourceEvent
+from tda_server.p0b.detector import P0bDetector, build_p0b_detector
+from tda_server.p0b.signals import PhoneTrigger, coarsen_cell
+
+
+def burst_triggers(origin=(41.0, 29.0), n_cells=5, t0=100_000, v_kms=3.5):
+    from tda_server.geo.cells import haversine_km
+    from tda_server.p0b.signals import detect_cell_center
+    ocell = coarsen_cell(*origin)
+    ola, olo = detect_cell_center(ocell)
+    trigs = []
+    for k in range(n_cells):
+        lat = origin[0] + 0.1 * k
+        cell = coarsen_cell(lat, origin[1])
+        la, lo = detect_cell_center(cell)
+        d = haversine_km(la, lo, ola, olo)
+        tms = t0 + int(1000 * d / v_kms)
+        for j in range(8):               # several devices per cell
+            trigs.append(PhoneTrigger(f"dev{k}_{j}", cell, tms + j, 40, tms + 100, True))
+    return trigs
+
+
+def test_detector_emits_source_event_on_consistent_burst():
+    det = build_p0b_detector(BackgroundModel(b0=-8.0, b1=0.005),
+                             nu_per_cell=100, threshold_h=3.0, attn_h=1.0)
+    trigs = burst_triggers()
+    for t in trigs:
+        det.observe_trigger(t)
+    ev, attn = det.evaluate(now_ms=max(t.trigger_ms for t in trigs) + 500)
+    assert isinstance(ev, SourceEvent)
+    assert ev.source == "p0b" and ev.mag_type == "p0b_proxy"
+    assert ev.origin_time.tzinfo is timezone.utc or ev.origin_time.tzinfo is not None
+    assert 40.9 < ev.lat < 41.6
+
+def test_citywide_simultaneous_does_not_emit():
+    det = build_p0b_detector(BackgroundModel(b0=-8.0, b1=0.005),
+                             nu_per_cell=100, threshold_h=3.0, attn_h=1.0)
+    # every cell triggers at the same instant: high score but no valid front
+    for k in range(5):
+        cell = coarsen_cell(41.0 + 0.1 * k, 29.0)
+        for j in range(8):
+            det.observe_trigger(PhoneTrigger(f"d{k}_{j}", cell, 100_000 + j, 40,
+                                             100_100, True))
+    ev, _attn = det.evaluate(now_ms=101_000)
+    assert ev is None
+
+def test_attention_signal_below_alarm():
+    det = build_p0b_detector(BackgroundModel(b0=-8.0, b1=0.005),
+                             nu_per_cell=100, threshold_h=50.0, attn_h=1.0)
+    trigs = burst_triggers(n_cells=2)     # weak: raises attention, not alarm
+    for t in trigs:
+        det.observe_trigger(t)
+    ev, attn = det.evaluate(now_ms=max(t.trigger_ms for t in trigs) + 500)
+    assert ev is None and attn is not None and attn.level >= 1.0
