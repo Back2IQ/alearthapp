@@ -12,6 +12,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "fakeredis>=2.23"]
+p0a = ["obspy>=1.4", "seisbench>=0.12", "numpy>=1.26"]
+# pyocto is installed separately (source build on ARM); gamma as pure-Python fallback:
+# pip install pyocto  OR  pip install gamma
 
 [build-system]
 requires = ["setuptools>=68"]

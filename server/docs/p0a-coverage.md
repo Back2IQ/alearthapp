@@ -87,4 +87,73 @@ single-station feed — consistent with this coverage result.
 
 ## ARM benchmark (Task 2)
 
-See the "ARM Benchmark" section below, added by Task 2.
+**Important caveat: this was run in the dev sandbox, not the target ARM VM.**
+`platform.machine()` reports `AMD64` on Windows (MINGW64), Python 3.14.2 —
+this is x86_64, not the Oracle Always-Free ARM instance the plan targets.
+Numbers below are a smoke test that the stack runs at all on 3.14, **not** an
+ARM go/no-go — that measurement still needs to be taken on the real VM before
+station count/window size are fixed, per the plan's own instruction (§Task 2,
+"ARM-Benchmark ist Go/No-Go ... keine ARM-Referenzdaten publiziert").
+
+### Install (`pip install -e ".[p0a]"`)
+
+- `obspy==1.5.0` and `seisbench==0.12.5` **installed successfully** — both
+  ship `cp314-win_amd64` wheels, so no build/compiler blocker on this
+  platform/Python combination (unexpectedly good news given Python 3.14 is
+  very new; ARM wheel availability for the same versions is still unverified
+  and must be checked on the actual VM, not assumed from this x86_64 result).
+- `numpy>=1.26` already present (2.5.2).
+
+### PyOcto (`pip install pyocto`)
+
+**FAILED — confirms the plan's predicted risk exactly.** No prebuilt wheel;
+pip fell back to a source build via `scikit-build-core`/CMake, which failed
+because no C++ compiler/`nmake` is available in this environment:
+```
+CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
+```
+This is the documented ARM risk (Recherche §1, Risiko 2) reproduced here on
+x86_64 too — PyOcto needs a real C++ toolchain wherever it's built, which the
+target VM must provide (or the build will fail there as well). **Verdict for
+now: GaMMA/grid-search fallback path, as the plan anticipates.**
+
+### GaMMA fallback (`pip install gamma`)
+
+**Finding, not a success:** the PyPI package literally named `gamma`
+installed cleanly but is an **unrelated, essentially empty package**
+(single near-empty `__init__.py`, pulls in an unrelated `monty`/materials
+-science dependency chain) — it is **not** the AI4EPS/GaMMA seismic
+associator referenced by the plan. That project is not published to PyPI
+under a matching importable name; installing the real GaMMA would require
+building from `https://github.com/AI4EPS/GaMMA` source, which was not
+attempted here (out of the probe's time budget, and Task 9's `_associate_gamma`
+stub already treats "gamma unavailable" as an expected, tested fallback
+branch to grid-search). This package was installed then immediately
+uninstalled again to avoid a misleading dependency in the environment.
+**Verdict: GaMMA is not actually available in this environment either** —
+the grid-search fallback (Task 9) is therefore the real, currently-working
+associator path, exactly as the plan designs for.
+
+### PhaseNet throughput (`scripts/bench_arm.py`, x86_64 dev machine)
+
+```
+PhaseNet: 20 windows (30s @ 100Hz) in 0.10s = 5 ms/window/3ch
+```
+5 ms/window/3-channel on x86_64/CPU is comfortably inside any plausible
+latency budget — but this number **must be re-measured on the target ARM
+VM** before it informs station-count/window-size decisions; x86_64 desktop
+throughput is not a stand-in for an Oracle Always-Free ARM core.
+
+### Go/No-Go summary
+
+| Component | Install/build result (this environment) | Verdict |
+|---|---|---|
+| obspy, seisbench | OK (wheels for cp314) | usable, pending ARM wheel confirmation |
+| PyOcto | build FAILED (no C++ toolchain) | fallback required, matches plan's prediction |
+| GaMMA (real AI4EPS lib) | not installed (PyPI name squatted by unrelated package) | fallback required |
+| Grid-search associator (Task 9) | pure numpy, no external deps | **the working associator path today** |
+
+**No fabricated benchmark numbers.** The PhaseNet throughput figure above is
+real but explicitly x86_64, not ARM — recorded as a smoke-test data point,
+not a Go decision. ARM re-measurement remains an open action item for
+whoever provisions the target Oracle VM.
