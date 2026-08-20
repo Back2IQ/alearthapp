@@ -151,6 +151,23 @@ class P0bDetector:
         )
         return ev, attn
 
+    @classmethod
+    def production(cls, background: BackgroundModel, density: DensityTracker, *,
+                   threshold_h: float, attn_h: float,
+                   reputation: ReputationStore | None = None,
+                   eps_s: float = 20.0, min_cells: int = 3) -> "P0bDetector":
+        """Production constructor (FUND 6). The ScoreDetector reads nu from
+        the exact same DensityTracker instance the caller passes to
+        run_p0b_pipeline (which _consume_pings fills from real ActivePings),
+        so Pings -> Density -> Score are guaranteed to share one tracker
+        object. Wiring up two separate DensityTracker instances (or using
+        the test-only build_p0b_detector/_SeededDensity path) leaves nu
+        permanently 0 for the detector -> score always -1 -> never fires."""
+        det = ScoreDetector(background, density, eps_s=eps_s)
+        return cls(detector=det, reputation=reputation or ReputationStore(),
+                   threshold_h=threshold_h, attn_h=attn_h, eps_s=eps_s,
+                   min_cells=min_cells)
+
 
 def build_p0b_detector(background: BackgroundModel, *, nu_per_cell: int,
                        threshold_h: float, attn_h: float, eps_s: float = 20.0,

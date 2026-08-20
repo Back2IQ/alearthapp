@@ -34,8 +34,10 @@ async def run_p0b_pipeline(
     tick_s: float = 1.0,
     clock: Callable[[], int],
 ) -> None:
-    # detector's own density comes from its ScoreDetector; the pipeline-level
-    # DensityTracker feeds it when the detector is built to share it (production).
+    # `detector` must be built via P0bDetector.production(background, density, ...)
+    # with THIS SAME `density` instance (FUND 6): that guarantees the
+    # ScoreDetector inside `detector` reads nu from the tracker _consume_pings
+    # fills below, rather than a disconnected/test-only density source.
     pings = asyncio.create_task(_consume_pings(ping_stream, density))
     trigs = asyncio.create_task(_consume_triggers(trigger_stream, detector))
     try:
