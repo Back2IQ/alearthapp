@@ -12,6 +12,14 @@ from tda_server.stream.base import EventStream, serialize_source_event
 log = logging.getLogger(__name__)
 AFAD_URL = "https://deprem.afad.gov.tr/apiv2/event/filter"
 
+# AFAD's "date" field is documented to be local Turkey time (TRT, UTC+3,
+# no DST) when it carries no offset - confirmed against the real fixture
+# (tests/fixtures/afad_filter.json, e.g. "date":"2026-08-19T02:38:36").
+# This should be re-verified against a live response if/when direct
+# access to the AFAD endpoint is available again.
+AFAD_TZ_OFFSET_H = 3
+AFAD_TZ = timezone(timedelta(hours=AFAD_TZ_OFFSET_H))
+
 
 def parse_afad_response(items: list[dict], received_at: datetime) -> list[SourceEvent]:
     out: list[SourceEvent] = []
@@ -20,7 +28,8 @@ def parse_afad_response(items: list[dict], received_at: datetime) -> list[Source
             raw_date = str(it["date"])
             origin = datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
             if origin.tzinfo is None:
-                origin = origin.replace(tzinfo=timezone.utc)
+                # offsetless AFAD dates are TRT, not UTC - see AFAD_TZ_OFFSET_H above
+                origin = origin.replace(tzinfo=AFAD_TZ)
             out.append(SourceEvent(
                 source="afad",
                 source_event_id=str(it["eventID"]),
@@ -40,13 +49,16 @@ def parse_afad_response(items: list[dict], received_at: datetime) -> list[Source
 async def run_afad(stream: EventStream, url_base: str = AFAD_URL,
                    interval_s: float = 60.0, seen: set[str] | None = None) -> None:
     seen = set() if seen is None else seen
-    async with httpx.AsyncClient(timeout=20) as client:
+    # follow_redirects: the live endpoint now 302s deprem.afad.gov.tr ->
+    # servisnet.afad.gov.tr, which httpx does not follow by default.
+    async with httpx.AsyncClient(follow_redirects=True, timeout=20) as client:
         while True:
             try:
                 now = datetime.now(timezone.utc)
+                now_trt = now.astimezone(AFAD_TZ)  # AFAD expects the query window in TRT
                 params = {
-                    "start": (now - timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%S"),
-                    "end": now.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "start": (now_trt - timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%S"),
+                    "end": now_trt.strftime("%Y-%m-%dT%H:%M:%S"),
                     "minmag": "2",
                 }
                 resp = await client.get(url_base, params=params)

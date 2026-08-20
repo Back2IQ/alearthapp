@@ -20,3 +20,20 @@ def test_parse_real_response():
 
 def test_item_missing_fields_skipped():
     assert parse_afad_response([{"eventID": "1"}], NOW) == []
+
+
+def test_offsetless_date_is_interpreted_as_trt_not_utc():
+    # AFAD's real feed sends offsetless local time (TRT = UTC+3, no DST).
+    # See tests/fixtures/afad_filter.json, e.g. "date":"2026-08-19T02:38:36".
+    item = {
+        "eventID": "725942",
+        "latitude": "37.15033",
+        "longitude": "30.25883",
+        "depth": "71.26",
+        "type": "ML",
+        "magnitude": "2",
+        "date": "2026-08-19T02:38:36",
+    }
+    events = parse_afad_response([item], NOW)
+    assert len(events) == 1
+    assert events[0].origin_time == datetime(2026, 8, 18, 23, 38, 36, tzinfo=timezone.utc)
