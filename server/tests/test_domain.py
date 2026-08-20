@@ -45,3 +45,15 @@ def test_merge_lower_magnitude_does_not_deescalate():
 def test_merge_small_change_not_flagged():
     c = CanonicalEvent.from_source(se("emsc", 5.0))
     assert c.merge(se("usgs", 5.1)) is False   # < 0.2 Differenz
+
+
+def test_merge_exact_delta_escalates_despite_float_rounding():
+    # 2.3 - 2.1 == 0.19999999999999973 in binary float, must still count
+    # as an escalation-worthy 0.2 jump.
+    c = CanonicalEvent.from_source(se("emsc", 2.1))
+    assert c.merge(se("usgs", 2.3)) is True
+
+
+def test_merge_below_delta_still_not_flagged():
+    c = CanonicalEvent.from_source(se("emsc", 2.1))
+    assert c.merge(se("usgs", 2.2)) is False   # 0.1 Differenz bleibt False

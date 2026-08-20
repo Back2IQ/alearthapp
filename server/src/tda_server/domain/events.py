@@ -66,6 +66,8 @@ class CanonicalEvent:
         self.mag_low = min(self.mag_low, se.magnitude)
         old_max = self.mag_high
         self.mag_high = max(self.mag_high, se.magnitude)
-        escalated = (self.mag_high - old_max) >= self.ESCALATION_DELTA
+        # tolerance guards against binary float error on exact deltas
+        # (e.g. 2.3 - 2.1 == 0.19999999999999973)
+        escalated = (self.mag_high - old_max) >= self.ESCALATION_DELTA - 1e-9
         self.magnitude = self.mag_high
         return escalated
