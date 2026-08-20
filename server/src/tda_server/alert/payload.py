@@ -22,6 +22,8 @@ def derive_tier(ev: CanonicalEvent) -> str:
     land in later plans and will add their own EventState branches above the
     CONFIRMED check without touching the P1/P2 logic below.
     """
+    if set(ev.sources) == {"p0b"}:
+        return "P0"
     if ev.state is EventState.CONFIRMED:
         return "P2"
     return "P1"
