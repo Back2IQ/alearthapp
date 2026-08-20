@@ -30,15 +30,29 @@ def return_level(u: float, xi: float, sigma: float, zeta_u: float,
 
 
 def calibrate_threshold(scores: np.ndarray, *, eval_interval_s: float,
-                        quantile: float = 0.95, target_per_year: float = 1.0) -> float:
+                        quantile: float = 0.95, target_per_year: float = 1.0,
+                        n_parallel_cells: int = 1) -> float:
+    """Calibrate h so quiet-time scores exceed it ~target_per_year times per
+    year - PER CELL. `h` only controls the per-cell false-alarm rate: a real
+    deployment scores many thousands of grid cells every tick, so with
+    n_parallel_cells=1 (the default) the SYSTEMWIDE false-alarm rate is
+    approximately n_cells times higher than target_per_year, not equal to it
+    (a multiple-testing / Bonferroni-style effect - independent cells each
+    get their own ~1/yr shot at a false alarm).
+
+    Pass n_parallel_cells = the number of cells scored concurrently per tick
+    to calibrate for the SYSTEMWIDE rate instead: the per-cell target is
+    tightened to target_per_year / n_parallel_cells, which raises (makes
+    stricter) the returned h."""
     scores = np.asarray(scores, dtype=float)
+    per_cell_target = target_per_year / max(n_parallel_cells, 1)
     u = float(np.quantile(scores, quantile))
     exceed = scores[scores > u] - u
     if exceed.size < 50:
         # too few exceedances for a stable tail fit: fall back to a high quantile
-        return float(np.quantile(scores, 1.0 - target_per_year /
+        return float(np.quantile(scores, 1.0 - per_cell_target /
                                  (SECONDS_PER_YEAR / eval_interval_s)))
     xi, sigma = gpd_fit_mom(exceed)
     zeta_u = exceed.size / scores.size
     n_per_year = SECONDS_PER_YEAR / eval_interval_s
-    return return_level(u, xi, sigma, zeta_u, n_per_year, target_per_year)
+    return return_level(u, xi, sigma, zeta_u, n_per_year, per_cell_target)

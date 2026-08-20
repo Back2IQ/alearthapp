@@ -26,3 +26,17 @@ def test_calibrate_threshold_gives_rare_level():
     # empirically almost no quiet-time score should exceed h
     assert (scores > h).sum() <= 5
     assert h > np.quantile(scores, 0.99)
+
+def test_calibrate_threshold_n_parallel_cells_raises_threshold():
+    # FUND 4: calibrate_threshold's target_per_year is a PER-CELL rate; a
+    # real deployment scores thousands of cells per tick, so the systemwide
+    # false-alarm rate is ~n_parallel_cells x the per-cell rate. Passing the
+    # number of concurrently-scored cells must tighten (raise) h so the
+    # SYSTEMWIDE rate, not just the per-cell rate, stays near target_per_year.
+    rng = np.random.default_rng(2)
+    scores = rng.exponential(scale=1.0, size=1_000_000) - 1.0
+    h_single_cell = calibrate_threshold(scores, eval_interval_s=1.0, quantile=0.95,
+                                        target_per_year=1.0, n_parallel_cells=1)
+    h_many_cells = calibrate_threshold(scores, eval_interval_s=1.0, quantile=0.95,
+                                       target_per_year=1.0, n_parallel_cells=10_000)
+    assert h_many_cells > h_single_cell
