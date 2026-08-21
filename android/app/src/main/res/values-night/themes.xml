@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Tda" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/tda_ready_blue</item>
+        <item name="colorPrimaryDark">@color/tda_ready_blue</item>
+        <item name="colorAccent">@color/tda_attention_amber</item>
+        <item name="android:windowBackground">@color/tda_bg_dark</item>
+        <item name="android:textColorPrimary">@color/tda_text_dark</item>
+
+        <item name="colorTierP0">@color/tda_p0_red</item>
+        <item name="colorTierP1">@color/tda_p1_amber_deep</item>
+        <item name="colorTierP2">@color/tda_p2_darkred</item>
+        <item name="colorAttention">@color/tda_attention_amber</item>
+        <item name="colorDisturbance">@color/tda_disturbance_grey</item>
+        <item name="colorProtectionStrong">@color/tda_protect_strong_red</item>
+        <item name="colorProtectionModerate">@color/tda_protect_moderate_amber</item>
+        <item name="colorProtectionWeak">@color/tda_protect_weak_green</item>
+        <item name="colorReady">@color/tda_ready_blue</item>
+    </style>
+
+    <style name="Theme.Tda.Alert" parent="Theme.Tda">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Tda.ColorblindSafe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/tda_cb_ready</item>
+        <item name="colorPrimaryDark">@color/tda_cb_ready</item>
+        <item name="colorAccent">@color/tda_cb_attention_yellow</item>
+        <item name="android:windowBackground">@color/tda_bg_dark</item>
+        <item name="android:textColorPrimary">@color/tda_text_dark</item>
+
+        <item name="colorTierP0">@color/tda_cb_p0_orange</item>
+        <item name="colorTierP1">@color/tda_cb_p1_amber</item>
+        <item name="colorTierP2">@color/tda_cb_p2_vermillion</item>
+        <item name="colorAttention">@color/tda_cb_attention_yellow</item>
+        <item name="colorDisturbance">@color/tda_cb_disturbance_grey</item>
+        <item name="colorProtectionStrong">@color/tda_cb_protect_strong</item>
+        <item name="colorProtectionModerate">@color/tda_cb_protect_moderate</item>
+        <item name="colorProtectionWeak">@color/tda_cb_protect_weak</item>
+        <item name="colorReady">@color/tda_cb_ready</item>
+    </style>
+
+    <style name="Theme.Tda.ColorblindSafe.Alert" parent="Theme.Tda.ColorblindSafe">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

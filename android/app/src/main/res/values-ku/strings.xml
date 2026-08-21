@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kurdish (Kurmanji). Only the life-saving core strings are translated for the MVP
+     (spec i18n note: "lebensrettende Kernstrings ... in allen vier Sprachen"); all
+     other strings fall back to the English default. NEEDS NATIVE-SPEAKER REVIEW
+     before production; these are machine-assisted translations. -->
+<resources>
+    <string name="app_name">Hişyariya Karesatê ya Tirkiyeyê</string>
+
+    <string name="status_ready">Sîstem amade ye</string>
+    <string name="status_attention">Balkêşî</string>
+    <string name="status_alarm_p0">HIŞYARÎ P0</string>
+    <string name="status_confirmed_p2">PIŞTRAST P2</string>
+    <string name="status_disturbance_discarded">Aloziyek hate dîtin – hişyarî nehat dayîn</string>
+
+    <string name="alert_title_p0">HIŞYARIYA BÛYERA ERDHEJÊ</string>
+    <string name="alert_title_p2">BÛYERA ERDHEJÊ PIŞTRAST BÛ</string>
+    <string name="tier_p0_label">P0 · tenê koma telefonan</string>
+    <string name="tier_p1_label">P1 · çavkaniyek katalogê</string>
+    <string name="tier_p2_label">P2 · piştrast kirin</string>
+    <string name="escalation_p0_to_p2">Piştrast bû: P0 → P2</string>
+    <string name="countdown_label">çirke heta pêla S · %1$s</string>
+    <string name="countdown_arrived">Pêla S gihîşt</string>
+    <string name="protection_status_label">Divê tu çi bikî</string>
+    <string name="protection_strong">BIÇEMÎNE · XWE BIPARÊZE · BIGRE</string>
+    <string name="protection_moderate">Dibe ku lerz çêbe – amade be ku xwe biparêzî</string>
+    <string name="protection_weak">Lawaz – bi îhtîmalek mezin ewle ye</string>
+    <string name="magnitude_label">Mezinahî</string>
+    <string name="intensity_label">Tundiya texmînî (li vir)</string>
+    <string name="distance_label">Dûrahiya heta navendê</string>
+    <string name="warning_time_label">Dema hişyariyê</string>
+
+    <string-array name="mmi_descriptions">
+        <item>I</item>
+        <item>II</item>
+        <item>III</item>
+        <item>IV</item>
+        <item>V</item>
+        <item>VI</item>
+        <item>VII</item>
+        <item>VIII</item>
+        <item>IX</item>
+        <item>X</item>
+        <item>XI</item>
+        <item>XII</item>
+    </string-array>
+</resources>

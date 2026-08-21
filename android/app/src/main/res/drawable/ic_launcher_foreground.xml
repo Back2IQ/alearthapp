@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple seismic-wave glyph on transparent ground, safe zone-centered per adaptive
+     icon spec (66dp active area within 108dp canvas). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M20,60 L34,60 L40,40 L48,76 L56,48 L62,60 L70,60 L76,50 L88,50" />
+</vector>

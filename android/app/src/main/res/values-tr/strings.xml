@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish. Machine-assisted translation; needs native-speaker review before
+     production use, per spec i18n note. -->
+<resources>
+    <string name="app_name">Türkiye Afet Uyarısı</string>
+
+    <string name="status_ready">Sistem hazır</string>
+    <string name="status_attention">Dikkat</string>
+    <string name="status_alarm_p0">ALARM P0</string>
+    <string name="status_confirmed_p2">DOĞRULANDI P2</string>
+    <string name="status_disturbance_discarded">Parazit – alarm verilmedi</string>
+
+    <string name="label_city">Konumunuz</string>
+    <string name="label_language">Dil</string>
+    <string name="label_theme">Tema</string>
+    <string name="theme_system">Sistem</string>
+    <string name="theme_light">Açık</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="label_colorblind_safe">Renk körlüğüne uygun palet</string>
+    <string name="seismogram_title">Canlı sismogram (telefon ivmeölçeri)</string>
+    <string name="seismogram_subtitle">Bu cihazın gerçek hareketini gösterir -- eğriyi görmek için telefonu hareket ettirin.</string>
+
+    <string name="section_test_scenarios">Test senaryoları (yalnızca yerel, ağ yok)</string>
+    <string name="btn_test_quake">Test depremi (P0 → P2)</string>
+    <string name="btn_aftershock_sequence">Artçı sarsıntı dizisi</string>
+    <string name="btn_disturbance_firework">Parazit: havai fişek</string>
+    <string name="btn_reset">Sıfırla</string>
+    <string name="btn_view_report">Son olay raporu</string>
+
+    <string name="sequence_title">Deprem dizisi</string>
+    <string name="sequence_empty">Aktif dizi yok. Canlı bir dizi görmek için artçı senaryosunu başlatın.</string>
+    <string name="sequence_mainshock">Ana şok</string>
+    <string name="sequence_aftershock">Artçı şok</string>
+    <string name="sequence_item_format">%1$s · M%2$.1f · MMI %3$s · %4$s</string>
+
+    <string name="alert_title_p0">DEPREM ALARMI</string>
+    <string name="alert_title_p2">DEPREM DOĞRULANDI</string>
+    <string name="tier_p0_label">P0 · yalnızca telefon kümesi</string>
+    <string name="tier_p1_label">P1 · tek katalog kaynağı</string>
+    <string name="tier_p2_label">P2 · doğrulandı</string>
+    <string name="escalation_p0_to_p2">Doğrulandı: P0 → P2</string>
+    <string name="countdown_label">S dalgasına s · %1$s</string>
+    <string name="countdown_arrived">S dalgası ulaştı</string>
+    <string name="countdown_p_wave_note">P dalgası (bilgi) ~%1$d s</string>
+    <string name="magnitude_label">Büyüklük</string>
+    <string name="magnitude_proxy_note">(yaklaşık tahmin, telefon kümesi)</string>
+    <string name="magnitude_pd_note">(Pd, enstrümantal)</string>
+    <string name="intensity_label">Tahmini şiddet (burada)</string>
+    <string name="intensity_estimate_note">Yalnızca kaba bir tahmin -- bilimsel ölçüm değildir.</string>
+    <string name="distance_label">Merkez üssüne uzaklık</string>
+    <string name="distance_value_format">%1$.0f km</string>
+    <string name="warning_time_label">Uyarı süresi</string>
+    <string name="warning_time_value_format">%1$.0f s</string>
+    <string name="protection_status_label">Ne yapmalı</string>
+    <string name="protection_strong">ÇÖK · KAPAN · TUTUN</string>
+    <string name="protection_moderate">Sarsıntı olabilir – korunmaya hazır olun</string>
+    <string name="protection_weak">Zayıf – muhtemelen güvenli</string>
+    <string name="btn_close_alert">Kapat</string>
+    <string name="btn_open_report">Olay raporunu gör</string>
+
+    <string name="disturbance_title">Parazit algılandı – alarm yok</string>
+    <string name="disturbance_reason_firework">Şehir genelinde, eşzamanlı sinyal, tutarlı bir dalga cephesi yok – havai fişek/trafik tipik, deprem değil. Alarm verilmedi.</string>
+    <string name="btn_dismiss">Tamam</string>
+
+    <string name="report_title">Son olay raporu</string>
+    <string name="report_empty">Henüz olay yok. Önce başlangıç ekranından bir test senaryosu çalıştırın.</string>
+    <string name="report_share">Paylaş</string>
+    <string name="report_timeline_origin">Kırılma başlangıcı (kaynak zamanı)</string>
+    <string name="report_timeline_detection">Algılama (P0 verildi)</string>
+    <string name="report_timeline_confirmed">Doğrulama (P2 verildi)</string>
+    <string name="report_timeline_swave">Konumunuzda S dalgası</string>
+    <string name="report_line_format">%1$s: +%2$.1f sn</string>
+    <string name="report_header_format">Olay %1$s · %2$s · M%3$.1f · derinlik %4$.0f km</string>
+
+    <string name="cd_status_chip">Güncel sistem durumu</string>
+    <string name="cd_countdown">S dalgası varış geri sayımı</string>
+    <string name="cd_protection_icon">Korunma durumu simgesi</string>
+    <string name="cd_tier_icon">Alarm katmanı simgesi</string>
+    <string name="cd_seismogram">Canlı sismogram eğrisi</string>
+
+    <string-array name="mmi_descriptions">
+        <item>I – Hissedilmez</item>
+        <item>II – Çok az kişi tarafından hissedilir</item>
+        <item>III – İç mekânda hissedilir, kamyon geçişi gibi</item>
+        <item>IV – Geniş çapta hissedilir, eşyalar titrer</item>
+        <item>V – Neredeyse herkes hisseder, eşyalar düşer</item>
+        <item>VI – Hafif hasar, ayakta durmak zor</item>
+        <item>VII – Zayıf binalarda hasar</item>
+        <item>VIII – Ciddi hasar</item>
+        <item>IX – Ağır hasar, binalar kayar</item>
+        <item>X – Çoğu binada ciddi hasar</item>
+        <item>XI – Az sayıda yapı ayakta kalır</item>
+        <item>XII – Neredeyse tam yıkım</item>
+    </string-array>
+
+    <string-array name="city_names">
+        <item>Adana</item>
+        <item>Gaziantep</item>
+        <item>Kahramanmaraş</item>
+        <item>İstanbul</item>
+        <item>İzmir</item>
+        <item>Ankara</item>
+    </string-array>
+</resources>

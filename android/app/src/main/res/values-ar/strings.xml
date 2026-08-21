@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Arabic (RTL). Only the life-saving core strings are translated for the MVP
+     (spec i18n note: "lebensrettende Kernstrings ... in allen vier Sprachen"); all
+     other strings fall back to the English default. NEEDS NATIVE-SPEAKER REVIEW
+     before production; these are machine-assisted translations. -->
+<resources>
+    <string name="app_name">إنذار الكوارث في تركيا</string>
+
+    <string name="status_ready">النظام جاهز</string>
+    <string name="status_attention">انتباه</string>
+    <string name="status_alarm_p0">إنذار P0</string>
+    <string name="status_confirmed_p2">تأكيد P2</string>
+    <string name="status_disturbance_discarded">تم رصد تشويش – لم يصدر إنذار</string>
+
+    <string name="alert_title_p0">إنذار زلزال</string>
+    <string name="alert_title_p2">تم تأكيد الزلزال</string>
+    <string name="tier_p0_label">P0 · مجموعة هواتف فقط</string>
+    <string name="tier_p1_label">P1 · مصدر واحد من الكتالوج</string>
+    <string name="tier_p2_label">P2 · مؤكد</string>
+    <string name="escalation_p0_to_p2">تم التأكيد: P0 → P2</string>
+    <string name="countdown_label">ثانية حتى وصول الموجة S · %1$s</string>
+    <string name="countdown_arrived">وصلت الموجة S</string>
+    <string name="protection_status_label">ماذا تفعل</string>
+    <string name="protection_strong">انبطح · احتمِ · تمسّك</string>
+    <string name="protection_moderate">قد يحدث اهتزاز – كن مستعدًا للاحتماء</string>
+    <string name="protection_weak">ضعيف – على الأرجح آمن</string>
+    <string name="magnitude_label">الشدة</string>
+    <string name="intensity_label">الشدة المقدرة هنا</string>
+    <string name="distance_label">المسافة إلى المركز</string>
+    <string name="warning_time_label">مدة التحذير</string>
+
+    <string-array name="mmi_descriptions">
+        <item>I</item>
+        <item>II</item>
+        <item>III</item>
+        <item>IV</item>
+        <item>V</item>
+        <item>VI</item>
+        <item>VII</item>
+        <item>VIII</item>
+        <item>IX</item>
+        <item>X</item>
+        <item>XI</item>
+        <item>XII</item>
+    </string-array>
+</resources>

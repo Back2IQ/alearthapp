@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Semantic status colors as theme attributes so a colorblind-safe theme overlay
+         can swap the whole red/green semantics for a blue/orange palette without
+         touching any layout or code (spec: never rely on color alone anyway;
+         these always pair with icon + text). -->
+    <attr name="colorTierP0" format="color" />
+    <attr name="colorTierP1" format="color" />
+    <attr name="colorTierP2" format="color" />
+    <attr name="colorAttention" format="color" />
+    <attr name="colorDisturbance" format="color" />
+    <attr name="colorProtectionStrong" format="color" />
+    <attr name="colorProtectionModerate" format="color" />
+    <attr name="colorProtectionWeak" format="color" />
+    <attr name="colorReady" format="color" />
+</resources>

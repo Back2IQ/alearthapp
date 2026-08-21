@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/alertRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/tierIcon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/cd_tier_icon"
+                android:src="@drawable/ic_tier_p0" />
+
+            <TextView
+                android:id="@+id/alertTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:text="@string/alert_title_p0" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tierLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/tier_p0_label" />
+
+        <TextView
+            android:id="@+id/escalationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp"
+            android:text="@string/escalation_p0_to_p2" />
+
+        <TextView
+            android:id="@+id/countdownText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="56sp"
+            android:textStyle="bold"
+            android:contentDescription="@string/cd_countdown"
+            android:text="-- s" />
+
+        <TextView
+            android:id="@+id/pWaveNoteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/magnitude_label" />
+
+            <TextView
+                android:id="@+id/magnitudeValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:text="--" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/intensity_label" />
+
+            <TextView
+                android:id="@+id/intensityValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:text="--" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/intensity_estimate_note" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/distance_label" />
+
+            <TextView
+                android:id="@+id/distanceValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:text="--" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/warning_time_label" />
+
+            <TextView
+                android:id="@+id/warningTimeValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:text="--" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#33808080"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/protection_status_label" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:id="@+id/protectionIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/cd_protection_icon"
+                android:src="@drawable/ic_protection_weak" />
+
+            <TextView
+                android:id="@+id/protectionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:text="@string/protection_weak" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnOpenReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_open_report" />
+
+        <Button
+            android:id="@+id/btnCloseAlert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_close_alert" />
+
+    </LinearLayout>
+</ScrollView>

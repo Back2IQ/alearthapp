@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English (default) strings. Life-safety core strings (countdown label, protection
+     status, tier names, alert titles) are translated into TR/EN/KU/AR (values-tr,
+     values-ku, values-ar). Remaining UI strings are at least TR/EN today;
+     native-speaker review is still needed before production, see spec i18n note. -->
+<resources>
+    <string name="app_name">Turkey Disaster Alert</string>
+
+    <!-- Status chip -->
+    <string name="status_ready">System ready</string>
+    <string name="status_attention">Attention</string>
+    <string name="status_alarm_p0">ALERT P0</string>
+    <string name="status_confirmed_p2">CONFIRMED P2</string>
+    <string name="status_disturbance_discarded">Disturbance discarded</string>
+
+    <!-- Main screen controls -->
+    <string name="label_city">Your location</string>
+    <string name="label_language">Language</string>
+    <string name="label_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="label_colorblind_safe">Colorblind-safe palette</string>
+    <string name="seismogram_title">Live seismogram (phone accelerometer)</string>
+    <string name="seismogram_subtitle">Shows real motion of this device -- move the phone to see the trace react.</string>
+
+    <string name="section_test_scenarios">Test scenarios (local only, no network)</string>
+    <string name="btn_test_quake">Test earthquake (P0 → P2)</string>
+    <string name="btn_aftershock_sequence">Aftershock sequence</string>
+    <string name="btn_disturbance_firework">Disturbance: fireworks</string>
+    <string name="btn_reset">Reset</string>
+    <string name="btn_view_report">Last event report</string>
+
+    <!-- Sequence panel -->
+    <string name="sequence_title">Earthquake sequence</string>
+    <string name="sequence_empty">No sequence active. Start the aftershock scenario to see a live sequence build up.</string>
+    <string name="sequence_mainshock">Mainshock</string>
+    <string name="sequence_aftershock">Aftershock</string>
+    <string name="sequence_item_format">%1$s · M%2$.1f · MMI %3$s · %4$s</string>
+
+    <!-- Alert screen -->
+    <string name="alert_title_p0">EARTHQUAKE ALERT</string>
+    <string name="alert_title_p2">EARTHQUAKE CONFIRMED</string>
+    <string name="tier_p0_label">P0 · phone cluster only</string>
+    <string name="tier_p1_label">P1 · single catalog source</string>
+    <string name="tier_p2_label">P2 · confirmed</string>
+    <string name="escalation_p0_to_p2">Confirmed: P0 → P2</string>
+    <string name="countdown_label">s until S-wave · %1$s</string>
+    <string name="countdown_arrived">S-wave arriving</string>
+    <string name="countdown_p_wave_note">P-wave (info) in ~%1$d s</string>
+    <string name="magnitude_label">Magnitude</string>
+    <string name="magnitude_proxy_note">(proxy estimate, phone cluster)</string>
+    <string name="magnitude_pd_note">(Pd, instrumental)</string>
+    <string name="intensity_label">Estimated intensity here</string>
+    <string name="intensity_estimate_note">Rough estimate only -- not a scientific reading.</string>
+    <string name="distance_label">Distance to origin</string>
+    <string name="distance_value_format">%1$.0f km</string>
+    <string name="warning_time_label">Warning time</string>
+    <string name="warning_time_value_format">%1$.0f s</string>
+    <string name="protection_status_label">What to do</string>
+    <string name="protection_strong">DROP · COVER · HOLD ON</string>
+    <string name="protection_moderate">Shaking possible – be ready to take cover</string>
+    <string name="protection_weak">Weak – likely safe</string>
+    <string name="btn_close_alert">Close</string>
+    <string name="btn_open_report">View event report</string>
+
+    <!-- Disturbance -->
+    <string name="disturbance_title">Disturbance detected – no alert</string>
+    <string name="disturbance_reason_firework">City-wide, simultaneous signal with no consistent wavefront – typical of fireworks/traffic, not an earthquake. No alert was issued.</string>
+    <string name="btn_dismiss">OK</string>
+
+    <!-- Report screen -->
+    <string name="report_title">Last event report</string>
+    <string name="report_empty">No event yet. Run a test scenario from the start screen first.</string>
+    <string name="report_share">Share</string>
+    <string name="report_timeline_origin">Rupture onset (origin time)</string>
+    <string name="report_timeline_detection">Detection (P0 issued)</string>
+    <string name="report_timeline_confirmed">Confirmed (P2 issued)</string>
+    <string name="report_timeline_swave">S-wave at your location</string>
+    <string name="report_line_format">%1$s: +%2$.1f s</string>
+    <string name="report_header_format">Event %1$s · %2$s · M%3$.1f · depth %4$.0f km</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_status_chip">Current system status</string>
+    <string name="cd_countdown">Countdown to S-wave arrival</string>
+    <string name="cd_protection_icon">Protection status icon</string>
+    <string name="cd_tier_icon">Alert tier icon</string>
+    <string name="cd_seismogram">Live seismogram trace</string>
+
+    <string-array name="mmi_descriptions">
+        <item>I – Not felt</item>
+        <item>II – Barely felt by a few</item>
+        <item>III – Felt indoors, like a truck passing</item>
+        <item>IV – Felt widely, dishes rattle</item>
+        <item>V – Felt by nearly everyone, objects fall</item>
+        <item>VI – Slight damage, hard to stand</item>
+        <item>VII – Damage to weak buildings</item>
+        <item>VIII – Considerable damage</item>
+        <item>IX – Heavy damage, buildings shift</item>
+        <item>X – Serious damage to most buildings</item>
+        <item>XI – Few structures survive</item>
+        <item>XII – Near total destruction</item>
+    </string-array>
+
+    <string-array name="city_names">
+        <item>Adana</item>
+        <item>Gaziantep</item>
+        <item>Kahramanmaraş</item>
+        <item>İstanbul</item>
+        <item>İzmir</item>
+        <item>Ankara</item>
+    </string-array>
+</resources>
