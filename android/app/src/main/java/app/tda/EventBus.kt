@@ -52,6 +52,10 @@ object EventBus {
 
     suspend fun emitAlarm(p: Eew.AlarmPayload) { _alarm.emit(p) }
 
+    /** Non-suspending variant for callers without a coroutine scope (e.g. OkHttp's
+     * WebSocket listener callbacks, which run on OkHttp's own dispatcher thread). */
+    fun tryEmitAlarm(p: Eew.AlarmPayload) { _alarm.tryEmit(p) }
+
     fun appendSequence(e: Eew.SequenceEntry) { _sequence.value = _sequence.value + e }
     fun resetSequence() { _sequence.value = emptyList() }
 

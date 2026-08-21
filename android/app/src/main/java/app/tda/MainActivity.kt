@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         setupLanguageSpinner()
         setupThemeControls()
         setupTestButtons()
+        setupServerControls()
         observeEventBus()
     }
 
@@ -123,6 +124,54 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.widget.Button>(R.id.btnViewReport).setOnClickListener {
             startActivity(Intent(this, ReportActivity::class.java))
         }
+    }
+
+    /** Wires the "Mit Server verbinden" section (spec "Server-Verbindungsmodus") to
+     * [ServerLink]. The local [TestScenarios] injector above is completely untouched --
+     * this is an additional, independent alarm source that also verifies Ed25519
+     * signatures before anything reaches [EventBus]. */
+    private fun setupServerControls() {
+        val urlField = findViewById<android.widget.EditText>(R.id.editServerUrl)
+
+        findViewById<android.widget.Button>(R.id.btnServerConnect).setOnClickListener {
+            val url = urlField.text.toString().trim()
+            if (url.isNotEmpty()) {
+                ServerLink.connect(url)
+            }
+        }
+        findViewById<android.widget.Button>(R.id.btnServerDisconnect).setOnClickListener {
+            ServerLink.disconnect()
+        }
+        findViewById<android.widget.Button>(R.id.btnServerTestQuake).setOnClickListener {
+            ServerLink.sendSimulate("quake")
+        }
+        findViewById<android.widget.Button>(R.id.btnServerTestFirework).setOnClickListener {
+            ServerLink.sendSimulate("firework")
+        }
+
+        scope.launch {
+            ServerLink.connState.collect { state -> renderServerStatusChip(state) }
+        }
+        scope.launch {
+            ServerLink.invalidSignature.collect {
+                Toast.makeText(this@MainActivity, R.string.ws_invalid_signature, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun renderServerStatusChip(state: ServerConnState) {
+        val icon = findViewById<ImageView>(R.id.serverStatusIcon)
+        val text = findViewById<TextView>(R.id.serverStatusText)
+        val chip = findViewById<android.view.View>(R.id.serverStatusChip)
+        val (drawableRes, stringRes, attrRes) = when (state) {
+            ServerConnState.DISCONNECTED -> Triple(R.drawable.ic_status_block, R.string.server_status_disconnected, R.attr.colorDisturbance)
+            ServerConnState.CONNECTING -> Triple(R.drawable.ic_status_attention, R.string.server_status_connecting, R.attr.colorAttention)
+            ServerConnState.CONNECTED -> Triple(R.drawable.ic_status_ready, R.string.server_status_connected, R.attr.colorReady)
+            ServerConnState.FAILED -> Triple(R.drawable.ic_status_block, R.string.server_status_failed, R.attr.colorDisturbance)
+        }
+        icon.setImageResource(drawableRes)
+        text.setText(stringRes)
+        chip.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor(attrRes))
     }
 
     private fun observeEventBus() {

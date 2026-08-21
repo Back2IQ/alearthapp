@@ -31,6 +31,20 @@
     <string name="btn_reset">Reset</string>
     <string name="btn_view_report">Last event report</string>
 
+    <!-- Server connection mode -->
+    <string name="section_server_connect">Connect to server</string>
+    <string name="hint_server_url">ws://host:port (emulator: ws://10.0.2.2:8000, phone: ws://&lt;PC-LAN-IP&gt;:8000)</string>
+    <string name="btn_server_connect">Connect</string>
+    <string name="btn_server_disconnect">Disconnect</string>
+    <string name="server_status_disconnected">Disconnected</string>
+    <string name="server_status_connecting">Connecting…</string>
+    <string name="server_status_connected">Connected</string>
+    <string name="server_status_failed">Connection failed</string>
+    <string name="btn_server_test_quake">Test earthquake from server</string>
+    <string name="btn_server_test_firework">Disturbance from server</string>
+    <string name="ws_invalid_signature">Signatur ungültig – verworfen</string>
+    <string name="cd_server_status_chip">Server connection status</string>
+
     <!-- Sequence panel -->
     <string name="sequence_title">Earthquake sequence</string>
     <string name="sequence_empty">No sequence active. Start the aftershock scenario to see a live sequence build up.</string>
