@@ -196,3 +196,22 @@ picker work, not a code-only patch, and is intentionally left unfixed here.
   real waveform window in the picker and wire it into the magnitude
   estimate; verify against a real event with known catalog magnitude, not
   only against fixture picklists that assume `pd_cm` is already present.
+
+## Nachtrag ORFEUS/EIDA/GEOFON/IRIS-Stationscheck (21.08.2026, verifiziert)
+
+Ziel: kann P0a ohne AFAD-Vertrag teil-entschattet werden? Reale Abfragen (FDSNWS-Metadaten + SeedLink-INFO STREAMS Echtzeit).
+
+**Metadaten (FDSNWS, Türkei-Bbox lat 36–42,5 / lon 25–45):**
+- GEOFON `geofon.gfz-potsdam.de/fdsnws/station`: 8 GE-Stationen (davon türkisch: GE.ARPR Arapgir 39.09,38.34 · GE.ISP Isparta 37.84,30.51 · GE.MALT Malatya 38.31,38.43; Rest Ägäis Naxos/Santorini).
+- ORFEUS `orfeus-eu.org/fdsnws/station`: 11 TU-Stationen (AFAD-Netz-Metadaten föderiert).
+- IRIS `service.iris.edu/fdsnws/station`: 8 GE + 11 KO (KOERI-Metadaten föderiert).
+
+**Echtzeit (SeedLink INFO STREAMS):**
+- GEOFON `:18000` OFFEN (SeedLink v4). GE streamt 82 Streams. **Türkisch frei in Echtzeit bestätigt: GE.ISP (Isparta), GE.ARPR (Arapgir)**. GE.MALT (Malatya) NUR Metadaten, kein Echtzeit-Stream. Ägäis live: GE.APE (Naxos), GE.SANT (Santorini).
+- **KO und TU: 0 Echtzeit-Streams** auf GEOFON. KOERI-eigener Port `eida.koeri.boun.edu.tr:18000` verweigert (WinError 10061). IRIS `rtserve.iris.washington.edu:18000` OFFEN, aber KO/TU-Echtzeit dort nicht nachweisbar (INFO-Format abweichend, unschlüssig — separat prüfen).
+
+**Ehrliches Fazit:**
+- **Teil-Entschattung ist real, aber dünn:** frei-in-Echtzeit sind v. a. **GE.ISP + GE.ARPR** (ARPR direkt an der Ostanatolischen Verwerfung, Kahramanmaraş-Region) plus Ägäis-Stationen (APE/SANT — relevant für Ägäis-/Mittelmeer-Quellen inkl. Tsunami).
+- Für EPIC-artige Assoziation (≥ 4 Nahstationen in EINER Quellzone) reicht das allein NICHT → **P0a bleibt für eigenständiges Scharf-Alarmieren im Schatten.**
+- ABER: erstmals genug **echte** Streams, um P0a im Schattenbetrieb mit REALEN Daten zu fahren (Kalibrierung/Validierung, P0b-Kreuzbestätigung) statt ohne Daten — ohne jeden Vertrag. Der Sprung von „1 Station" auf „mehrere gut platzierte, inkl. EAF + Ägäis" ist der reale Gewinn.
+- Dichte Scharf-Abdeckung der Quellzonen braucht weiterhin AFAD-TDVM/KOERI-Kooperation (Partnerschaftsschiene, kritischer Pfad).
