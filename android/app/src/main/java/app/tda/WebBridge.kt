@@ -30,6 +30,10 @@ class WebBridge(private val activity: Activity) {
     fun onAlert(json: String) {
         val o = runCatching { JSONObject(json) }.getOrNull() ?: return
         val id = o.optString("id").ifEmpty { return }
+        // Gewählte UI-Sprache aus dem Web übernehmen, damit der native Alarm in dieser
+        // Sprache erscheint (nicht in der System-Locale).
+        Prefs.init(activity)
+        o.optString("lang").takeIf { it.isNotEmpty() }?.let { Prefs.languageTag = it }
         val tier = when (o.optString("tier")) {
             "P2" -> Eew.Tier.P2
             "P1" -> Eew.Tier.P1
@@ -96,7 +100,7 @@ class WebBridge(private val activity: Activity) {
         )
         val n = NotificationCompat.Builder(activity, NotificationChannels.CRITICAL)
             .setSmallIcon(R.drawable.ic_tier_p0)
-            .setContentTitle(activity.getString(R.string.alert_title_p0))
+            .setContentTitle(activity.withAppLocale().getString(R.string.alert_title_p0))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setFullScreenIntent(fsi, true)

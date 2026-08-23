@@ -1,5 +1,6 @@
 package app.tda
 
+import android.content.Context
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
@@ -44,6 +45,10 @@ class AlertActivity : AppCompatActivity() {
     private var distKm: Double = 0.0
     private lateinit var eventId: String
     private lateinit var cityName: String
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase.withAppLocale())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Prefs.init(this)

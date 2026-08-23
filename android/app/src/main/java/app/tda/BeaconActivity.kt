@@ -1,5 +1,6 @@
 package app.tda
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -30,6 +31,10 @@ class BeaconActivity : AppCompatActivity() {
 
     private lateinit var scope: CoroutineScope
     private var strobe: Strobe? = null
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase.withAppLocale())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Prefs.init(this)
