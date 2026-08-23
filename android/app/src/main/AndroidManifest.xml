@@ -32,10 +32,6 @@
         </activity>
 
         <activity
-            android:name=".OnboardingActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".AlertActivity"
             android:exported="false"
             android:launchMode="singleTop"
