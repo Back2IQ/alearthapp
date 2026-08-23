@@ -13,6 +13,8 @@
     <string name="status_confirmed_p2">CONFIRMED P2</string>
     <string name="status_disturbance_discarded">Disturbance discarded</string>
     <string name="home_clear">Clear alert</string>
+    <string name="pick_alarm_sound">Choose alarm sound</string>
+    <string name="alarm_sound_saved">Alarm sound saved</string>
 
     <!-- Main screen controls -->
     <string name="label_city">Your location</string>

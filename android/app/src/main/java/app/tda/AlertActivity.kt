@@ -36,7 +36,10 @@ class AlertActivity : AppCompatActivity() {
         const val EXTRA_USER_LAT = "user_lat"
         const val EXTRA_USER_LON = "user_lon"
         const val EXTRA_USER_CITY_NAME = "user_city_name"
+        const val EXTRA_SOUND = "sound"
     }
+
+    private var soundEnabled = true
 
     private lateinit var scope: CoroutineScope
     private var currentTier: Eew.Tier = Eew.Tier.P0
@@ -73,6 +76,7 @@ class AlertActivity : AppCompatActivity() {
         val userLat = intent.getDoubleExtra(EXTRA_USER_LAT, 0.0)
         val userLon = intent.getDoubleExtra(EXTRA_USER_LON, 0.0)
         cityName = intent.getStringExtra(EXTRA_USER_CITY_NAME) ?: ""
+        soundEnabled = intent.getBooleanExtra(EXTRA_SOUND, true)
         distKm = Eew.haversineKm(userLat, userLon, epiLat, epiLon)
         mag = 6.8
         currentTier = Eew.Tier.P0
@@ -195,10 +199,15 @@ class AlertActivity : AppCompatActivity() {
             dndAccessGranted = dndAccessGranted()
         )
         val vibrator = getSystemService(VIBRATOR_SERVICE) as? Vibrator
-        if (plan.playAlarmSound) {
+        // In der Hybrid-Huelle feuert der native Alarm nur oberhalb der Alarm-Schwelle,
+        // ist also immer alarmwuerdig -> Ton spielen, sobald der Nutzer ihn erlaubt
+        // (soundEnabled), unabhaengig von der P0/P2-Daempfungspolitik.
+        if (soundEnabled || plan.playAlarmSound) {
             try {
-                val uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                val custom = Prefs.alarmSoundUri
+                val uri = if (custom.isNotEmpty()) android.net.Uri.parse(custom)
+                    else RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                 val ringtone = RingtoneManager.getRingtone(this, uri)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     ringtone?.audioAttributes = AudioAttributes.Builder()

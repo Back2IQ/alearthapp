@@ -2,9 +2,11 @@ package app.tda
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -29,6 +31,8 @@ import androidx.webkit.WebViewClientCompat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+
+    companion object { private const val REQ_PICK_SOUND = 301 }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +97,30 @@ class MainActivity : AppCompatActivity() {
             wanted += android.Manifest.permission.ACCESS_FINE_LOCATION
         }
         if (wanted.isNotEmpty()) requestPermissions(wanted.toTypedArray(), 101)
+    }
+
+    /** Nativer System-Ringtone-Picker (Typ Alarm); Auswahl landet in Prefs.alarmSoundUri. */
+    fun pickAlarmSound() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.pick_alarm_sound))
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
+            Prefs.alarmSoundUri.takeIf { it.isNotEmpty() }?.let {
+                putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(it))
+            }
+        }
+        runCatching { startActivityForResult(intent, REQ_PICK_SOUND) }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQ_PICK_SOUND && resultCode == RESULT_OK) {
+            val uri: Uri? = data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            Prefs.alarmSoundUri = uri?.toString() ?: ""
+            Toast.makeText(this, R.string.alarm_sound_saved, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -33,6 +33,7 @@ object Prefs {
     private const val KEY_ONBOARDED = "onboarded"
     private const val KEY_ALERT_RADIUS_KM = "alert_radius_km"
     private const val KEY_MIN_MAG = "min_mag"
+    private const val KEY_ALARM_SOUND_URI = "alarm_sound_uri"
 
     private lateinit var prefs: SharedPreferences
 
@@ -168,4 +169,9 @@ object Prefs {
     var minMagnitude: Double
         get() = prefs.getFloat(KEY_MIN_MAG, 3.5f).toDouble().coerceIn(1.0, 8.0)
         set(v) { prefs.edit().putFloat(KEY_MIN_MAG, v.toFloat()).apply() }
+
+    /** Vom Nutzer gewählter Alarmton (content:// URI); leer = System-Alarmton. */
+    var alarmSoundUri: String
+        get() = prefs.getString(KEY_ALARM_SOUND_URI, "") ?: ""
+        set(v) { prefs.edit().putString(KEY_ALARM_SOUND_URI, v).apply() }
 }

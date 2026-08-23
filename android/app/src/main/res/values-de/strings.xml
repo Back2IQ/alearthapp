@@ -11,6 +11,8 @@
     <string name="status_confirmed_p2">BESTÄTIGT P2</string>
     <string name="status_disturbance_discarded">Störung verworfen</string>
     <string name="home_clear">Alarm zurücksetzen</string>
+    <string name="pick_alarm_sound">Alarmton wählen</string>
+    <string name="alarm_sound_saved">Alarmton gespeichert</string>
 
     <!-- Main screen controls -->
     <string name="label_city">Ihr Standort</string>

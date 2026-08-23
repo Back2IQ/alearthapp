@@ -46,7 +46,7 @@ class WebBridge(private val activity: Activity) {
             lat = o.optDouble("lat"), lon = o.optDouble("lon"),
             depthKm = o.optDouble("depthKm", 10.0), originTs = o.optLong("originTs", System.currentTimeMillis()),
             userLat = o.optDouble("userLat"), userLon = o.optDouble("userLon"),
-            cityName = o.optString("cityName")
+            cityName = o.optString("cityName"), sound = o.optBoolean("sound", true)
         )
         activity.runOnUiThread {
             val firstForId = lastAlarmId != id
@@ -62,6 +62,12 @@ class WebBridge(private val activity: Activity) {
         }
     }
 
+    /** Web-Seite bittet um Auswahl eines eigenen Alarmtons → nativer Ringtone-Picker. */
+    @JavascriptInterface
+    fun pickAlarmSound() {
+        activity.runOnUiThread { (activity as? MainActivity)?.pickAlarmSound() }
+    }
+
     /** Web-Seite meldet Entwarnung (Alarm geschlossen) → Reste stoppen. */
     @JavascriptInterface
     fun onAlertCleared() {
@@ -73,7 +79,8 @@ class WebBridge(private val activity: Activity) {
 
     private data class AlertData(
         val id: String, val lat: Double, val lon: Double, val depthKm: Double,
-        val originTs: Long, val userLat: Double, val userLon: Double, val cityName: String
+        val originTs: Long, val userLat: Double, val userLon: Double, val cityName: String,
+        val sound: Boolean
     )
 
     private fun alertIntent(p: AlertData): Intent =
@@ -86,6 +93,7 @@ class WebBridge(private val activity: Activity) {
             putExtra(AlertActivity.EXTRA_USER_LAT, p.userLat)
             putExtra(AlertActivity.EXTRA_USER_LON, p.userLon)
             putExtra(AlertActivity.EXTRA_USER_CITY_NAME, p.cityName)
+            putExtra(AlertActivity.EXTRA_SOUND, p.sound)
         }
 
     private fun launchAlert(p: AlertData) {
