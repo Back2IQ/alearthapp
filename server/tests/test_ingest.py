@@ -28,3 +28,51 @@ def test_parse_ping_body_ok():
                          "ping_ms": "1755691200000"}, received_ms=1755691200100)
     assert p.device_hash == "abc" and p.ping_ms == 1755691200000
     assert p.received_ms == 1755691200100
+
+
+from tda_server.p0b.gateway import AllowlistVerifier, RateLimiter, TriggerGate
+from tda_server.serve.ingest import TriggerIngestor
+
+
+def make_ingestor():
+    trig_out, ping_out = [], []
+    ing = TriggerIngestor(
+        verifier=AllowlistVerifier(set()),
+        limiter=RateLimiter(max_per_window=100, window_ms=1000),
+        gate=TriggerGate(),
+        submit_trigger=trig_out.append,
+        submit_ping=ping_out.append,
+        ping_limiter=RateLimiter(max_per_window=100, window_ms=1000),
+    )
+    return ing, trig_out, ping_out
+
+
+def test_ingestor_accepts_valid_trigger():
+    ing, trig_out, _ = make_ingestor()
+    raw = {"device_hash": "abc", "cell": "d410_289",
+           "trigger_ms": "1000", "clock_unc_ms": "1000"}
+    ing.handle_trigger(raw, token="", received_ms=1100)
+    assert len(trig_out) == 1
+    assert trig_out[0]["device_hash"] == "abc" and trig_out[0]["attest_ok"] == "0"
+    assert trig_out[0]["received_ms"] == "1100"
+
+
+def test_ingestor_drops_bad_clock_silently():
+    ing, trig_out, _ = make_ingestor()
+    raw = {"device_hash": "abc", "cell": "d410_289",
+           "trigger_ms": "1000", "clock_unc_ms": "9000"}   # over gate limit
+    ing.handle_trigger(raw, token="", received_ms=1100)
+    assert trig_out == []                                    # gated out, no raise
+
+
+def test_ingestor_raises_on_malformed():
+    ing, _, _ = make_ingestor()
+    with pytest.raises(ValueError):
+        ing.handle_trigger({"device_hash": "abc"}, token="", received_ms=1)
+
+
+def test_ingestor_accepts_ping():
+    ing, _, ping_out = make_ingestor()
+    ing.handle_ping({"device_hash": "abc", "cell": "d410_289", "ping_ms": "1000"},
+                    received_ms=1100)
+    assert len(ping_out) == 1 and ping_out[0]["device_hash"] == "abc"
