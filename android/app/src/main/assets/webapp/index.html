@@ -705,17 +705,22 @@
   <div class="ob">
     <div class="ob-dots" id="obDots"></div>
     <div class="ob-card" data-ob="1">
+      <div class="ob-mark">🌐</div>
+      <h2>Language · Sprache · Dil · Язык · اللغة</h2>
+      <div class="chips" id="obLangs" style="margin-top:12px"></div>
+    </div>
+    <div class="ob-card" data-ob="2" hidden>
       <div class="ob-mark">◎</div>
       <h2 id="ob1t">Welcome to TDA</h2>
       <p id="ob1b">TDA warns you seconds before the shaking arrives and shows every natural hazard near you.</p>
     </div>
-    <div class="ob-card" data-ob="2" hidden>
+    <div class="ob-card" data-ob="3" hidden>
       <h2 id="ob2t">Where should we watch?</h2>
       <p id="ob2b">Use your location, or pick a city. You can change this any time.</p>
       <button class="btn accent wide" id="obGps">📡 <span id="obGpsText">Use my location</span></button>
       <div class="chips" id="obCities" style="margin-top:12px"></div>
     </div>
-    <div class="ob-card" data-ob="3" hidden>
+    <div class="ob-card" data-ob="4" hidden>
       <h2 id="ob3t">Choose a protection level</h2>
       <div class="ob-profiles" id="obProfiles">
         <button class="ob-profile" data-profile="vorsichtig"><b id="obPv">Cautious</b><span id="obPvd">radius 500 km · from M 2.5</span></button>
@@ -725,17 +730,17 @@
       <p class="ob-note" id="obRetro"></p>
       <p class="ob-fine" id="ob3fine">Magnitude = strength; radius = how far away a quake still concerns you. Fine sliders stay in Settings.</p>
     </div>
-    <div class="ob-card" data-ob="4" hidden>
+    <div class="ob-card" data-ob="5" hidden>
       <h2 id="ob4t">Alerts</h2>
       <div class="toggle-row"><span id="ob4sound">Alarm sound</span><label class="switch"><input type="checkbox" id="obSound" checked><span class="slider"></span></label></div>
       <button class="btn wide" id="obNotify" style="margin-top:14px">🔔 <span id="obNotifyText">Enable notifications</span></button>
       <p class="ob-fine" id="ob4fine">Notifications work while the page/app is open. Full push delivery comes with the app.</p>
     </div>
-    <div class="ob-card" data-ob="5" hidden>
+    <div class="ob-card" data-ob="6" hidden>
       <h2 id="ob5t">Offline rescue (in the app)</h2>
       <p id="ob5b">If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.</p>
     </div>
-    <div class="ob-card" data-ob="6" hidden>
+    <div class="ob-card" data-ob="7" hidden>
       <h2 id="ob6t">This is what an alert looks like</h2>
       <p id="ob6b">Try a practice alert so you recognise the sound and screen in a real event.</p>
       <button class="btn accent wide" id="obDrill">▶ <span id="obDrillText">Show a practice alert</span></button>
@@ -2322,7 +2327,17 @@ function renderStartNearest() {
   box.onclick = () => { switchTab("map"); if (map) { map.setView([best.lat, best.lon], 7); } };
 }
 let obStep = 1;
-const OB_STEPS = 6;
+const OB_STEPS = 7;
+const OB_LANGS = [["tr","Türkçe"],["en","English"],["de","Deutsch"],["ru","Русский"],["ar","العربية"]];
+function renderObLangs() {
+  const c = $("obLangs"); if (!c) return; c.innerHTML = "";
+  OB_LANGS.forEach(([code,label]) => {
+    const b = document.createElement("button"); b.className = "chip-btn"; b.textContent = label;
+    b.setAttribute("aria-pressed", String(code === lang));
+    b.onclick = () => { lang = code; applyLanguage(); savePrefs(); renderObLangs(); };
+    c.appendChild(b);
+  });
+}
 function renderObRetro() {
   const el = $("obRetro"); if (!el) return;
   const within = quakes.filter(q => Eew.haversineKm(State.loc.lat, State.loc.lon, q.lat, q.lon) <= Settings.radiusKm);
@@ -2337,11 +2352,12 @@ function obGoTo(step) {
   for (let i = 1; i <= OB_STEPS; i++) { const d = document.createElement("i"); if (i === obStep) d.className = "on"; dots.appendChild(d); }
   $("obBack").style.visibility = obStep === 1 ? "hidden" : "visible";
   $("obNext").textContent = obStep === OB_STEPS ? t("ob_finish") : t("ob_next");
-  if (obStep === 3) renderObRetro();
+  if (obStep === 4) renderObRetro();
 }
 function startOnboarding() {
   $("onboarding").classList.add("show");
-  // seed profile buttons + city chips to current state
+  // seed language buttons + profile buttons + city chips to current state
+  renderObLangs();
   highlightObProfile(profileGuess());
   renderObCities();
   obGoTo(1);
