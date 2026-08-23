@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German. Machine-assisted translation; needs native-speaker review before
+     production use, per spec i18n note. -->
+<resources>
+    <string name="app_name">Turkey Disaster Alert</string>
+
+    <!-- Status chip -->
+    <string name="status_ready">System bereit</string>
+    <string name="status_attention">Achtung</string>
+    <string name="status_alarm_p0">ALARM P0</string>
+    <string name="status_confirmed_p2">BESTÄTIGT P2</string>
+    <string name="status_disturbance_discarded">Störung verworfen</string>
+    <string name="home_clear">Alarm zurücksetzen</string>
+    <string name="pick_alarm_sound">Alarmton wählen</string>
+    <string name="alarm_sound_saved">Alarmton gespeichert</string>
+
+    <!-- Main screen controls -->
+    <string name="label_city">Ihr Standort</string>
+    <string name="label_language">Sprache</string>
+    <string name="label_theme">Design</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="label_colorblind_safe">Farbenblindheitsfreundliche Palette</string>
+    <string name="seismogram_title">Live-Seismogramm (Beschleunigungssensor des Telefons)</string>
+    <string name="seismogram_subtitle">Zeigt die tatsächliche Bewegung dieses Geräts -- bewegen Sie das Telefon, um die Kurve reagieren zu sehen.</string>
+
+    <string name="section_test_scenarios">Testszenarien (nur lokal, kein Netzwerk)</string>
+    <string name="btn_test_quake">Testerdbeben (P0 → P2)</string>
+    <string name="btn_aftershock_sequence">Nachbebenfolge</string>
+    <string name="btn_disturbance_firework">Störung: Feuerwerk</string>
+    <string name="btn_reset">Zurücksetzen</string>
+    <string name="btn_view_report">Letzter Ereignisbericht</string>
+
+    <!-- Server connection mode -->
+    <string name="section_server_connect">Mit Server verbinden</string>
+    <string name="hint_server_url">ws://host:port (Emulator: ws://10.0.2.2:8000, Telefon: ws://&lt;PC-LAN-IP&gt;:8000)</string>
+    <string name="btn_server_connect">Verbinden</string>
+    <string name="btn_server_disconnect">Trennen</string>
+    <string name="server_status_disconnected">Getrennt</string>
+    <string name="server_status_connecting">Verbindung wird hergestellt…</string>
+    <string name="server_status_connected">Verbunden</string>
+    <string name="server_status_failed">Verbindung fehlgeschlagen</string>
+    <string name="btn_server_test_quake">Testerdbeben vom Server</string>
+    <string name="btn_server_test_firework">Störung vom Server</string>
+    <string name="ws_invalid_signature">Signatur ungültig – verworfen</string>
+    <string name="cd_server_status_chip">Serververbindungsstatus</string>
+
+    <!-- Sequence panel -->
+    <string name="sequence_title">Erdbebenfolge</string>
+    <string name="sequence_empty">Keine aktive Folge. Starten Sie das Nachbeben-Szenario, um eine Live-Folge aufzubauen.</string>
+    <string name="sequence_mainshock">Hauptbeben</string>
+    <string name="sequence_aftershock">Nachbeben</string>
+    <string name="sequence_item_format">%1$s · M%2$.1f · MMI %3$s · %4$s</string>
+
+    <!-- Alert screen -->
+    <string name="alert_title_p0">ERDBEBENALARM</string>
+    <string name="alert_title_p2">ERDBEBEN BESTÄTIGT</string>
+    <string name="tier_p0_label">P0 · nur Telefon-Cluster</string>
+    <string name="tier_p1_label">P1 · einzelne Katalogquelle</string>
+    <string name="tier_p2_label">P2 · bestätigt</string>
+    <string name="escalation_p0_to_p2">Bestätigt: P0 → P2</string>
+    <string name="countdown_label">s bis S-Welle · %1$s</string>
+    <string name="countdown_arrived">S-Welle trifft ein</string>
+    <string name="countdown_p_wave_note">P-Welle (Info) in ~%1$d s</string>
+    <string name="magnitude_label">Magnitude</string>
+    <string name="magnitude_proxy_note">(Näherungsschätzung, Telefon-Cluster)</string>
+    <string name="magnitude_pd_note">(Pd, instrumentell)</string>
+    <string name="intensity_label">Geschätzte Intensität hier</string>
+    <string name="intensity_estimate_note">Nur grobe Schätzung -- keine wissenschaftliche Messung.</string>
+    <string name="distance_label">Entfernung zum Ursprung</string>
+    <string name="distance_value_format">%1$.0f km</string>
+    <string name="warning_time_label">Vorwarnzeit</string>
+    <string name="warning_time_value_format">%1$.0f s</string>
+    <string name="protection_status_label">Was zu tun ist</string>
+    <string name="protection_strong">DECKUNG · SCHUTZ · FESTHALTEN</string>
+    <string name="protection_moderate">Erschütterung möglich – bereit sein, Schutz zu suchen</string>
+    <string name="protection_weak">Schwach – wahrscheinlich sicher</string>
+    <string name="btn_close_alert">Schließen</string>
+    <string name="btn_open_report">Ereignisbericht ansehen</string>
+
+    <!-- Disturbance -->
+    <string name="disturbance_title">Störung erkannt – kein Alarm</string>
+    <string name="disturbance_reason_firework">Stadtweites, gleichzeitiges Signal ohne konsistente Wellenfront – typisch für Feuerwerk/Verkehr, nicht für ein Erdbeben. Es wurde kein Alarm ausgelöst.</string>
+    <string name="btn_dismiss">OK</string>
+
+    <!-- Report screen -->
+    <string name="report_title">Letzter Ereignisbericht</string>
+    <string name="report_empty">Noch kein Ereignis. Führen Sie zuerst ein Testszenario auf dem Startbildschirm aus.</string>
+    <string name="report_share">Teilen</string>
+    <string name="report_timeline_origin">Bruchbeginn (Ursprungszeit)</string>
+    <string name="report_timeline_detection">Erkennung (P0 ausgegeben)</string>
+    <string name="report_timeline_confirmed">Bestätigung (P2 ausgegeben)</string>
+    <string name="report_timeline_swave">S-Welle an Ihrem Standort</string>
+    <string name="report_line_format">%1$s: +%2$.1f s</string>
+    <string name="report_header_format">Ereignis %1$s · %2$s · M%3$.1f · Tiefe %4$.0f km</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_status_chip">Aktueller Systemstatus</string>
+    <string name="cd_countdown">Countdown bis zum Eintreffen der S-Welle</string>
+    <string name="cd_protection_icon">Schutzstatus-Symbol</string>
+    <string name="cd_tier_icon">Alarmstufen-Symbol</string>
+    <string name="cd_seismogram">Live-Seismogrammkurve</string>
+
+    <string-array name="mmi_descriptions">
+        <item>I – Nicht spürbar</item>
+        <item>II – Kaum von wenigen spürbar</item>
+        <item>III – In Innenräumen spürbar, wie ein vorbeifahrender Lkw</item>
+        <item>IV – Weithin spürbar, Geschirr klirrt</item>
+        <item>V – Von fast allen spürbar, Gegenstände fallen um</item>
+        <item>VI – Leichte Schäden, schwer zu stehen</item>
+        <item>VII – Schäden an schwachen Gebäuden</item>
+        <item>VIII – Erhebliche Schäden</item>
+        <item>IX – Schwere Schäden, Gebäude verschieben sich</item>
+        <item>X – Ernste Schäden an den meisten Gebäuden</item>
+        <item>XI – Nur wenige Bauwerke bleiben stehen</item>
+        <item>XII – Nahezu totale Zerstörung</item>
+    </string-array>
+
+    <string-array name="city_names">
+        <item>Adana</item>
+        <item>Gaziantep</item>
+        <item>Kahramanmaraş</item>
+        <item>İstanbul</item>
+        <item>İzmir</item>
+        <item>Ankara</item>
+    </string-array>
+
+    <!-- TP-3 notification channels -->
+    <string name="chan_critical">Kritische Erdbebenwarnungen</string>
+    <string name="chan_critical_desc">Lebensrettende bestätigte Warnungen. Können auch im Stummschaltmodus ertönen.</string>
+    <string name="chan_test">Testwarnungen</string>
+    <string name="chan_test_desc">Übungswarnungen — niemals der echte Alarmton.</string>
+    <string name="chan_ready">Bereitschaftshinweis</string>
+    <string name="chan_ready_desc">Stiller Hinweis nach einem starken Beben, damit Sie sich als sicher markieren können.</string>
+    <string name="chan_service">Nachbebenüberwachung</string>
+    <string name="chan_service_desc">Überwacht im Hintergrund weiter auf Nachbeben.</string>
+
+    <!-- TP-3 service + beacon -->
+    <string name="svc_watching">Überwachung auf Nachbeben</string>
+    <string name="svc_grace">Starkes Beben — Sie haben Zeit zu handeln. Tippen Sie, wenn Sie sicher sind.</string>
+    <string name="svc_beacon">Notfallsignal aktiv</string>
+    <string name="beacon_ask_title">Sind Sie sicher?</string>
+    <string name="beacon_ask_body">Zum Antworten tippen. Ohne Antwort startet das Notfallsignal.</string>
+
+    <string name="beacon_active_title">Notfallsignal aktiv</string>
+    <string name="beacon_safe_title">Als sicher markiert</string>
+    <string name="beacon_im_safe">Mir geht es gut</string>
+    <string name="beacon_need_help">Ich brauche Hilfe</string>
+    <string name="beacon_stop">Signal stoppen</string>
+    <string name="beacon_share_safe">„Mir geht es gut“ teilen</string>
+    <string name="beacon_share_text">Mir geht es gut. — über Turkey Disaster Alert</string>
+    <string name="btn_test_beacon_chain">Signalkette testen (TEST)</string>
+    <string name="test_beacon_started">TEST-Signalkette aktiviert — dies ist nur eine Übung.</string>
+    <string name="dnd_optin_explain">Erlauben Sie der App, auch im Modus „Nicht stören“ zu ertönen. Ohne dies kann der vollständige DND-Modus sogar eine lebensrettende Warnung stumm schalten.</string>
+
+    <!-- TP-5 navigation -->
+    <string name="tab_home">Start</string>
+    <string name="tab_readiness">Bereitschaft</string>
+    <string name="tab_settings">Einstellungen</string>
+    <string name="dev_section_header">Entwicklerbereich</string>
+
+    <!-- Drawer-Navigation + Startseite -->
+    <string name="app_menu">Menü</string>
+    <string name="nav_network">Netzwerk</string>
+    <string name="nav_safety">Sicherheit &amp; Notsignal</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="start_subtitle">Du wirst gewarnt, bevor dich die Erschütterung erreicht.</string>
+    <string name="start_location_format">Standort: %1$s</string>
+    <string name="start_nearest_title">Zuletzt in der Nähe</string>
+    <string name="start_nearest_placeholder">Live-Erdbebendaten kommen im nächsten Update.</string>
+
+    <!-- TP-5 readiness -->
+    <string name="readiness_score_format">%1$d/100</string>
+    <string name="readiness_missing_format">Ihnen fehlen %1$d Dinge für 72 Stunden</string>
+    <string name="readiness_ready">Sie sind gut vorbereitet.</string>
+    <string name="profile_pet">Haustier</string>
+    <string name="profile_kids">Kinder</string>
+    <string name="profile_car">Auto</string>
+    <string name="affiliate_notice">Werbe-/Affiliate-Links: Wenn Sie darüber kaufen, erhalten wir möglicherweise eine Provision — der Preis bleibt für Sie gleich.</string>
+    <string name="btn_search_amazon">Bei Amazon suchen</string>
+    <string name="btn_search_local">Lokal suchen</string>
+
+    <string name="prep_item_water">Trinkwasservorrat</string>
+    <string name="prep_why_water">3 Liter pro Person und Tag für mindestens 72 Stunden.</string>
+    <string name="prep_item_firstaid">Erste-Hilfe-Set</string>
+    <string name="prep_why_firstaid">Verletzungen versorgen, wenn Hilfe sich verzögert.</string>
+    <string name="prep_item_gobag">Notfallrucksack</string>
+    <string name="prep_why_gobag">Griffbereite Grundausstattung für eine schnelle Evakuierung.</string>
+    <string name="prep_item_docs">Wasserdichte Dokumentenmappe</string>
+    <string name="prep_why_docs">Ausweis und Papiere sicher und tragbar aufbewahren.</string>
+    <string name="prep_item_radio">Kurbelradio</string>
+    <string name="prep_why_radio">Offizielle Informationen erhalten, wenn Strom und Netz ausfallen.</string>
+    <string name="prep_item_powerbank">Powerbank</string>
+    <string name="prep_why_powerbank">Ihr Telefon für Warnungen und Anrufe funktionsfähig halten.</string>
+    <string name="prep_item_whistle">Trillerpfeife</string>
+    <string name="prep_why_whistle">Rettungskräfte auf sich aufmerksam machen, wenn Sie eingeschlossen sind.</string>
+    <string name="prep_item_helmet">Helm</string>
+    <string name="prep_why_helmet">Kopf vor herabfallenden Trümmern schützen.</string>
+    <string name="prep_item_mask">FFP2-Staubmaske</string>
+    <string name="prep_why_mask">Nach einem Einsturz durch den Staub atmen.</string>
+    <string name="prep_item_blanket">Rettungsdecke</string>
+    <string name="prep_why_blanket">Warm bleiben, während Sie auf Hilfe warten.</string>
+    <string name="prep_item_petcarrier">Transportbox für Haustiere</string>
+    <string name="prep_why_petcarrier">Ihr Tier sicher evakuieren.</string>
+    <string name="prep_item_petfood">Tiernahrungsvorrat</string>
+    <string name="prep_why_petfood">Mehrere Tage Futter und Wasser für Ihr Haustier.</string>
+    <string name="prep_item_kidsfirstaid">Erste-Hilfe-Set für Kinder</string>
+    <string name="prep_why_kidsfirstaid">Kindgerechte medizinische Versorgung.</string>
+    <string name="prep_item_kidssupplies">Baby-/Kinderbedarf</string>
+    <string name="prep_why_kidssupplies">Windeln, Nahrung und Trostgegenstände.</string>
+    <string name="prep_item_jumpstarter">Starthilfegerät</string>
+    <string name="prep_why_jumpstarter">Auto starten, wenn die Batterie leer ist.</string>
+    <string name="prep_item_warnvest">Warnweste</string>
+    <string name="prep_why_warnvest">Auf der Straße sichtbar bleiben.</string>
+    <string name="prep_item_towrope">Abschleppseil</string>
+    <string name="prep_why_towrope">Das Auto nach einer Panne wieder in Bewegung bringen.</string>
+    <string name="btn_prepare_aftershock">Sich auf die Nachbebentage vorbereiten</string>
+</resources>

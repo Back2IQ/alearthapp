@@ -1,7 +1,9 @@
 package app.tda
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,6 +24,10 @@ object TestScenarios {
     private const val EPICENTER_LAT = 37.58
     private const val EPICENTER_LON = 36.93
 
+    // Long-lived scope so a running scenario chain (aftershocks, P0->P2) survives a
+    // Fragment/tab switch, which would otherwise cancel a caller-supplied view scope mid-chain.
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     private var job: Job? = null
     private var counter = 0
 
@@ -36,7 +42,7 @@ object TestScenarios {
     }
 
     /** Testbeben: Aufmerksamkeit (t0) -> P0-Alarm (t0+1.5s) -> P2-Bestätigung (t0+6s). */
-    fun runEarthquakeDrill(scope: CoroutineScope, userCity: Eew.City) {
+    fun runEarthquakeDrill(userCity: Eew.City) {
         cancelAll()
         EventBus.resetSequence()
         job = scope.launch {
@@ -80,7 +86,7 @@ object TestScenarios {
     }
 
     /** Nachbeben-Sequenz: Hauptbeben M7.8 -> M7.5 -> mehrere kleinere; Push nur oberhalb Schwelle. */
-    fun runAftershockSequence(scope: CoroutineScope, userCity: Eew.City) {
+    fun runAftershockSequence(userCity: Eew.City) {
         cancelAll()
         EventBus.resetSequence()
         job = scope.launch {
@@ -131,7 +137,7 @@ object TestScenarios {
     }
 
     /** Feuerwerk: „Störung erkannt – kein Alarm" -- spiegelt den Backend-Wellenfront-Filter. */
-    fun runFireworksDisturbance(scope: CoroutineScope) {
+    fun runFireworksDisturbance() {
         cancelAll()
         job = scope.launch {
             delay(800)

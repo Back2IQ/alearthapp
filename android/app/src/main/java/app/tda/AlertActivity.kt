@@ -1,5 +1,6 @@
 package app.tda
 
+import android.content.Context
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
@@ -35,7 +36,10 @@ class AlertActivity : AppCompatActivity() {
         const val EXTRA_USER_LAT = "user_lat"
         const val EXTRA_USER_LON = "user_lon"
         const val EXTRA_USER_CITY_NAME = "user_city_name"
+        const val EXTRA_SOUND = "sound"
     }
+
+    private var soundEnabled = true
 
     private lateinit var scope: CoroutineScope
     private var currentTier: Eew.Tier = Eew.Tier.P0
@@ -44,6 +48,10 @@ class AlertActivity : AppCompatActivity() {
     private var distKm: Double = 0.0
     private lateinit var eventId: String
     private lateinit var cityName: String
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase.withAppLocale())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Prefs.init(this)
@@ -68,6 +76,7 @@ class AlertActivity : AppCompatActivity() {
         val userLat = intent.getDoubleExtra(EXTRA_USER_LAT, 0.0)
         val userLon = intent.getDoubleExtra(EXTRA_USER_LON, 0.0)
         cityName = intent.getStringExtra(EXTRA_USER_CITY_NAME) ?: ""
+        soundEnabled = intent.getBooleanExtra(EXTRA_SOUND, true)
         distKm = Eew.haversineKm(userLat, userLon, epiLat, epiLon)
         mag = 6.8
         currentTier = Eew.Tier.P0
@@ -92,6 +101,8 @@ class AlertActivity : AppCompatActivity() {
                     renderTier(currentTier)
                     findViewById<android.view.View>(R.id.escalationText).visibility = android.view.View.VISIBLE
                     triggerAlertFeedback(currentTier)
+                    val mmiNow = Eew.mmi(mag, distKm)
+                    AlarmService.arm(this@AlertActivity, mmiNow, Eew.Tier.P2, isTest = false)
                 }
             }
         }
@@ -180,11 +191,23 @@ class AlertActivity : AppCompatActivity() {
      * not wired here.
      */
     private fun triggerAlertFeedback(tier: Eew.Tier) {
+        val plan = CriticalAlarmPolicy.plan(
+            tier = tier,
+            isTest = false,
+            soundEnabled = true,
+            dndOptIn = Prefs.dndBypassOptIn,
+            dndAccessGranted = dndAccessGranted()
+        )
         val vibrator = getSystemService(VIBRATOR_SERVICE) as? Vibrator
-        if (tier == Eew.Tier.P2) {
+        // In der Hybrid-Huelle feuert der native Alarm nur oberhalb der Alarm-Schwelle,
+        // ist also immer alarmwuerdig -> Ton spielen, sobald der Nutzer ihn erlaubt
+        // (soundEnabled), unabhaengig von der P0/P2-Daempfungspolitik.
+        if (soundEnabled || plan.playAlarmSound) {
             try {
-                val uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                val custom = Prefs.alarmSoundUri
+                val uri = if (custom.isNotEmpty()) android.net.Uri.parse(custom)
+                    else RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                 val ringtone = RingtoneManager.getRingtone(this, uri)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     ringtone?.audioAttributes = AudioAttributes.Builder()
@@ -193,13 +216,18 @@ class AlertActivity : AppCompatActivity() {
                         .build()
                 }
                 ringtone?.play()
-            } catch (_: Exception) {
-                // Best-effort only; never let a missing ringtone crash the alert screen.
-            }
-            vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 400, 200, 400, 200, 400), -1))
-        } else {
-            vibrator?.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE))
+            } catch (_: Exception) { }
         }
+        if (plan.vibrate) {
+            val pattern = if (tier == Eew.Tier.P2) longArrayOf(0, 400, 200, 400, 200, 400) else longArrayOf(0, 250)
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
+        }
+    }
+
+    private fun dndAccessGranted(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
+        val nm = getSystemService(android.app.NotificationManager::class.java)
+        return nm?.isNotificationPolicyAccessGranted == true
     }
 
     override fun onDestroy() {

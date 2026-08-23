@@ -12,6 +12,9 @@
     <string name="status_alarm_p0">ALERT P0</string>
     <string name="status_confirmed_p2">CONFIRMED P2</string>
     <string name="status_disturbance_discarded">Disturbance discarded</string>
+    <string name="home_clear">Clear alert</string>
+    <string name="pick_alarm_sound">Choose alarm sound</string>
+    <string name="alarm_sound_saved">Alarm sound saved</string>
 
     <!-- Main screen controls -->
     <string name="label_city">Your location</string>
@@ -124,4 +127,95 @@
         <item>İzmir</item>
         <item>Ankara</item>
     </string-array>
+
+    <!-- TP-3 notification channels -->
+    <string name="chan_critical">Critical earthquake alerts</string>
+    <string name="chan_critical_desc">Life-saving confirmed alerts. Can sound even when muted.</string>
+    <string name="chan_test">Test alerts</string>
+    <string name="chan_test_desc">Practice alerts — never the real alarm sound.</string>
+    <string name="chan_ready">Beacon standby</string>
+    <string name="chan_ready_desc">Quiet notice after a strong quake, so you can mark yourself safe.</string>
+    <string name="chan_service">Aftershock watch</string>
+    <string name="chan_service_desc">Keeps watching for aftershocks in the background.</string>
+
+    <!-- TP-3 service + beacon -->
+    <string name="svc_watching">Watching for aftershocks</string>
+    <string name="svc_grace">Strong quake — you have time to act. Tap when safe.</string>
+    <string name="svc_beacon">Emergency beacon active</string>
+    <string name="beacon_ask_title">Are you safe?</string>
+    <string name="beacon_ask_body">Tap to answer. No answer starts the emergency beacon.</string>
+
+    <string name="beacon_active_title">Emergency beacon active</string>
+    <string name="beacon_safe_title">Marked safe</string>
+    <string name="beacon_im_safe">I\'m safe</string>
+    <string name="beacon_need_help">I need help</string>
+    <string name="beacon_stop">Stop beacon</string>
+    <string name="beacon_share_safe">Share “I\'m safe”</string>
+    <string name="beacon_share_text">I\'m safe. — via Turkey Disaster Alert</string>
+    <string name="btn_test_beacon_chain">Test beacon chain (TEST)</string>
+    <string name="test_beacon_started">TEST beacon chain armed — this is only a drill.</string>
+    <string name="dnd_optin_explain">Allow the app to sound through “Do Not Disturb”. Without this, full DND can silence even a life-saving alert.</string>
+
+    <!-- TP-5 navigation -->
+    <string name="tab_home">Start</string>
+    <string name="tab_readiness">Readiness</string>
+    <string name="tab_settings">Settings</string>
+    <string name="dev_section_header">Developer area</string>
+
+    <!-- Drawer navigation + start landing -->
+    <string name="app_menu">Menu</string>
+    <string name="nav_network">Network</string>
+    <string name="nav_safety">Safety &amp; signal</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="start_subtitle">You will be warned before the shaking reaches you.</string>
+    <string name="start_location_format">Location: %1$s</string>
+    <string name="start_nearest_title">Most recent nearby</string>
+    <string name="start_nearest_placeholder">Live earthquake data arrives in the next update.</string>
+
+    <!-- TP-5 readiness -->
+    <string name="readiness_score_format">%1$d/100</string>
+    <string name="readiness_missing_format">You are missing %1$d things for 72 hours</string>
+    <string name="readiness_ready">You are well prepared.</string>
+    <string name="profile_pet">Pet</string>
+    <string name="profile_kids">Children</string>
+    <string name="profile_car">Car</string>
+    <string name="affiliate_notice">Ad/affiliate links: if you buy through these, we may earn a commission — the price stays the same for you.</string>
+    <string name="btn_search_amazon">Search on Amazon</string>
+    <string name="btn_search_local">Search locally</string>
+
+    <string name="prep_item_water">Drinking water supply</string>
+    <string name="prep_why_water">3 liters per person per day for at least 72 hours.</string>
+    <string name="prep_item_firstaid">First-aid kit</string>
+    <string name="prep_why_firstaid">Treat injuries when help is delayed.</string>
+    <string name="prep_item_gobag">Go-bag</string>
+    <string name="prep_why_gobag">Grab-and-go essentials for a fast evacuation.</string>
+    <string name="prep_item_docs">Waterproof document pouch</string>
+    <string name="prep_why_docs">Keep ID and papers safe and portable.</string>
+    <string name="prep_item_radio">Hand-crank radio</string>
+    <string name="prep_why_radio">Get official info when power and network are down.</string>
+    <string name="prep_item_powerbank">Power bank</string>
+    <string name="prep_why_powerbank">Keep your phone alive for alerts and calls.</string>
+    <string name="prep_item_whistle">Whistle</string>
+    <string name="prep_why_whistle">Signal rescuers if you are trapped.</string>
+    <string name="prep_item_helmet">Helmet</string>
+    <string name="prep_why_helmet">Protect your head from falling debris.</string>
+    <string name="prep_item_mask">FFP2 dust mask</string>
+    <string name="prep_why_mask">Breathe through dust after a collapse.</string>
+    <string name="prep_item_blanket">Emergency blanket</string>
+    <string name="prep_why_blanket">Stay warm while waiting for help.</string>
+    <string name="prep_item_petcarrier">Pet carrier</string>
+    <string name="prep_why_petcarrier">Evacuate your animal safely.</string>
+    <string name="prep_item_petfood">Pet food supply</string>
+    <string name="prep_why_petfood">Several days of food and water for your pet.</string>
+    <string name="prep_item_kidsfirstaid">Children\'s first-aid kit</string>
+    <string name="prep_why_kidsfirstaid">Child-appropriate medical supplies.</string>
+    <string name="prep_item_kidssupplies">Baby/child supplies</string>
+    <string name="prep_why_kidssupplies">Diapers, food and comfort items.</string>
+    <string name="prep_item_jumpstarter">Jump starter</string>
+    <string name="prep_why_jumpstarter">Start the car if the battery is dead.</string>
+    <string name="prep_item_warnvest">Warning vest</string>
+    <string name="prep_why_warnvest">Stay visible on the road.</string>
+    <string name="prep_item_towrope">Tow rope</string>
+    <string name="prep_why_towrope">Get the car moving after a breakdown.</string>
+    <string name="btn_prepare_aftershock">Prepare for the aftershock days</string>
 </resources>

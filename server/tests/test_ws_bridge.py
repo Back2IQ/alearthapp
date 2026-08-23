@@ -37,12 +37,43 @@ async def test_simulate_quake_broadcasts_signed_p0_then_p2_alerts():
 
             await ws.send(json.dumps({"cmd": "simulate", "kind": "quake"}))
 
+            # The bridge also broadcasts "network" state (detection-network layer);
+            # collect the two signed alert messages, ignoring interleaved network updates.
             alerts = []
-            for _ in range(2):
+            while len(alerts) < 2:
                 msg = json.loads(await ws.recv())
+                if msg["type"] == "network":
+                    continue
                 assert msg["type"] == "alert"
                 assert verify_payload(msg["payload"], pub_b64) is True
                 alerts.append(msg["payload"])
 
             assert alerts[0]["tier"] == "P0"
             assert alerts[-1]["tier"] == "P2"
+
+
+async def _recv_network_until(ws, pred, limit: int = 40):
+    for _ in range(limit):
+        msg = json.loads(await ws.recv())
+        if msg.get("type") == "network" and pred(msg):
+            return msg
+    raise AssertionError("no matching network message")
+
+
+async def test_join_registers_device_and_quake_lights_up_a_detection():
+    priv_b64, pub_b64 = _keypair()
+    port = _free_port()
+
+    async with start_server("127.0.0.1", port, priv_key_b64=priv_b64, pub_key_b64=pub_b64):
+        async with websockets.connect(f"ws://127.0.0.1:{port}") as ws:
+            assert json.loads(await ws.recv())["type"] == "hello"
+
+            await ws.send(json.dumps({"cmd": "join", "lat": 37.0, "lon": 35.32}))
+            net = await _recv_network_until(ws, lambda m: m["online_total"] >= 1)
+            assert net["online_total"] >= 1
+            assert any(c["online"] >= 1 for c in net["cells"])
+
+            # a simulated quake seeds a synthetic trigger cluster near the epicentre
+            await ws.send(json.dumps({"cmd": "simulate", "kind": "quake"}))
+            det = await _recv_network_until(ws, lambda m: len(m["detections"]) >= 1)
+            assert det["detections"][0]["devices"] >= 3

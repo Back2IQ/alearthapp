@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turkey Disaster Alert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;650;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Leaflet map (loads when online; the map degrades gracefully offline). -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="lib/disasters.js"></script>
+<script src="lib/prep.js"></script>
+<!--
+  Turkey Disaster Alert — local web client (futuristic redesign).
+  Single self-contained file, runs from file://. Plain-language UI (no P0/P2 jargon),
+  GPS or street-level address location, languages TR/EN/RU/AR.
+  Core earthquake logic + Ed25519 verification are byte-identical to the Android client
+  and the Python backend (verified). Google Fonts optional; system fonts fall back.
+-->
+<style>
+  :root {
+    --font-display:"Space Grotesk", system-ui, sans-serif;
+    --font-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius:14px;
+    /* dark (default) — seismic command centre */
+    --bg:#081218; --bg2:#071217;
+    --panel:rgba(12,28,35,.84); --panel-strong:rgba(17,36,44,.92);
+    --border:rgba(168,224,214,.14); --border-strong:rgba(168,224,214,.28);
+    --text:#e8f2f1; --muted:#9fb5b7; --faint:#6d898d;
+    --calm:#54e6cd; --calm-2:#2f8f83;
+    --warn:#f2bc69; --alarm:#ff6d62; --confirm:#ff5245; --neutral:#6d898d;
+    --accent:var(--calm); --accent-2:var(--calm-2);
+    --shadow:0 20px 55px -22px rgba(0,0,0,.6);
+  }
+  :root[data-theme="light"] {
+    --bg:#dbecea; --bg2:#eaf5f2;
+    --panel:rgba(243,250,249,.87); --panel-strong:rgba(224,241,238,.9);
+    --border:rgba(16,60,62,.14); --border-strong:rgba(16,60,62,.26);
+    --text:#102328; --muted:#496267; --faint:#657d80;
+    --shadow:0 18px 44px -20px rgba(16,60,62,.22);
+  }
+  :root[data-cb="1"] {
+    --calm:#37b6ff; --calm-2:#1f7fb8; --warn:#ffc233; --alarm:#ff7a18; --confirm:#ff7a18;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    font-family:var(--font-body); color:var(--text); background:var(--bg);
+    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+    min-height:100dvh; overflow-x:hidden;
+  }
+  /* ambient ground wash that reacts to status accent, kept quiet */
+  .bg-field { position:fixed; inset:0; z-index:-1; overflow:hidden; background:
+      radial-gradient(1100px 640px at 82% -8%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%),
+      radial-gradient(900px 720px at -8% 112%, color-mix(in srgb, var(--accent-2) 8%, transparent), transparent 58%),
+      linear-gradient(165deg, var(--bg), var(--bg2));
+    transition:background .6s ease; }
+  /* topographic contour layer — pure CSS, no imagery */
+  .grid-lines { position:absolute; inset:0; opacity:.4; pointer-events:none;
+    background-image:
+      repeating-radial-gradient(ellipse at 78% 14%, transparent 0 17px, color-mix(in srgb,var(--accent) 12%,transparent) 18px 19px, transparent 20px 36px),
+      repeating-radial-gradient(ellipse at 12% 82%, transparent 0 21px, color-mix(in srgb,var(--text) 5%,transparent) 22px 23px, transparent 24px 40px),
+      linear-gradient(120deg, color-mix(in srgb,var(--accent) 5%,transparent), transparent 40%);
+    -webkit-mask-image:linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+    mask-image:linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent); }
+
+  .wrap { max-width:560px; margin:0 auto; padding:22px 16px 48px; }
+  .brand { display:flex; align-items:center; gap:12px; padding:6px 2px 20px; }
+  .brand .mark { width:42px; height:42px; border-radius:11px; display:grid; place-items:center; font-size:1.3rem;
+    background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 46%,transparent),color-mix(in srgb,var(--accent-2) 38%,transparent));
+    box-shadow:0 0 0 1px var(--border-strong), 0 8px 22px -10px color-mix(in srgb,var(--accent) 55%,transparent); }
+  .brand h1 { font-family:var(--font-display); font-size:1.08rem; margin:0; letter-spacing:-.01em; font-weight:600; }
+  .brand .sub { font-family:var(--font-display); font-size:.62rem; font-weight:650; letter-spacing:.145em; text-transform:uppercase; color:var(--faint); margin-top:3px; }
+  .brand .settings-btn { margin-left:auto; }
+
+  .panel { position:relative; background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin:14px 0;
+    backdrop-filter:blur(16px) saturate(1.1); -webkit-backdrop-filter:blur(16px) saturate(1.1); box-shadow:var(--shadow); }
+  .panel::before, .panel::after { content:""; position:absolute; width:9px; height:9px; pointer-events:none; opacity:.55; }
+  .panel::before { top:7px; left:7px; border-top:1px solid var(--border-strong); border-left:1px solid var(--border-strong); }
+  .panel::after { bottom:7px; right:7px; border-bottom:1px solid var(--border-strong); border-right:1px solid var(--border-strong); }
+  .panel h2 { font-family:var(--font-display); font-size:.625rem; font-weight:650; letter-spacing:.145em; text-transform:uppercase; color:var(--faint); margin:0 0 14px; }
+
+  /* ---- status hero — calm safety-ring signature ---- */
+  .hero { text-align:center; padding:30px 18px 24px; position:relative; overflow:hidden; }
+  .hero .pulse { width:104px; height:104px; margin:0 auto 16px; border-radius:50%; position:relative; display:grid; place-items:center;
+    background:radial-gradient(circle,color-mix(in srgb,var(--accent) 16%,transparent),transparent 72%); }
+  .hero .pulse::before { content:""; position:absolute; inset:0; border-radius:50%; border:1px solid var(--border-strong); }
+  .hero .pulse::after { content:""; position:absolute; inset:0; border-radius:50%; border:1.5px solid color-mix(in srgb,var(--accent) 60%,transparent); border-top-color:transparent; border-right-color:transparent; animation:ripple 2.6s ease-in-out infinite; }
+  @keyframes ripple { 0%{transform:scale(.92) rotate(0deg);opacity:.9} 100%{transform:scale(1.28) rotate(220deg);opacity:0} }
+  .hero .glyph { font-size:2rem; filter:drop-shadow(0 0 10px color-mix(in srgb,var(--accent) 55%,transparent)); }
+  .hero .title { font-family:var(--font-display); font-size:1.5rem; font-weight:600; letter-spacing:-.02em; }
+  .hero .subtitle { color:var(--muted); margin-top:6px; font-size:.9rem; }
+  .hero .loc-badge { display:inline-flex; align-items:center; gap:6px; margin-top:16px; padding:7px 14px; border-radius:100px;
+    background:var(--panel-strong); border:1px solid var(--border); font-size:.8rem; font-family:var(--font-display); letter-spacing:.02em; color:var(--muted); }
+
+  /* ---- location ---- */
+  .loc-actions { display:flex; gap:10px; margin-bottom:10px; }
+  .search-box { position:relative; }
+  .results { margin-top:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); display:none; }
+  .results.show { display:block; }
+  .results button { display:block; width:100%; text-align:left; padding:11px 13px; background:var(--panel-strong); border:0; border-bottom:1px solid var(--border); color:var(--text); font-size:.88rem; cursor:pointer; transition:background .2s; }
+  .results button:last-child { border-bottom:0; }
+  .results button:hover { background:color-mix(in srgb,var(--accent) 10%,transparent); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .chip-btn { padding:8px 13px; border-radius:100px; background:var(--panel-strong); border:1px solid var(--border); color:var(--text); font-size:.82rem; cursor:pointer; transition:background .2s, border-color .2s; }
+  .chip-btn[aria-pressed="true"] { background:color-mix(in srgb,var(--accent) 16%,transparent); border-color:color-mix(in srgb,var(--accent) 45%,transparent); color:var(--text); }
+  .field-label { font-family:var(--font-display); font-size:.625rem; font-weight:650; letter-spacing:.145em; text-transform:uppercase; color:var(--faint); margin:2px 0 8px; }
+
+  input[type=text], select {
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border);
+    background:var(--panel-strong); color:var(--text); font-size:.92rem; font-family:var(--font-body); outline:none; transition:border-color .2s, box-shadow .2s;
+  }
+  input[type=text]:focus, select:focus { border-color:color-mix(in srgb,var(--accent) 55%,transparent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent); }
+  select { appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position:calc(100% - 18px) center,calc(100% - 13px) center; background-size:5px 5px,5px 5px; background-repeat:no-repeat; }
+  /* native dropdown list renders on a white OS background — force dark, readable option text */
+  select option { color:#000; background:#fff; }
+
+  button.btn { font-family:var(--font-display); font-size:.85rem; font-weight:650; letter-spacing:.01em; padding:12px 14px; border-radius:10px; cursor:pointer;
+    background:var(--panel-strong); color:var(--text); border:1px solid var(--border); transition:transform .12s ease, border-color .2s ease, background .2s ease; }
+  button.btn:active { transform:translateY(1px) scale(.99); }
+  button.btn.accent { background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#061114; border-color:transparent; font-weight:700;
+    box-shadow:0 10px 24px -10px color-mix(in srgb,var(--accent) 65%,transparent); }
+  button.btn.wide { width:100%; }
+  button.btn.ghost { background:transparent; }
+  .btn-row { display:flex; gap:10px; }
+  .btn-row > * { flex:1; }
+  .icon-btn { width:42px; height:42px; border-radius:10px; display:grid; place-items:center; font-size:1.05rem; padding:0; flex:none; }
+
+  /* settings sheet */
+  .sheet-field { margin-top:14px; }
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; }
+  .switch { position:relative; width:44px; height:26px; flex:none; }
+  .switch input { opacity:0; width:0; height:0; }
+  .slider { position:absolute; inset:0; background:var(--panel-strong); border:1px solid var(--border); border-radius:26px; transition:background .2s, border-color .2s; cursor:pointer; }
+  .slider:before { content:""; position:absolute; height:18px; width:18px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:transform .2s, background .2s; }
+  .switch input:checked + .slider { background:color-mix(in srgb,var(--accent) 30%,transparent); border-color:color-mix(in srgb,var(--accent) 55%,transparent); }
+  .switch input:checked + .slider:before { transform:translateX(18px); background:var(--accent); }
+  .seg { display:flex; gap:6px; background:var(--panel-strong); border:1px solid var(--border); border-radius:10px; padding:4px; }
+  .seg button { flex:1; border:0; border-radius:7px; background:transparent; color:var(--muted); padding:9px; font-size:.78rem; font-weight:650; letter-spacing:.02em; cursor:pointer; font-family:var(--font-display); transition:background .2s, color .2s; }
+  .seg button[aria-pressed="true"] { background:color-mix(in srgb,var(--accent) 18%,transparent); color:var(--text); }
+
+  canvas#seis { width:100%; height:96px; display:block; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb,var(--bg2) 70%,transparent); }
+  .hint { font-size:.76rem; color:var(--faint); margin:10px 0 0; line-height:1.5; }
+
+  /* ---- map ---- */
+  .map-wrap { position:relative; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); }
+  #map, #alertMap { width:100%; background:#071217; }
+  #map { height:280px; }
+  #alertMap { height:200px; border-radius:var(--radius); }
+  .map-fallback { position:absolute; inset:0; display:none; place-items:center; text-align:center; padding:20px; color:var(--muted); font-size:.85rem; background:var(--panel-strong); }
+  .map-fallback.show { display:grid; }
+  .map-legend { display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:10px; font-size:.72rem; color:var(--muted); font-family:var(--font-display); letter-spacing:.02em; }
+  .map-legend span { display:inline-flex; align-items:center; gap:6px; }
+  .haz-legend { margin-top:6px; }
+  .haz-legend span { cursor:help; border-bottom:1px dotted var(--border-strong); padding-bottom:1px; }
+  .lg-dot { width:10px; height:10px; border-radius:50%; box-shadow:0 0 6px currentColor; }
+  .map-tools { display:flex; gap:8px; margin-top:10px; }
+  .map-tools .btn { flex:1; padding:9px; font-size:.78rem; }
+  .leaflet-container { font-family:var(--font-body); background:#071217; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background:var(--bg2); color:var(--text); }
+  .leaflet-popup-content { font-size:.84rem; }
+  .leaflet-control-attribution { font-size:9px !important; }
+  .q-label { background:transparent; border:0; font-weight:700; color:#fff; text-shadow:0 1px 3px #000; }
+  .haz-icon { font-size:19px; line-height:1; text-align:center; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); cursor:pointer; }
+  .seis-opts { margin-top:10px; }
+  .seis-info { margin-top:10px; padding:10px 12px; border-radius:9px; background:var(--panel-strong); border:1px solid var(--border); font-size:.76rem; color:var(--muted); line-height:1.5; }
+  .seis-info b { color:var(--text); }
+  .seis-info .warn { color:var(--warn); }
+  .net-readout { display:flex; align-items:baseline; gap:10px; margin:8px 0 4px; }
+  .net-num { font-family:var(--font-display); font-size:2rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .net-lbl { color:var(--muted); font-size:.86rem; }
+  .net-detect { background:color-mix(in srgb,var(--alarm) 14%,transparent); border:1px solid color-mix(in srgb,var(--alarm) 40%,transparent); color:var(--text); border-radius:10px; padding:11px 13px; margin:8px 0; font-weight:600; font-size:.88rem; }
+  @keyframes netpulse { 0%{transform:scale(.6);opacity:.9} 100%{transform:scale(1.8);opacity:0} }
+
+  /* ---- quake list ---- */
+  .q-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--border); cursor:pointer; }
+  .q-item:first-child { border-top:0; }
+  .q-mag { width:44px; height:44px; border-radius:9px; display:grid; place-items:center; font-family:var(--font-display); font-weight:700; font-size:1rem; font-variant-numeric:tabular-nums; color:#061114; flex:none; }
+  .q-info { flex:1; min-width:0; }
+  .q-place { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .q-meta { font-size:.74rem; color:var(--faint); margin-top:2px; }
+  .q-empty { color:var(--muted); font-size:.86rem; padding:6px 0; }
+  .seg-3 { display:flex; gap:6px; background:var(--panel-strong); border:1px solid var(--border); border-radius:10px; padding:4px; margin-top:8px; }
+  .seg-3 button { flex:1; border:0; border-radius:7px; background:transparent; color:var(--muted); padding:8px; font-size:.72rem; font-weight:650; letter-spacing:.02em; cursor:pointer; font-family:var(--font-display); transition:background .2s, color .2s; }
+  .seg-3 button[aria-pressed="true"] { background:color-mix(in srgb,var(--accent) 18%,transparent); color:var(--text); }
+
+  /* ---- range settings ---- */
+  .set-group { margin-top:20px; }
+  .set-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .set-row .name { font-weight:600; font-size:.88rem; color:var(--text); }
+  .set-row .val { font-family:var(--font-display); font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:4px; background:var(--panel-strong); border:1px solid var(--border); outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--accent); cursor:pointer; box-shadow:0 0 8px color-mix(in srgb,var(--accent) 55%,transparent); border:2px solid var(--bg); }
+  input[type=range]::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:var(--accent); cursor:pointer; border:2px solid var(--bg); }
+  .set-desc { font-size:.74rem; color:var(--faint); margin:2px 0 0; line-height:1.45; }
+
+  /* sequence list */
+  .seq-item { display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--border); }
+  .seq-item:first-child { border-top:0; }
+  .seq-badge { width:32px; height:32px; border-radius:8px; display:grid; place-items:center; font-weight:700; font-family:var(--font-display); flex:none; font-size:.86rem; font-variant-numeric:tabular-nums; }
+  .seq-main { background:color-mix(in srgb,var(--alarm) 20%,transparent); color:var(--text); }
+  .seq-after { background:var(--panel-strong); color:var(--muted); }
+  .seq-item .m { font-weight:600; }
+  .seq-item .t { font-size:.76rem; color:var(--faint); }
+
+  details.demo { background:var(--panel); border:1px dashed var(--border-strong); border-radius:var(--radius); padding:4px 16px; margin:14px 0; }
+  details.demo > summary { list-style:none; cursor:pointer; padding:13px 0; font-family:var(--font-display); font-size:.68rem; font-weight:650; letter-spacing:.145em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:9px; }
+  details.demo > summary::-webkit-details-marker { display:none; }
+  details.demo > summary::before { content:"▸"; transition:transform .2s ease; }
+  details.demo[open] > summary::before { transform:rotate(90deg); }
+  .demo-body { padding:4px 0 16px; }
+  .demo-body .btn { width:100%; margin-top:9px; text-align:left; }
+  .srv-status { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:100px; font-size:.76rem; font-weight:650; font-family:var(--font-display); border:1px solid var(--border); }
+  .srv-dot { width:8px; height:8px; border-radius:50%; background:var(--neutral); }
+
+  /* ---- ALERT overlay — calm but unmistakable ---- */
+  .overlay { position:fixed; inset:0; z-index:60; display:none; overflow-y:auto; }
+  #alertOverlay { z-index:75; }
+  .overlay.show { display:block; }
+  .alert { min-height:100dvh; padding:30px 20px calc(30px + env(safe-area-inset-bottom)); display:flex; flex-direction:column;
+    background:radial-gradient(900px 560px at 50% -8%, color-mix(in srgb,var(--alarm) 20%,transparent), transparent 62%), linear-gradient(180deg,#071217,#050d11); }
+  .alert.confirmed { background:radial-gradient(900px 560px at 50% -8%, color-mix(in srgb,var(--confirm) 26%,transparent), transparent 62%), linear-gradient(180deg,#071217,#050d11); }
+  .conf-badge { align-self:center; display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:100px; font-weight:650; font-family:var(--font-display); font-size:.78rem; letter-spacing:.08em; text-transform:uppercase;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); }
+  .alert-title { text-align:center; font-family:var(--font-display); font-size:2.1rem; font-weight:600; letter-spacing:-.02em; margin:18px 0 4px; }
+  .escalation { align-self:center; background:#fff; color:var(--confirm); font-weight:700; font-family:var(--font-display); border-radius:100px; padding:8px 18px; margin:6px 0; display:none; font-size:.82rem; letter-spacing:.03em; }
+  .escalation.show { display:block; animation:pop .22s ease-out; }
+  @keyframes pop { 0%{transform:scale(.92);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+  .ring-wrap { display:grid; place-items:center; margin:16px 0 6px; }
+  .ring-wrap svg { transform:rotate(-90deg); }
+  .ring-bg { stroke:rgba(255,255,255,.12); }
+  .ring-fg { stroke:#fff; stroke-linecap:round; transition:stroke-dashoffset .8s linear; }
+  .ring-center { position:absolute; text-align:center; }
+  .ring-num { font-family:var(--font-display); font-size:3.2rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
+  .ring-unit { font-family:var(--font-display); font-size:.7rem; font-weight:650; text-transform:uppercase; letter-spacing:.145em; opacity:.85; margin-top:5px; }
+  .cd-caption { text-align:center; font-size:.94rem; margin-top:8px; opacity:.9; }
+  .pwave { text-align:center; font-size:.8rem; opacity:.75; min-height:1.1em; margin-top:3px; }
+
+  .instruct { text-align:center; font-family:var(--font-display); font-weight:650; font-size:1.35rem; letter-spacing:.08em; padding:20px 16px; margin:20px 0; border-radius:var(--radius);
+    background:rgba(0,0,0,.24); border:1px solid rgba(255,255,255,.12); }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .metric { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:14px; }
+  .metric .k { font-family:var(--font-display); font-size:.62rem; font-weight:650; text-transform:uppercase; letter-spacing:.1em; opacity:.75; }
+  .metric .v { font-family:var(--font-display); font-size:1.3rem; font-weight:700; margin-top:5px; font-variant-numeric:tabular-nums; }
+  .metric .n { font-size:.7rem; opacity:.7; margin-top:2px; }
+  .alert-note { text-align:center; font-size:.76rem; opacity:.7; margin:0 0 18px; }
+  .alert-actions { display:flex; gap:12px; margin-top:auto; }
+  .alert-actions .btn { flex:1; background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.22); }
+  .alert *, .alert { color:#fff; }
+
+  /* report */
+  .report { min-height:100dvh; background:var(--bg); }
+  .tl { list-style:none; padding:0; margin:8px 0; }
+  .tl li { display:flex; align-items:center; gap:14px; padding:16px 0; position:relative; }
+  .tl li::before { content:""; width:9px; height:9px; border-radius:50%; background:var(--accent); flex:none; box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 15%,transparent); }
+  .tl li:not(:last-child)::after { content:""; position:absolute; left:4px; top:28px; bottom:-4px; width:1px; background:var(--border-strong); }
+  .tl .lbl { flex:1; color:var(--muted); font-size:.88rem; }
+  .tl .val { font-family:var(--font-display); font-weight:700; font-variant-numeric:tabular-nums; }
+
+  .modal { position:fixed; inset:0; z-index:70; background:rgba(4,10,13,.6); backdrop-filter:blur(6px); display:none; align-items:flex-end; justify-content:center; padding:0; }
+  .modal.show { display:flex; }
+  .modal .box { background:var(--panel); backdrop-filter:blur(18px) saturate(1.1); -webkit-backdrop-filter:blur(18px) saturate(1.1); border-top:1px solid var(--border-strong); border-radius:20px 20px 0 0; padding:24px 20px calc(28px + env(safe-area-inset-bottom)); width:100%; max-width:560px; }
+  .modal .box h3 { font-family:var(--font-display); margin:0 0 10px; font-size:1.1rem; font-weight:600; }
+  .modal .box p { color:var(--muted); margin:0 0 18px; line-height:1.55; }
+
+
+  .toast { position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px); background:var(--panel-strong); border:1px solid var(--border-strong); color:var(--text); padding:12px 20px; border-radius:10px; font-size:.86rem; z-index:80; opacity:0; pointer-events:none; transition:opacity .22s ease, transform .22s ease; max-width:90%; text-align:center; box-shadow:var(--shadow); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  [dir=rtl] .results button, [dir=rtl] .seq-item, [dir=rtl] .demo-body .btn { text-align:right; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border-strong); border-top-color:var(--accent); border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; }
+  @keyframes sp { to{transform:rotate(360deg)} }
+
+  /* ---- tab shell ---- */
+  .tab-view { display:none; }
+  .tab-view.active { display:block; }
+  .tabbar { position:fixed; left:0; right:0; bottom:0; z-index:40; display:flex; gap:2px;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom)); background:color-mix(in srgb,var(--bg2) 88%,transparent);
+    backdrop-filter:blur(18px) saturate(1.1); -webkit-backdrop-filter:blur(18px) saturate(1.1); border-top:1px solid var(--border); }
+  .tabbar button { flex:1; border:0; background:transparent; color:var(--faint); font-family:var(--font-display);
+    font-size:.6rem; font-weight:650; letter-spacing:.03em; padding:6px 2px; border-radius:10px; cursor:pointer; transition:color .2s, background .2s;
+    display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .tabbar button .ic { font-size:1.1rem; line-height:1; }
+  .tabbar button[aria-selected="true"] { color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); }
+  @media (max-width:899px) { .tabbar button span:not(.ic) { display:none; } .tabbar button { padding:8px 2px; } }
+  .wrap { padding-bottom:98px; }            /* clear the fixed tab bar */
+  @media (min-width:900px) {
+    .tabbar { top:0; bottom:0; right:auto; width:92px; flex-direction:column; justify-content:flex-start;
+      gap:6px; border-top:0; border-right:1px solid var(--border); padding-top:20px; }
+    .wrap { margin-left:92px; padding-bottom:48px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+  #onboarding { background:var(--bg); }
+  .ob { min-height:100dvh; max-width:560px; margin:0 auto; padding:40px 22px calc(30px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; }
+  .ob-dots { display:flex; gap:8px; justify-content:center; margin-bottom:26px; }
+  .ob-dots i { width:8px; height:8px; border-radius:50%; background:var(--border-strong); transition:background .2s, transform .2s; }
+  .ob-dots i.on { background:var(--accent); transform:scale(1.25); }
+  .ob-card { flex:1; }
+  .ob-card h2 { font-family:var(--font-display); font-size:1.5rem; margin:0 0 12px; }
+  .ob-card p { color:var(--muted); line-height:1.55; }
+  .ob-level { border:1px solid rgba(128,128,128,.28); border-radius:14px; padding:12px 14px; margin-bottom:12px; }
+  .ob-level-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .ob-level-head b { font-size:1.05rem; }
+  .ob-level-val { color:#34d399; font-weight:600; font-size:.95rem; white-space:nowrap; }
+  .ob-level .ob-fine { margin:4px 0 0; }
+  .ob-slider-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
+  .ob-slider-row label { color:var(--muted); font-size:.85rem; min-width:78px; }
+  .ob-slider-row input[type=range] { flex:1; min-width:0; }
+  .ob-seg-row { display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .ob-seg-row label { color:var(--muted); font-size:.85rem; min-width:78px; }
+  .ob-seg-row .seg { flex:1; }
+  .ob-mark { width:56px; height:56px; border-radius:16px; display:grid; place-items:center; font-size:1.6rem; margin-bottom:16px;
+    background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent-2) 45%,transparent)); }
+  .ob-profiles { display:flex; flex-direction:column; gap:10px; margin:6px 0 14px; }
+  .ob-profile { text-align:left; padding:14px 16px; border-radius:14px; border:1px solid var(--border); background:var(--panel-strong); color:var(--text); cursor:pointer; display:flex; flex-direction:column; gap:3px; }
+  .ob-profile[aria-pressed="true"] { border-color:color-mix(in srgb,var(--accent) 55%,transparent); background:color-mix(in srgb,var(--accent) 14%,transparent); }
+  .ob-profile b { font-family:var(--font-display); }
+  .ob-profile span { font-size:.82rem; color:var(--muted); }
+  .ob-note { color:var(--accent) !important; font-size:.88rem; min-height:1.2em; }
+  .ob-fine { font-size:.78rem; color:var(--faint) !important; }
+  .ob-nav { display:flex; gap:10px; margin-top:20px; }
+  .ob-nav .btn { flex:1; }
+
+  .faq-item { border-top:1px solid var(--border); padding:4px 0; }
+  .faq-item:first-of-type { border-top:0; }
+  .faq-item > summary { list-style:none; cursor:pointer; padding:12px 0; font-weight:600; color:var(--text); display:flex; align-items:center; gap:9px; }
+  .faq-item > summary::-webkit-details-marker { display:none; }
+  .faq-item > summary::before { content:"+"; color:var(--accent); font-family:var(--font-display); }
+  .faq-item[open] > summary::before { content:"–"; }
+  .faq-item p { color:var(--muted); line-height:1.55; margin:0 0 12px; padding-left:18px; }
+
+  .prep-sec { margin-top:18px; }
+  .prep-sec:first-child { margin-top:6px; }
+  .prep-sec h3 { font-family:var(--font-display); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+  .prep-item { padding:11px 0; border-top:1px solid var(--border); }
+  .prep-item:first-child { border-top:0; }
+  .prep-name { font-weight:600; }
+  .prep-why { font-size:.8rem; color:var(--faint); margin:2px 0 8px; }
+  .prep-links { display:flex; gap:10px; flex-wrap:wrap; }
+  .prep-links a { font-size:.82rem; padding:7px 12px; border-radius:100px; border:1px solid var(--border); color:var(--text); text-decoration:none; background:var(--panel-strong); }
+  .prep-links a.amz { border-color:color-mix(in srgb,var(--accent) 45%,transparent); }
+</style>
+</head>
+<body data-status="READY">
+<div class="bg-field"><div class="grid-lines"></div></div>
+
+<div class="wrap" id="startScreen">
+  <div class="brand">
+    <div class="mark">◎</div>
+    <div>
+      <h1 id="appName">Turkey Disaster Alert</h1>
+      <div class="sub" id="tagline">Earthquake early warning</div>
+    </div>
+    <button class="btn icon-btn ghost settings-btn" id="btnSettings" aria-label="Settings">⚙</button>
+  </div>
+
+  <section class="tab-view active" data-tab="start" id="view-start">
+  <!-- STATUS HERO -->
+  <div class="panel hero" id="hero">
+    <div class="pulse"><span class="glyph" id="heroGlyph">🛡</span></div>
+    <div class="title" id="heroTitle">All clear</div>
+    <div class="subtitle" id="heroSub">System active — watching for earthquakes</div>
+    <div class="loc-badge">📍 <span id="heroLoc">Adana</span></div>
+  </div>
+
+  <div class="panel" id="startNearestPanel" style="display:none">
+    <h2 id="startRecentTitle">Most recent nearby</h2>
+    <div id="startNearest" class="q-item" style="cursor:pointer"></div>
+  </div>
+
+  <!-- LOCATION -->
+  <div class="panel">
+    <h2 id="locTitle">Your location</h2>
+    <div class="loc-actions">
+      <button class="btn accent" style="flex:1" id="btnGps">📡 <span id="btnGpsText">Use my location</span></button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="addrInput" autocomplete="off" spellcheck="false" placeholder="Search address or place…">
+      <div class="results" id="results"></div>
+    </div>
+    <p class="hint" id="searchHint">Optional — needs internet.</p>
+  </div>
+  </section>
+
+  <section class="tab-view" data-tab="map" id="view-map">
+  <!-- MAP -->
+  <div class="panel">
+    <h2 id="mapTitle">Live earthquake map</h2>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-fallback" id="mapFallback">Map needs an internet connection.</div>
+    </div>
+    <div class="seg-3" id="viewSeg">
+      <button data-view="nearby" aria-pressed="true" id="vwNearby">Nearby</button>
+      <button data-view="felt" aria-pressed="false" id="vwFelt">Felt (M≥4)</button>
+      <button data-view="global" aria-pressed="false" id="vwGlobal">Global</button>
+    </div>
+    <div class="map-legend">
+      <span><i class="lg-dot" style="background:#22e3b0;color:#22e3b0"></i><span id="lgYou">You</span></span>
+      <span><i class="lg-dot" style="background:#ffd23f;color:#ffd23f"></i>M&lt;4</span>
+      <span><i class="lg-dot" style="background:#ff9f1c;color:#ff9f1c"></i>M4–6</span>
+      <span><i class="lg-dot" style="background:#ff405d;color:#ff405d"></i>M≥6</span>
+    </div>
+    <div class="map-legend haz-legend" id="hazLegend"></div>
+    <div class="toggle-row" style="margin-top:10px">
+      <span id="lblHazards">Show other natural disasters</span>
+      <label class="switch"><input type="checkbox" id="hazSwitch" checked><span class="slider"></span></label>
+    </div>
+    <div class="map-tools">
+      <button class="btn ghost" id="btnRecenter">◎ <span id="btnRecenterText">Recenter</span></button>
+      <button class="btn ghost" id="btnRefresh">↻ <span id="btnRefreshText">Refresh</span></button>
+    </div>
+  </div>
+  </section>
+
+  <section class="tab-view" data-tab="disasters" id="view-disasters">
+  <!-- DISASTERS: filters + unified list -->
+    <div class="panel">
+      <h2 id="katTitle">Recent disasters</h2>
+      <div class="field-label" id="fType">Type</div>
+      <div class="chips" id="katTypeChips"></div>
+      <div class="field-label" id="fRegion" style="margin-top:12px">Region</div>
+      <div class="seg-3" id="katRegionSeg">
+        <button data-region="global" aria-pressed="true" id="rgGlobal">Global</button>
+        <button data-region="tr" aria-pressed="false" id="rgTr">TR + neighbours</button>
+        <button data-region="near" aria-pressed="false" id="rgNear">Near me</button>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:12px">
+        <div style="flex:1">
+          <div class="field-label" id="fTime">Period</div>
+          <div class="seg" id="katWindowSeg">
+            <button data-win="24" aria-pressed="true" id="win24">24 h</button>
+            <button data-win="48" aria-pressed="false" id="win48">48 h</button>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div class="field-label" id="fSort">Sort</div>
+          <select id="katSortSelect">
+            <option value="zeit" id="sortTime">Time</option>
+            <option value="naehe" id="sortNear">Distance</option>
+            <option value="schwere" id="sortSev">Severity</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:14px">
+        <div style="flex:1">
+          <div class="set-row"><span class="name" id="fMinMag">Min. magnitude</span><span class="val" id="katMinMagVal">M 0.0</span></div>
+          <input type="range" id="katMinMag" min="0" max="7" step="0.5" value="0">
+          <p class="set-desc" id="descMinMag2">Earthquakes only (Richter).</p>
+        </div>
+        <div style="flex:1">
+          <div class="field-label" id="fMinAlert">Min. hazard alert</div>
+          <div class="seg-3" id="katAlertSeg">
+            <button data-alert="all" aria-pressed="true" id="alAll">All</button>
+            <button data-alert="orange" aria-pressed="false" id="alOrange">Orange+</button>
+            <button data-alert="red" aria-pressed="false" id="alRed">Red</button>
+          </div>
+          <p class="set-desc" id="descMinAlert">Storms, floods, tsunami… (GDACS level).</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div id="katSourceNote" class="hint" style="display:none; color:var(--warn)"></div>
+      <div id="disasterList"><p class="q-empty" id="katLoading">Loading…</p></div>
+    </div>
+  </section>
+
+  <section class="tab-view" data-tab="network" id="view-network">
+  <!-- SEISMOGRAM -->
+  <div class="panel">
+    <h2 id="seisTitle">Live seismogram</h2>
+    <div class="seg" id="seisModeSeg" style="margin-bottom:10px">
+      <button data-mode="device" aria-pressed="true" id="smDevice">This device</button>
+      <button data-mode="station" aria-pressed="false" id="smStation">Live station</button>
+    </div>
+    <select id="stationSelect" style="display:none; margin-bottom:8px"></select>
+    <canvas id="seis" width="520" height="192"></canvas>
+    <div class="chips seis-opts" id="seisOpts">
+      <button class="chip-btn" data-opt="grid" id="soGrid">Grid &amp; labels</button>
+      <button class="chip-btn" data-opt="autogain" id="soGain">Auto-gain</button>
+      <button class="chip-btn" data-opt="info" id="soInfo">Station info</button>
+    </div>
+    <div id="gainWrap" style="display:none; margin-top:10px">
+      <div class="set-row"><span class="name" id="lblGain">Gain</span><span class="val" id="valGain">1.0×</span></div>
+      <input type="range" id="gainSlider" min="0.2" max="6" step="0.1" value="1">
+    </div>
+    <div class="seis-info" id="seisInfo" style="display:none"></div>
+    <button class="btn ghost wide" id="btnMotion" style="display:none; margin-top:10px">Enable motion sensor</button>
+    <p class="hint" id="seisSub">Move the device to see the trace react. Nothing is recorded or uploaded.</p>
+  </div>
+
+  <!-- DETECTION NETWORK -->
+  <div class="panel">
+    <h2 id="netTitle">Detection network</h2>
+    <div class="toggle-row">
+      <span id="netJoinLabel">Join the network</span>
+      <label class="switch"><input type="checkbox" id="netSwitch"><span class="slider"></span></label>
+    </div>
+    <div class="net-readout">
+      <span class="net-num" id="netOnline">0</span>
+      <span class="net-lbl" id="netOnlineLabel">devices online</span>
+    </div>
+    <div class="net-detect" id="netDetect" style="display:none"></div>
+    <button class="btn ghost wide" id="btnTrigger" style="margin-top:6px">Send a test trigger</button>
+    <p class="hint" id="netNote">When your device shakes it shares only a coarse grid cell + a timestamp — never your exact location. The more people join, the earlier everyone is warned. Works worldwide.</p>
+  </div>
+
+  <!-- SEQUENCE (hidden until active) -->
+  <div class="panel" id="seqPanel" style="display:none">
+    <h2 id="seqTitle">Earthquake sequence</h2>
+    <div id="seqContainer"></div>
+  </div>
+
+  <!-- DEMO / TEST -->
+  <details class="demo">
+    <summary id="demoTitle">Demo &amp; test</summary>
+    <div class="demo-body">
+      <p class="hint" id="devPanelNote" style="color:var(--warn); margin-top:0">Test tool — triggers demo/drill alerts only.</p>
+      <button class="btn" id="btnQuake">▶ <span id="btnQuakeText">Simulate an earthquake</span></button>
+      <button class="btn" id="btnAfter">▶ <span id="btnAfterText">Simulate an aftershock series</span></button>
+      <button class="btn" id="btnFire">▶ <span id="btnFireText">Simulate a false alarm (fireworks)</span></button>
+      <button class="btn ghost" id="btnReport">📄 <span id="btnReportText">Last event report</span></button>
+      <button class="btn ghost" id="btnReset">↺ <span id="btnResetText">Reset</span></button>
+
+      <div style="margin-top:18px">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+          <h2 style="margin:0" id="srvTitle">Live server</h2>
+          <span class="srv-status" id="srvStatus"><span class="srv-dot" id="srvDot"></span><span id="srvStatusText">Offline</span></span>
+        </div>
+        <input type="text" id="srvUrl" value="ws://localhost:8000" spellcheck="false" autocapitalize="off">
+        <div class="btn-row" style="margin-top:9px">
+          <button class="btn" id="btnConnect">Connect</button>
+          <button class="btn ghost" id="btnDisconnect">Disconnect</button>
+        </div>
+        <div class="btn-row" style="margin-top:9px">
+          <button class="btn" id="btnSrvQuake">Quake from server</button>
+          <button class="btn" id="btnSrvFire">False alarm from server</button>
+        </div>
+        <p class="hint" id="srvHint"></p>
+      </div>
+    </div>
+  </details>
+  </section>
+
+  <section class="tab-view" data-tab="vorsorge" id="view-vorsorge">
+    <div class="panel">
+      <h2 id="prepTitle">Prepare</h2>
+      <p class="hint" id="prepDisclosure"></p>
+      <div id="prepList"></div>
+    </div>
+  </section>
+
+  <section class="tab-view" data-tab="faq" id="view-faq">
+    <div class="panel">
+      <h2 id="faqTitle">FAQ</h2>
+      <button class="btn accent wide" id="faqRestart" style="margin-bottom:14px">↻ <span id="faqRestartText">Restart onboarding</span></button>
+      <details class="faq-item"><summary id="faqQ1">How early does TDA warn?</summary><p id="faqA1"></p></details>
+      <details class="faq-item"><summary id="faqQ2">What do magnitude, depth and radius mean?</summary><p id="faqA2"></p></details>
+      <details class="faq-item"><summary id="faqQ3">Why do false alarms happen — and how does TDA catch them?</summary><p id="faqA3"></p></details>
+      <details class="faq-item"><summary id="faqQ4">What happens offline / if the network fails?</summary><p id="faqA4"></p></details>
+      <details class="faq-item"><summary id="faqQ5">Is my location data safe?</summary><p id="faqA5"></p></details>
+      <details class="faq-item"><summary id="faqQ6">Where does the data come from?</summary><p id="faqA6"></p></details>
+    </div>
+  </section>
+
+  <section class="tab-view" data-tab="settings" id="view-settings">
+    <div class="panel">
+    <h3 style="font-family:var(--font-display); margin:0 0 4px" id="setTitle">Settings</h3>
+    <div class="sheet-field">
+      <div class="field-label" id="lblLang">Language</div>
+      <select id="langSelect">
+        <option value="tr">Türkçe</option>
+        <option value="en" selected>English</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Русский</option>
+        <option value="ar">العربية</option>
+      </select>
+    </div>
+    <div class="sheet-field">
+      <div class="field-label" id="lblTheme">Appearance</div>
+      <div class="seg" id="themeSeg">
+        <button data-theme="system" aria-pressed="true" id="thSystem">System</button>
+        <button data-theme="dark" aria-pressed="false" id="thDark">Dark</button>
+        <button data-theme="light" aria-pressed="false" id="thLight">Light</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span id="lblCb">Colorblind-safe colors</span>
+      <label class="switch"><input type="checkbox" id="cbSwitch"><span class="slider"></span></label>
+    </div>
+
+    <div class="set-group">
+      <div class="field-label" id="advTitle" style="text-transform:uppercase; letter-spacing:.1em; font-weight:600">Advanced</div>
+
+      <div class="toggle-row" style="margin-top:10px">
+        <span id="lblUnits">Distance units</span>
+        <div class="seg" id="unitSeg" style="width:auto; flex:none">
+          <button data-unit="km" aria-pressed="true" id="unKm" style="padding:8px 16px">km</button>
+          <button data-unit="mi" aria-pressed="false" id="unMi" style="padding:8px 16px">mi</button>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="set-row"><span class="name" id="lblRadius">Alert radius</span><span class="val" id="valRadius">300 km</span></div>
+        <input type="range" id="rngRadius" min="20" max="1000" step="10" value="300">
+        <p class="set-desc" id="descRadius">Only earthquakes within this distance concern you.</p>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="set-row"><span class="name" id="lblMinMag">Minimum magnitude</span><span class="val" id="valMinMag">M 3.0</span></div>
+        <input type="range" id="rngMinMag" min="1" max="7" step="0.1" value="3">
+        <p class="set-desc" id="descMinMag">Weaker quakes are shown on the map but never alarm.</p>
+      </div>
+
+      <div class="toggle-row" style="margin-top:20px">
+        <span id="lblSound">Alarm sound</span>
+        <label class="switch"><input type="checkbox" id="soundSwitch" checked><span class="slider"></span></label>
+      </div>
+      <button class="btn wide" id="btnPickSound" style="margin-top:12px; display:none">🔔 <span id="btnPickSoundText">Choose alarm sound</span></button>
+      <div class="toggle-row" style="margin-top:16px">
+        <span id="lblNotifyRealtime">Real-time detections</span>
+        <label class="switch"><input type="checkbox" id="ntfRealtime" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row" style="margin-top:16px">
+        <span id="lblNotifyReports">User-reported quakes</span>
+        <label class="switch"><input type="checkbox" id="ntfReports" checked><span class="slider"></span></label>
+      </div>
+    </div>
+
+      <div class="set-group">
+        <div class="field-label" id="placesTitle" style="text-transform:uppercase; letter-spacing:.1em; font-weight:600">My locations</div>
+        <p class="set-desc" id="placesDesc" style="margin-top:6px">Also get warned for family &amp; friends — add their city.</p>
+        <div class="search-box" style="margin-top:10px">
+          <input type="text" id="setPlaceInput" autocomplete="off" spellcheck="false" placeholder="Search their city…">
+          <div class="results" id="setPlaceResults"></div>
+        </div>
+        <div id="setPlacesList" class="places-list" style="margin-top:6px"></div>
+      </div>
+
+      <div class="set-group">
+        <div class="toggle-row">
+          <span id="lblDev">Developer / test mode</span>
+          <label class="switch"><input type="checkbox" id="devSwitch"><span class="slider"></span></label>
+        </div>
+        <p class="set-desc" id="descDev">Shows the live-server test panel in the Network tab.</p>
+      </div>
+
+    <button class="btn accent wide" id="btnSetDone" style="margin-top:22px">Done</button>
+    </div>
+  </section>
+
+  <nav class="tabbar" id="tabbar" role="tablist">
+    <button data-tab="start" aria-selected="true"><span class="ic">⌂</span><span id="tabStart">Start</span></button>
+    <button data-tab="map" aria-selected="false"><span class="ic">◎</span><span id="tabMap">Map</span></button>
+    <button data-tab="disasters" aria-selected="false"><span class="ic">⚠</span><span id="tabDisasters">Disasters</span></button>
+    <button data-tab="network" aria-selected="false"><span class="ic">⚡</span><span id="tabNetwork">Network</span></button>
+    <button data-tab="vorsorge" aria-selected="false"><span class="ic">🎒</span><span id="tabVorsorge">Prepare</span></button>
+    <button data-tab="faq" aria-selected="false"><span class="ic">❔</span><span id="tabFaq">FAQ</span></button>
+    <button data-tab="settings" aria-selected="false"><span class="ic">⚙</span><span id="tabSettings">Settings</span></button>
+  </nav>
+</div>
+
+<!-- ALERT OVERLAY -->
+<div class="overlay" id="alertOverlay">
+  <div class="alert" id="alertScreen">
+    <div class="conf-badge" id="confBadge">⚡ <span id="confText">Early warning</span></div>
+    <div class="escalation" id="escalationBox">Now confirmed</div>
+    <div class="alert-title" id="alertTitle">EARTHQUAKE</div>
+
+    <div class="ring-wrap" style="position:relative">
+      <svg width="220" height="220" viewBox="0 0 220 220">
+        <circle class="ring-bg" cx="110" cy="110" r="96" fill="none" stroke-width="12"/>
+        <circle class="ring-fg" id="ringFg" cx="110" cy="110" r="96" fill="none" stroke-width="12" stroke-dasharray="603.2" stroke-dashoffset="0"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-num" id="ringNum">—</div>
+        <div class="ring-unit" id="ringUnit">seconds</div>
+      </div>
+    </div>
+    <div class="cd-caption" id="cdCaption">until shaking reaches you</div>
+    <div class="pwave" id="pwaveNote"></div>
+
+    <div class="instruct" id="instruct">DROP · COVER · HOLD ON</div>
+
+    <div class="map-wrap" style="margin-bottom:20px"><div id="alertMap"></div></div>
+
+    <div class="metrics">
+      <div class="metric"><div class="k" id="mkStrength">Strength</div><div class="v" id="mvStrength">—</div><div class="n" id="mnStrength"></div></div>
+      <div class="metric"><div class="k" id="mkShaking">Shaking here</div><div class="v" id="mvShaking">—</div></div>
+      <div class="metric"><div class="k" id="mkDist">Distance</div><div class="v" id="mvDist">—</div></div>
+      <div class="metric"><div class="k" id="mkLead">Warning time</div><div class="v" id="mvLead">—</div></div>
+    </div>
+    <p class="alert-note" id="alertNote">Rough estimate — not a scientific reading.</p>
+
+    <div class="alert-actions">
+      <button class="btn" id="btnAlertReport">Event report</button>
+      <button class="btn" id="btnAlertClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT OVERLAY -->
+<div class="overlay" id="reportOverlay">
+  <div class="wrap report">
+    <div class="brand"><div class="mark">📄</div><div><h1 id="reportTitle">Event report</h1></div></div>
+    <div class="panel">
+      <p id="reportEmpty" style="color:var(--muted)">No event yet. Run a simulation first.</p>
+      <div id="reportBody" style="display:none">
+        <div id="reportHeader" style="font-family:var(--font-display); font-weight:600; margin-bottom:8px"></div>
+        <ul class="tl" id="reportTl"></ul>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn accent" id="btnShare">Share</button>
+      <button class="btn ghost" id="btnReportBack">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING OVERLAY -->
+<div class="overlay" id="onboarding">
+  <div class="ob">
+    <div class="ob-dots" id="obDots"></div>
+    <div class="ob-card" data-ob="1">
+      <div class="ob-mark">🌐</div>
+      <h2>Language · Sprache · Dil · Язык · اللغة</h2>
+      <div class="chips" id="obLangs" style="margin-top:12px"></div>
+    </div>
+    <div class="ob-card" data-ob="2" hidden>
+      <div class="ob-mark">◎</div>
+      <h2 id="ob1t">Welcome to TDA</h2>
+      <p id="ob1b">TDA warns you seconds before the shaking arrives and shows every natural hazard near you.</p>
+    </div>
+    <div class="ob-card" data-ob="3" hidden>
+      <h2 id="ob2t">Where do you want alerts?</h2>
+      <p id="ob2b">Choose your location by GPS or search — you can change it any time.</p>
+      <button class="btn accent wide" id="obGps">📡 <span id="obGpsText">Use my location</span></button>
+      <div class="search-box" style="margin-top:12px">
+        <input type="text" id="obAddrInput" autocomplete="off" spellcheck="false" placeholder="Search address or place…">
+        <div class="results" id="obResults"></div>
+      </div>
+    </div>
+    <div class="ob-card" data-ob="4" hidden>
+      <div class="ob-mark">👪</div>
+      <h2 id="obPlacesT">Add family &amp; friends?</h2>
+      <p id="obPlacesB">Get warned when a quake hits people you care about — add their city. Optional, add as many as you like.</p>
+      <div class="search-box" style="margin-top:12px">
+        <input type="text" id="obPlaceInput" autocomplete="off" spellcheck="false" placeholder="Search their city…">
+        <div class="results" id="obPlaceResults"></div>
+      </div>
+      <div id="obPlacesList" class="places-list" style="margin-top:10px"></div>
+    </div>
+    <div class="ob-card" data-ob="5" hidden>
+      <h2 id="ob3t">Set your warning levels</h2>
+      <div class="ob-level">
+        <div class="ob-level-head"><b id="obNotifH">Notification</b><span class="ob-level-val" id="obNotifVal"></span></div>
+        <p class="ob-fine" id="obNotifD">Quiet heads-up when a quake is relevant to you.</p>
+        <div class="ob-slider-row"><label id="obNotifMagLbl">Magnitude</label><input type="range" id="obNotifMag" min="2.5" max="7" step="0.5"></div>
+        <div class="ob-slider-row"><label id="obNotifRadLbl">Radius</label><input type="range" id="obNotifRadius" min="50" max="1000" step="50"></div>
+      </div>
+      <div class="ob-level">
+        <div class="ob-level-head"><b id="obAlarmH">Alarm</b><span class="ob-level-val" id="obAlarmVal"></span></div>
+        <p class="ob-fine" id="obAlarmD">Loud full-screen alert that cuts through silent mode.</p>
+        <div class="ob-slider-row"><label id="obAlarmMagLbl">Magnitude</label><input type="range" id="obAlarmMag" min="4" max="8" step="0.5"></div>
+      </div>
+      <div class="toggle-row" style="margin-top:14px"><span id="obStormFloodLbl">Also warn about storms &amp; floods?</span><label class="switch"><input type="checkbox" id="obStormFlood"><span class="slider"></span></label></div>
+      <div id="obHazSettings" hidden style="margin-top:12px">
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obStormH">Storms</b></div>
+          <div class="ob-seg-row"><label id="obStormNotifLbl">Notify from</label><div class="seg" id="obStormNotify"></div></div>
+          <div class="ob-seg-row"><label id="obStormAlarmLbl">Alarm from</label><div class="seg" id="obStormAlarm"></div></div>
+        </div>
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obFloodH">Floods</b></div>
+          <div class="ob-seg-row"><label id="obFloodNotifLbl">Notify from</label><div class="seg" id="obFloodNotify"></div></div>
+          <div class="ob-seg-row"><label id="obFloodAlarmLbl">Alarm from</label><div class="seg" id="obFloodAlarm"></div></div>
+        </div>
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obTsunamiH">Tsunami</b></div>
+          <div class="ob-seg-row"><label id="obTsunamiNotifLbl">Notify from</label><div class="seg" id="obTsunamiNotify"></div></div>
+          <div class="ob-seg-row"><label id="obTsunamiAlarmLbl">Alarm from</label><div class="seg" id="obTsunamiAlarm"></div></div>
+        </div>
+      </div>
+      <p class="ob-fine" id="ob3fine">Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.</p>
+    </div>
+    <div class="ob-card" data-ob="6" hidden>
+      <h2 id="ob4t">Alerts</h2>
+      <div class="toggle-row"><span id="ob4sound">Alarm sound</span><label class="switch"><input type="checkbox" id="obSound" checked><span class="slider"></span></label></div>
+      <button class="btn wide" id="obNotify" style="margin-top:14px">🔔 <span id="obNotifyText">Enable notifications</span></button>
+      <p class="ob-fine" id="ob4fine">Notifications work while the page/app is open. Full push delivery comes with the app.</p>
+    </div>
+    <div class="ob-card" data-ob="7" hidden>
+      <h2 id="ob5t">Offline rescue (in the app)</h2>
+      <p id="ob5b">If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.</p>
+    </div>
+    <div class="ob-card" data-ob="8" hidden>
+      <h2 id="ob6t">This is what an alert looks like</h2>
+      <p id="ob6b">Try a practice alert so you recognise the sound and screen in a real event.</p>
+      <button class="btn accent wide" id="obDrill">▶ <span id="obDrillText">Show a practice alert</span></button>
+    </div>
+    <div class="ob-nav">
+      <button class="btn ghost" id="obBack">Back</button>
+      <button class="btn ghost" id="obSkip">Skip</button>
+      <button class="btn accent" id="obNext">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISTURBANCE MODAL -->
+<div class="modal" id="distModal">
+  <div class="box">
+    <h3 id="distTitle">No real earthquake</h3>
+    <p id="distReason"></p>
+    <button class="btn accent wide" id="btnDistOk">OK</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   Eew — core logic, byte/number-identical to the Android client & backend.
+   ========================================================================== */
+const Eew = {
+  EARTH_RADIUS_KM: 6371.0, V_S_KM_S: 3.5, V_P_KM_S: 6.0,
+  haversineKm(lat1, lon1, lat2, lon2) {
+    const r = Math.PI/180, la1=lat1*r, la2=lat2*r, dLat=(lat2-lat1)*r, dLon=(lon2-lon1)*r;
+    const a = Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;
+    return this.EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  },
+  sWaveEtaSeconds(d, e) { return Math.max(0, d/this.V_S_KM_S - e); },
+  pWaveEtaSeconds(d, e) { return Math.max(0, d/this.V_P_KM_S - e); },
+  mmi(mag, d) { return Math.min(12, Math.max(1, 1.5*mag - 3*Math.log10(Math.max(d,1)) + 3)); },
+  ROMAN:["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"],
+  mmiRoman(v) { return this.ROMAN[Math.min(11, Math.max(0, Math.round(v)-1))]; },
+  mmiLevel(v) { return Math.min(12, Math.max(1, Math.round(v))); },
+  protectionLevel(v) { return v>=5 ? "STRONG" : v>=3 ? "MODERATE" : "WEAK"; },
+  CITIES:[
+    { id:"adana", name:"Adana", lat:37.00, lon:35.32 },
+    { id:"gaziantep", name:"Gaziantep", lat:37.06, lon:37.38 },
+    { id:"kahramanmaras", name:"Kahramanmaraş", lat:37.58, lon:36.93 },
+    { id:"istanbul", name:"İstanbul", lat:41.01, lon:28.98 },
+    { id:"izmir", name:"İzmir", lat:38.42, lon:27.14 },
+    { id:"ankara", name:"Ankara", lat:39.93, lon:32.86 },
+  ],
+};
+
+/* ==========================================================================
+   i18n — plain-language keys. EN/TR/RU complete; AR carries the life-safety
+   core and falls back to EN. (Machine-assisted; native review before prod.)
+   ========================================================================== */
+const STR = {
+  en: {
+    app_name:"Turkey Disaster Alert", tagline:"Earthquake early warning",
+    tab_start:"Start", tab_map:"Map", tab_disasters:"Disasters", tab_network:"Network", tab_vorsorge:"Prepare", tab_faq:"FAQ", tab_settings:"Settings", start_recent:"Most recent nearby",
+    hero_ready_t:"All clear", hero_ready_s:"System active — watching for earthquakes",
+    hero_attention_t:"Possible tremor", hero_attention_s:"Checking the signal…",
+    hero_warning_t:"Warning active", hero_warning_s:"Take cover now",
+    hero_confirmed_t:"Earthquake confirmed", hero_confirmed_s:"Follow the on-screen guidance",
+    hero_disturbance_t:"False alarm avoided", hero_disturbance_s:"That was not a real earthquake",
+    loc_title:"Your location", loc_use_gps:"Use my location",
+    loc_search_ph:"Search address or place…", loc_search_hint:"Optional — needs internet.",
+    places_title:"My locations", places_desc:"Also get warned for family & friends — add their city.",
+    places_add_ph:"Search their city…", places_label_ph:"Name (e.g. Mum)", places_empty:"No extra locations yet.", places_dup:"That location is already on your list.",
+    ob_places_t:"Add family & friends?", ob_places_b:"Get warned when a quake hits people you care about — add their city. Optional, add as many as you like.",
+    loc_searching:"Searching…", loc_none:"Nothing found", loc_gps_name:"My location (GPS)",
+    loc_gps_denied:"Location access denied", loc_gps_unavail:"Location not available",
+    seis_title:"Live seismogram",
+    seis_sub:"Move the device to see the trace react. Nothing is recorded or uploaded.",
+    seis_nosensor:"No motion sensor on this device.", btn_motion:"Enable motion sensor",
+    sm_device:"This device", sm_station:"Live station", seis_station_hint:"Real seismometer · delayed ~2–3 min", seis_station_live:"Live", seis_station_nodata:"No data — try another station.",
+    so_grid:"Grid & labels", so_gain:"Auto-gain", so_info:"Station info", lbl_gain:"Gain", seis_amp_auto:"auto", seis_axis_now:"now", seis_axis_older:"older", seis_delay:"~2–3 min delayed", seis_device_note:"Phone accelerometer — shown on screen only, nothing uploaded.", seis_note_anto:"Only real-time station inside Türkiye available on IRIS. Denser coverage needs KOERI/AFAD access.", seis_note_regional:"Regional / reference station — not inside Türkiye.",
+    seq_title:"Earthquake sequence", seq_main:"Main shock", seq_after:"Aftershock",
+    demo_title:"Demo & test", demo_quake:"Simulate an earthquake",
+    demo_after:"Simulate an aftershock series", demo_fire:"Simulate a false alarm (fireworks)",
+    demo_report:"Last event report", demo_reset:"Reset",
+    srv_title:"Live server", srv_offline:"Offline", srv_connecting:"Connecting…",
+    srv_online:"Online", srv_failed:"Connection failed",
+    srv_connect:"Connect", srv_disconnect:"Disconnect",
+    srv_quake:"Quake from server", srv_fire:"False alarm from server",
+    srv_hint_ok:"Every alert from the server is cryptographically verified before it can reach you.",
+    srv_hint_nocrypto:"This browser can't verify signatures — use a current Chrome, Edge or Safari.",
+    footnote:"Demo build · alerts from the live server are cryptographically verified before they can reach you.",
+    set_title:"Settings", lbl_lang:"Language", lbl_theme:"Appearance",
+    th_system:"System", th_dark:"Dark", th_light:"Light",
+    lbl_cb:"Colorblind-safe colors", set_done:"Done",
+    lbl_dev:"Developer / test mode", desc_dev:"Shows the live-server test panel in the Network tab.", dev_panel_note:"Test tool — triggers demo/drill alerts only.",
+    conf_prelim:"Early warning", conf_confirmed:"Confirmed earthquake",
+    alert_title:"EARTHQUAKE", now_confirmed:"Now confirmed",
+    cd_unit:"seconds", cd_caption:"until shaking reaches you", cd_arrived:"Shaking is arriving",
+    pwave:"First (weaker) waves in ~%1 s",
+    protect_strong:"DROP · COVER · HOLD ON", protect_moderate:"Get to cover — shaking possible",
+    protect_weak:"Likely safe — stay calm",
+    m_strength:"Strength", m_shaking:"Shaking here", m_distance:"Distance", m_lead:"Warning time",
+    mag_prelim:"preliminary", mag_confirmed:"measured",
+    alert_note:"Rough estimate — not a scientific reading.",
+    btn_report:"Event report", btn_close:"Close",
+    dist_title:"No real earthquake",
+    dist_reason:"A city-wide, simultaneous signal with no travelling wavefront — typical of fireworks or traffic, not an earthquake. No alarm was raised.",
+    btn_ok:"OK",
+    report_title:"Event report", report_empty:"No event yet. Run a simulation first.",
+    report_share:"Share", report_back:"Back",
+    tl_origin:"Earthquake began", tl_detect:"Detected (early warning)", tl_confirm:"Confirmed",
+    tl_swave:"Shaking at your location",
+    int_none:"barely noticeable", int_light:"light", int_felt:"clearly felt",
+    int_strong:"strong", int_severe:"very strong", int_extreme:"extreme",
+    unit_km:"km", unit_s:"s", unit_mi:"mi",
+    map_title:"Live earthquake map", list_title:"Recent earthquakes", list_source:"Sources: EMSC + USGS · updates every few minutes",
+    list_loading:"Loading…", list_error:"Couldn't load — check your connection.", list_empty:"No earthquakes match your filters.",
+    vw_nearby:"Nearby", vw_felt:"Felt (M≥4)", vw_global:"All",
+    recenter:"Recenter", refresh:"Refresh", map_offline:"Map needs an internet connection.", you_label:"You",
+    adv_title:"Advanced", lbl_units:"Distance units", lbl_radius:"Alert radius", lbl_minmag:"Minimum magnitude",
+    desc_radius:"Only earthquakes within this distance concern you.", desc_minmag:"Weaker quakes are shown on the map but never alarm.",
+    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
+    ago_min:"%1 min ago", ago_hour:"%1 h ago", ago_day:"%1 d ago", just_now:"just now",
+    lbl_hazards:"Show other natural disasters", lg_hazards:"other hazards",
+    hz_wildfire:"Wildfire", hz_storm:"Severe storm", hz_volcano:"Volcano", hz_flood:"Flood", hz_ice:"Sea/lake ice", hz_drought:"Drought", hz_landslide:"Landslide", hz_temp:"Extreme temperature", hz_other:"Hazard", hz_tsunami:"Tsunami", hz_cyclone:"Cyclone", hz_source:"Source", hz_alert_red:"Red alert", hz_alert_orange:"Orange alert", hz_alert_green:"Advisory",
+    net_title:"Detection network", net_join:"Join the network", net_online_label:"devices online", net_devices:"devices", net_triggers:"triggers", net_detecting:"Cluster detecting", net_detecting_banner:"%1 cluster(s) sensing shaking nearby", net_trigger_btn:"Send a test trigger", net_trigger_sent:"Trigger sent", net_joined:"Joined the network", net_note:"When your device shakes it shares only a coarse grid cell + a timestamp — never your exact location. The more people join, the earlier everyone is warned. Works worldwide.",
+    kat_title:"Recent disasters", f_type:"Type", f_region:"Region", f_time:"Period", f_sort:"Sort", f_minmag:"Min. magnitude",
+    ty_all:"All", ty_quake:"Quakes", ty_tsunami:"Tsunami", ty_flood:"Flood", ty_storm:"Storm", ty_volcano:"Volcano", ty_wildfire:"Wildfire",
+    rg_global:"Global", rg_tr:"TR + neighbours", rg_near:"Near me",
+    sort_time:"Time", sort_near:"Distance", sort_severity:"Severity",
+    f_minalert:"Min. hazard alert", al_all:"All", al_orange:"Orange+", al_red:"Red",
+    desc_minmag2:"Earthquakes only (Richter).", desc_minalert:"Storms, floods, tsunami… (GDACS level).",
+    kat_empty:"No events for this filter.", src_down:"%1 source unavailable — showing the rest.",
+    ob_next:"Next", ob_finish:"Done", ob_back:"Back", ob_skip:"Skip",
+    ob1_t:"Welcome to TDA", ob1_b:"TDA warns you seconds before the shaking arrives and shows every natural hazard near you.",
+    ob2_t:"Where do you want alerts?", ob2_b:"Choose your location by GPS or search — you can change it any time.", ob_gps:"Use my location",
+    ob3_t:"Set your warning levels", ob_notif_h:"Notification", ob_notif_d:"Quiet heads-up when a quake is relevant to you.", ob_alarm_h:"Alarm", ob_alarm_d:"Loud full-screen alert that cuts through silent mode.", ob_mag:"Magnitude", ob_radius:"Radius", ob_from:"from M", ob_stormflood:"Also warn about storms, floods & tsunami?", ob_haz_storm:"Storms", ob_haz_flood:"Floods", ob_haz_tsunami:"Tsunami", ob_notify_from:"Notify from", ob_alarm_from:"Alarm from", al_off:"Off", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
+    ob_retro:"This level would have warned you at %1 of %2 recent quakes nearby (last 24 h — hindsight, not a forecast).",
+    ob3_fine:"Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.",
+    ob4_t:"Alerts", ob4_sound:"Alarm sound", ob_notify:"Enable notifications", ob_notify_on:"Notifications on", ob_notify_off:"Notifications off",
+    ob4_fine:"Notifications work while the page/app is open. Full push delivery comes with the app.",
+    ob5_t:"Offline rescue (in the app)", ob5_b:"If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.",
+    ob6_t:"This is what an alert looks like", ob6_b:"Try a practice alert so you recognise the sound and screen in a real event.", ob_drill:"Show a practice alert",
+    faq_title:"FAQ", faq_restart:"Restart onboarding",
+    faq_q1:"How early does TDA warn?", faq_a1:"From a few seconds up to tens of seconds, depending on how far you are from the epicentre — the further away, the more warning. It can never warn before the quake itself begins; it races the shaking, not time.",
+    faq_q2:"What do magnitude, depth and radius mean?", faq_a2:"Magnitude is the quake's strength (each step up is much stronger). Depth is how far below ground it started (shallower is felt more). Radius is the distance around you within which a quake concerns you.",
+    faq_q3:"Why do false alarms happen — and how does TDA catch them?", faq_a3:"City-wide simultaneous shaking with no travelling wavefront is usually fireworks or traffic, not a quake. TDA checks for a spreading wavefront before alarming, and marks anything it filters out.",
+    faq_q4:"What happens offline / if the network fails?", faq_a4:"The map and live feeds need internet. The core early-warning logic runs locally. Phone-to-phone warning and SOS when the network is down work fully only in the native app, not in the browser.",
+    faq_q5:"Is my location data safe?", faq_a5:"The detection network only ever shares a coarse grid cell plus a timestamp — never your exact position. Address search and reverse-geocoding go directly to OpenStreetMap.",
+    faq_q6:"Where does the data come from?", faq_a6:"Earthquakes from USGS and EMSC (and AFAD where available); other hazards from NASA EONET and GDACS. USGS/EMSC/EONET load directly; GDACS/AFAD are optional and need the local server.",
+    prep_title:"Prepare", prep_amazon:"Search on Amazon", prep_local:"Local retailer",
+    prep_disclosure:"Recommendation links — if you buy, TDA may earn a small commission at no extra cost to you. Shown only here, never during an alert.",
+    prep_sec_all:"For every disaster", prep_sec_quake:"Earthquake", prep_sec_flood:"Flood", prep_sec_storm:"Storm", prep_sec_wildfire:"Wildfire",
+    prep_item_water:"Drinking water", prep_why_water:"A stored supply for several days.",
+    prep_item_firstaid:"First-aid kit", prep_why_firstaid:"Treat injuries when help is delayed.",
+    prep_item_gobag:"Go-bag", prep_why_gobag:"Grab-and-leave essentials in one bag.",
+    prep_item_docs:"Document pouch", prep_why_docs:"Waterproof copies of IDs and papers.",
+    prep_item_radio:"Hand-crank radio", prep_why_radio:"Get news when power and network are down.",
+    prep_item_powerbank:"Power bank", prep_why_powerbank:"Keep your phone — your lifeline — alive.",
+    prep_item_whistle:"Whistle", prep_why_whistle:"Signal rescuers if you are trapped.",
+    prep_item_helmet:"Helmet", prep_why_helmet:"Protect your head from falling debris.",
+    prep_item_mask:"FFP2 dust mask", prep_why_mask:"Breathe through concrete dust.",
+    prep_item_blanket:"Emergency blanket", prep_why_blanket:"Keep warm outdoors after a quake.",
+    prep_item_drybag:"Dry bag", prep_why_drybag:"Keep essentials dry in a flood.",
+    prep_item_boots:"Rubber boots", prep_why_boots:"Wade safely through water.",
+    prep_item_lifevest:"Life vest", prep_why_lifevest:"Stay afloat in rising water.",
+    prep_item_flashlight:"Flashlight", prep_why_flashlight:"See in a blackout.",
+    prep_item_windowfilm:"Window safety film", prep_why_windowfilm:"Hold glass together in a storm.",
+    prep_item_smokemask:"FFP3 smoke mask", prep_why_smokemask:"Filter wildfire smoke.",
+    prep_item_fireblanket:"Fire blanket", prep_why_fireblanket:"Smother small fires.",
+    prep_item_goggles:"Safety goggles", prep_why_goggles:"Protect eyes from smoke and ash.",
+  },
+  de: {
+    app_name:"Türkei Katastrophenwarnung", tagline:"Erdbeben-Frühwarnung",
+    tab_start:"Start", tab_map:"Karte", tab_disasters:"Katastrophen", tab_network:"Netzwerk", tab_vorsorge:"Vorsorge", tab_faq:"FAQ", tab_settings:"Einstellungen", start_recent:"Zuletzt in der Nähe",
+    hero_ready_t:"Alles ruhig", hero_ready_s:"System aktiv — Erdbeben werden überwacht",
+    hero_attention_t:"Mögliche Erschütterung", hero_attention_s:"Signal wird geprüft…",
+    hero_warning_t:"Warnung aktiv", hero_warning_s:"Sofort in Deckung",
+    hero_confirmed_t:"Erdbeben bestätigt", hero_confirmed_s:"Folgen Sie den Hinweisen am Bildschirm",
+    hero_disturbance_t:"Fehlalarm vermieden", hero_disturbance_s:"Das war kein echtes Erdbeben",
+    loc_title:"Ihr Standort", loc_use_gps:"Meinen Standort verwenden",
+    loc_search_ph:"Adresse oder Ort suchen…", loc_search_hint:"Optional — benötigt Internet.",
+    places_title:"Meine Standorte", places_desc:"Werde auch für Familie & Freunde gewarnt — Ort hinzufügen.",
+    places_add_ph:"Ort suchen…", places_label_ph:"Name (z.B. Mama)", places_empty:"Noch keine weiteren Orte.", places_dup:"Dieser Ort ist schon in deiner Liste.",
+    ob_places_t:"Familie & Freunde hinzufügen?", ob_places_b:"Werde gewarnt, wenn ein Beben Menschen trifft, die dir wichtig sind — ihren Ort hinzufügen. Optional, beliebig viele.",
+    loc_searching:"Suche läuft…", loc_none:"Nichts gefunden", loc_gps_name:"Mein Standort (GPS)",
+    loc_gps_denied:"Standortzugriff verweigert", loc_gps_unavail:"Standort nicht verfügbar",
+    seis_title:"Live-Seismogramm",
+    seis_sub:"Bewegen Sie das Gerät, um die Kurve reagieren zu sehen. Es wird nichts aufgezeichnet oder hochgeladen.",
+    seis_nosensor:"Kein Bewegungssensor auf diesem Gerät.", btn_motion:"Bewegungssensor aktivieren",
+    sm_device:"Dieses Gerät", sm_station:"Live-Station", seis_station_hint:"Echter Seismograph · ~2–3 Min. verzögert", seis_station_live:"Live", seis_station_nodata:"Keine Daten — andere Station versuchen.",
+    so_grid:"Raster & Beschriftung", so_gain:"Auto-Verstärkung", so_info:"Stationsinfo", lbl_gain:"Verstärkung", seis_amp_auto:"auto", seis_axis_now:"jetzt", seis_axis_older:"älter", seis_delay:"~2–3 Min. verzögert", seis_device_note:"Telefon-Beschleunigungssensor — nur am Bildschirm, nichts wird hochgeladen.", seis_note_anto:"Einzige Echtzeit-Station innerhalb der Türkei bei IRIS. Dichtere Abdeckung braucht KOERI/AFAD-Zugang.", seis_note_regional:"Regionale / Referenzstation — nicht in der Türkei.",
+    seq_title:"Erdbebenserie", seq_main:"Hauptbeben", seq_after:"Nachbeben",
+    demo_title:"Demo & Test", demo_quake:"Erdbeben simulieren",
+    demo_after:"Nachbebenserie simulieren", demo_fire:"Fehlalarm simulieren (Feuerwerk)",
+    demo_report:"Letzter Ereignisbericht", demo_reset:"Zurücksetzen",
+    srv_title:"Live-Server", srv_offline:"Offline", srv_connecting:"Verbinde…",
+    srv_online:"Online", srv_failed:"Verbindung fehlgeschlagen",
+    srv_connect:"Verbinden", srv_disconnect:"Trennen",
+    srv_quake:"Erdbeben vom Server", srv_fire:"Fehlalarm vom Server",
+    srv_hint_ok:"Jede Warnung vom Server wird kryptografisch geprüft, bevor sie Sie erreicht.",
+    srv_hint_nocrypto:"Dieser Browser kann Signaturen nicht prüfen — nutzen Sie ein aktuelles Chrome, Edge oder Safari.",
+    footnote:"Demo-Version · Warnungen vom Live-Server werden kryptografisch geprüft, bevor sie Sie erreichen.",
+    set_title:"Einstellungen", lbl_lang:"Sprache", lbl_theme:"Darstellung",
+    th_system:"System", th_dark:"Dunkel", th_light:"Hell",
+    lbl_cb:"Farbenblind-sichere Farben", set_done:"Fertig",
+    lbl_dev:"Entwickler-/Testmodus", desc_dev:"Zeigt das Live-Server-Testpanel im Netzwerk-Tab.", dev_panel_note:"Testwerkzeug — löst nur Demo-/Übungsalarme aus.",
+    conf_prelim:"Frühwarnung", conf_confirmed:"Bestätigtes Erdbeben",
+    alert_title:"ERDBEBEN", now_confirmed:"Jetzt bestätigt",
+    cd_unit:"Sekunden", cd_caption:"bis die Erschütterung Sie erreicht", cd_arrived:"Erschütterung trifft ein",
+    pwave:"Erste (schwächere) Wellen in ~%1 s",
+    protect_strong:"DUCKEN · SCHÜTZEN · HALTEN", protect_moderate:"In Deckung gehen — Erschütterung möglich",
+    protect_weak:"Wahrscheinlich sicher — bleiben Sie ruhig",
+    m_strength:"Stärke", m_shaking:"Erschütterung hier", m_distance:"Entfernung", m_lead:"Vorwarnzeit",
+    mag_prelim:"vorläufig", mag_confirmed:"gemessen",
+    alert_note:"Grobe Schätzung — keine wissenschaftliche Messung.",
+    btn_report:"Ereignisbericht", btn_close:"Schließen",
+    dist_title:"Kein echtes Erdbeben",
+    dist_reason:"Ein stadtweites, gleichzeitiges Signal ohne wandernde Wellenfront — typisch für Feuerwerk oder Verkehr, nicht für ein Erdbeben. Es wurde kein Alarm ausgelöst.",
+    btn_ok:"OK",
+    report_title:"Ereignisbericht", report_empty:"Noch kein Ereignis. Starten Sie zuerst eine Simulation.",
+    report_share:"Teilen", report_back:"Zurück",
+    tl_origin:"Erdbeben begann", tl_detect:"Erkannt (Frühwarnung)", tl_confirm:"Bestätigt",
+    tl_swave:"Erschütterung an Ihrem Standort",
+    int_none:"kaum spürbar", int_light:"leicht", int_felt:"deutlich spürbar",
+    int_strong:"stark", int_severe:"sehr stark", int_extreme:"extrem",
+    unit_km:"km", unit_s:"s", unit_mi:"mi",
+    map_title:"Live-Erdbebenkarte", list_title:"Aktuelle Erdbeben", list_source:"Quellen: EMSC + USGS · alle paar Minuten aktualisiert",
+    list_loading:"Wird geladen…", list_error:"Laden fehlgeschlagen — prüfen Sie Ihre Verbindung.", list_empty:"Keine Erdbeben passen zu Ihren Filtern.",
+    vw_nearby:"In der Nähe", vw_felt:"Spürbar (M≥4)", vw_global:"Alle",
+    recenter:"Zentrieren", refresh:"Aktualisieren", map_offline:"Karte benötigt eine Internetverbindung.", you_label:"Sie",
+    adv_title:"Erweitert", lbl_units:"Entfernungseinheit", lbl_radius:"Warnradius", lbl_minmag:"Mindestmagnitude",
+    desc_radius:"Nur Erdbeben innerhalb dieser Entfernung betreffen Sie.", desc_minmag:"Schwächere Beben erscheinen auf der Karte, lösen aber nie Alarm aus.",
+    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
+    ago_min:"vor %1 Min.", ago_hour:"vor %1 Std.", ago_day:"vor %1 T.", just_now:"gerade eben",
+    lbl_hazards:"Andere Naturkatastrophen anzeigen", lg_hazards:"andere Gefahren",
+    hz_wildfire:"Waldbrand", hz_storm:"Schwerer Sturm", hz_volcano:"Vulkan", hz_flood:"Überschwemmung", hz_ice:"Meer-/Seeeis", hz_drought:"Dürre", hz_landslide:"Erdrutsch", hz_temp:"Extreme Temperatur", hz_other:"Gefahr", hz_tsunami:"Tsunami", hz_cyclone:"Wirbelsturm", hz_source:"Quelle", hz_alert_red:"Rote Warnung", hz_alert_orange:"Orange Warnung", hz_alert_green:"Hinweis",
+    net_title:"Detektionsnetz", net_join:"Netzwerk beitreten", net_online_label:"Geräte online", net_devices:"Geräte", net_triggers:"Auslösungen", net_detecting:"Cluster erkennt", net_detecting_banner:"%1 Cluster spüren Erschütterung in der Nähe", net_trigger_btn:"Test-Auslösung senden", net_trigger_sent:"Auslösung gesendet", net_joined:"Netzwerk beigetreten", net_note:"Wenn Ihr Gerät wackelt, teilt es nur eine grobe Rasterzelle + einen Zeitstempel — nie Ihren genauen Standort. Je mehr mitmachen, desto früher werden alle gewarnt. Weltweit einsetzbar.",
+    kat_title:"Aktuelle Katastrophen", f_type:"Typ", f_region:"Region", f_time:"Zeitraum", f_sort:"Sortierung", f_minmag:"Mindestmagnitude",
+    ty_all:"Alle", ty_quake:"Erdbeben", ty_tsunami:"Tsunami", ty_flood:"Überschwemmung", ty_storm:"Sturm", ty_volcano:"Vulkan", ty_wildfire:"Waldbrand",
+    rg_global:"Global", rg_tr:"TR + Nachbarn", rg_near:"In meiner Nähe",
+    sort_time:"Zeit", sort_near:"Entfernung", sort_severity:"Schwere",
+    f_minalert:"Mindest-Gefahrenstufe", al_all:"Alle", al_orange:"Orange+", al_red:"Rot",
+    desc_minmag2:"Nur Erdbeben (Richter).", desc_minalert:"Stürme, Fluten, Tsunami… (GDACS-Stufe).",
+    kat_empty:"Keine Ereignisse für diesen Filter.", src_down:"Quelle %1 nicht verfügbar — Rest wird angezeigt.",
+    ob_next:"Weiter", ob_finish:"Fertig", ob_back:"Zurück", ob_skip:"Überspringen",
+    ob1_t:"Willkommen bei TDA", ob1_b:"TDA warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
+    ob2_t:"Wo möchtest du gewarnt werden?", ob2_b:"Wähle deinen Ort per Standort oder Suche — jederzeit änderbar.", ob_gps:"Meinen Standort verwenden",
+    ob3_t:"Warnstufen einstellen", ob_notif_h:"Benachrichtigung", ob_notif_d:"Leiser Hinweis, wenn ein Beben für dich relevant ist.", ob_alarm_h:"Alarm", ob_alarm_d:"Lauter Vollbild-Alarm, der auch durch Stumm dringt.", ob_mag:"Magnitude", ob_radius:"Umkreis", ob_from:"ab M", ob_stormflood:"Auch vor Sturm, Flut & Tsunami warnen?", ob_haz_storm:"Stürme", ob_haz_flood:"Überschwemmungen", ob_haz_tsunami:"Tsunami", ob_notify_from:"Hinweis ab", ob_alarm_from:"Alarm ab", al_off:"Aus", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
+    ob_retro:"Dieses Niveau hätte dich bei %1 von %2 Beben in deiner Nähe gewarnt (letzte 24 Std. — Rückschau, keine Vorhersage).",
+    ob3_fine:"Standard: Hinweis ab M4 im Umkreis 150 km · Alarm ab M6. Jederzeit in den Einstellungen änderbar.",
+    ob4_t:"Alarme", ob4_sound:"Alarmton", ob_notify:"Benachrichtigungen erlauben", ob_notify_on:"Benachrichtigungen an", ob_notify_off:"Benachrichtigungen aus",
+    ob4_fine:"Benachrichtigungen funktionieren, solange die Seite/App offen ist. Vollständige Push-Zustellung kommt mit der App.",
+    ob5_t:"Offline-Rettung (in der App)", ob5_b:"Wenn das Mobilnetz ausfällt, kann die App Warnungen und einen SOS von Handy zu Handy per Bluetooth tragen. Das funktioniert vollständig nur in der nativen App — nicht im Browser.",
+    ob6_t:"So sieht ein Alarm aus", ob6_b:"Probiere einen Übungsalarm, damit du Ton und Bildschirm im Ernstfall wiedererkennst.", ob_drill:"Probe-Alarm zeigen",
+    faq_title:"FAQ", faq_restart:"Onboarding erneut starten",
+    faq_q1:"Wie früh warnt TDA?", faq_a1:"Von wenigen bis zu einigen zehn Sekunden — je weiter du vom Epizentrum entfernt bist, desto mehr Vorwarnung. Vor dem Beben selbst kann sie nie warnen; sie ist schneller als die Erschütterung, nicht als die Zeit.",
+    faq_q2:"Was bedeuten Magnitude, Tiefe und Radius?", faq_a2:"Magnitude ist die Stärke des Bebens (jede Stufe ist deutlich stärker). Tiefe ist, wie weit unter der Erde es begann (flacher = stärker spürbar). Radius ist die Entfernung um dich, innerhalb derer dich ein Beben betrifft.",
+    faq_q3:"Warum kommt es zu Fehlalarmen — und wie erkennt TDA sie?", faq_a3:"Stadtweite, gleichzeitige Erschütterung ohne wandernde Wellenfront ist meist Feuerwerk oder Verkehr, kein Beben. TDA prüft auf eine sich ausbreitende Wellenfront, bevor es Alarm gibt, und kennzeichnet, was es herausfiltert.",
+    faq_q4:"Was passiert offline / wenn das Netz ausfällt?", faq_a4:"Karte und Live-Daten brauchen Internet. Die Kern-Frühwarnlogik läuft lokal. Warnung und SOS von Handy zu Handy bei totem Netz funktionieren vollständig nur in der nativen App, nicht im Browser.",
+    faq_q5:"Sind meine Standortdaten sicher?", faq_a5:"Das Detektionsnetz teilt nur eine grobe Rasterzelle plus Zeitstempel — nie deine genaue Position. Adresssuche und Reverse-Geocoding gehen direkt an OpenStreetMap.",
+    faq_q6:"Woher kommen die Daten?", faq_a6:"Erdbeben von USGS und EMSC (und AFAD, wo verfügbar); andere Gefahren von NASA EONET und GDACS. USGS/EMSC/EONET laden direkt; GDACS/AFAD sind optional und brauchen den lokalen Server.",
+    prep_title:"Vorsorge", prep_amazon:"Bei Amazon suchen", prep_local:"Lokaler Händler",
+    prep_disclosure:"Empfehlungs-Links — bei einem Kauf kann TDA eine kleine Provision erhalten, ohne Mehrkosten für dich. Nur hier zu sehen, nie während eines Alarms.",
+    prep_sec_all:"Für jede Katastrophe", prep_sec_quake:"Erdbeben", prep_sec_flood:"Überschwemmung", prep_sec_storm:"Sturm", prep_sec_wildfire:"Waldbrand",
+    prep_item_water:"Trinkwasser", prep_why_water:"Ein Vorrat für mehrere Tage.",
+    prep_item_firstaid:"Erste-Hilfe-Set", prep_why_firstaid:"Verletzungen versorgen, wenn Hilfe sich verzögert.",
+    prep_item_gobag:"Notfallrucksack", prep_why_gobag:"Das Wichtigste griffbereit in einer Tasche.",
+    prep_item_docs:"Dokumentenmappe", prep_why_docs:"Wasserdichte Kopien von Ausweisen und Papieren.",
+    prep_item_radio:"Kurbelradio", prep_why_radio:"Nachrichten ohne Strom und Netz.",
+    prep_item_powerbank:"Powerbank", prep_why_powerbank:"Hält dein Handy — deine Lebensader — am Leben.",
+    prep_item_whistle:"Trillerpfeife", prep_why_whistle:"Rettern signalisieren, wenn du verschüttet bist.",
+    prep_item_helmet:"Schutzhelm", prep_why_helmet:"Schützt den Kopf vor herabfallenden Trümmern.",
+    prep_item_mask:"FFP2-Staubmaske", prep_why_mask:"Atmen im Betonstaub.",
+    prep_item_blanket:"Rettungsdecke", prep_why_blanket:"Wärme im Freien nach dem Beben.",
+    prep_item_drybag:"Wasserdichte Tasche", prep_why_drybag:"Wichtiges trocken halten bei Flut.",
+    prep_item_boots:"Gummistiefel", prep_why_boots:"Sicher durchs Wasser waten.",
+    prep_item_lifevest:"Schwimmweste", prep_why_lifevest:"Über Wasser bleiben bei steigendem Pegel.",
+    prep_item_flashlight:"Taschenlampe", prep_why_flashlight:"Sehen bei Stromausfall.",
+    prep_item_windowfilm:"Fensterschutzfolie", prep_why_windowfilm:"Hält Glas im Sturm zusammen.",
+    prep_item_smokemask:"FFP3-Rauchmaske", prep_why_smokemask:"Filtert Waldbrandrauch.",
+    prep_item_fireblanket:"Löschdecke", prep_why_fireblanket:"Erstickt kleine Brände.",
+    prep_item_goggles:"Schutzbrille", prep_why_goggles:"Schützt die Augen vor Rauch und Asche.",
+  },
+  tr: {
+    app_name:"Türkiye Afet Uyarısı", tagline:"Deprem erken uyarısı",
+    tab_start:"Başlangıç", tab_map:"Harita", tab_disasters:"Afetler", tab_network:"Ağ", tab_vorsorge:"Hazırlık", tab_faq:"SSS", tab_settings:"Ayarlar", start_recent:"En yakın son olay",
+    hero_ready_t:"Her şey sakin", hero_ready_s:"Sistem etkin — depremler izleniyor",
+    hero_attention_t:"Olası sarsıntı", hero_attention_s:"Sinyal kontrol ediliyor…",
+    hero_warning_t:"Uyarı etkin", hero_warning_s:"Hemen korunun",
+    hero_confirmed_t:"Deprem doğrulandı", hero_confirmed_s:"Ekrandaki yönergeyi izleyin",
+    hero_disturbance_t:"Yanlış alarm önlendi", hero_disturbance_s:"Gerçek bir deprem değildi",
+    loc_title:"Konumunuz", loc_use_gps:"Konumumu kullan",
+    loc_search_ph:"Adres veya yer ara…", loc_search_hint:"İsteğe bağlı — internet gerekir.",
+    places_title:"Konumlarım", places_desc:"Aile ve arkadaşların için de uyarı al — şehirlerini ekle.",
+    places_add_ph:"Şehir ara…", places_label_ph:"İsim (örn. Anne)", places_empty:"Henüz ek konum yok.", places_dup:"Bu konum zaten listende.",
+    ob_places_t:"Aile ve arkadaşları ekle?", ob_places_b:"Önem verdiğin kişileri bir deprem vurduğunda uyarı al — şehirlerini ekle. İsteğe bağlı, istediğin kadar ekle.",
+    loc_searching:"Aranıyor…", loc_none:"Bir şey bulunamadı", loc_gps_name:"Konumum (GPS)",
+    loc_gps_denied:"Konum erişimi reddedildi", loc_gps_unavail:"Konum kullanılamıyor",
+    seis_title:"Canlı sismogram",
+    seis_sub:"Eğrinin tepki verdiğini görmek için cihazı hareket ettirin. Hiçbir şey kaydedilmez veya yüklenmez.",
+    seis_nosensor:"Bu cihazda hareket sensörü yok.", btn_motion:"Hareket sensörünü etkinleştir",
+    sm_device:"Bu cihaz", sm_station:"Canlı istasyon", seis_station_hint:"Gerçek sismometre · ~2–3 dk gecikmeli", seis_station_live:"Canlı", seis_station_nodata:"Veri yok — başka istasyon deneyin.",
+    so_grid:"Izgara & etiketler", so_gain:"Oto-kazanç", so_info:"İstasyon bilgisi", lbl_gain:"Kazanç", seis_amp_auto:"oto", seis_axis_now:"şimdi", seis_axis_older:"eski", seis_delay:"~2–3 dk gecikmeli", seis_device_note:"Telefon ivmeölçeri — yalnızca ekranda, hiçbir şey yüklenmez.", seis_note_anto:"IRIS'te Türkiye içinde yalnızca bu gerçek zamanlı istasyon var. Daha yoğun kapsama KOERI/AFAD erişimi gerektirir.", seis_note_regional:"Bölgesel / referans istasyon — Türkiye içinde değil.",
+    seq_title:"Deprem dizisi", seq_main:"Ana sarsıntı", seq_after:"Artçı sarsıntı",
+    demo_title:"Demo ve test", demo_quake:"Deprem simüle et",
+    demo_after:"Artçı sarsıntı dizisi simüle et", demo_fire:"Yanlış alarm simüle et (havai fişek)",
+    demo_report:"Son olay raporu", demo_reset:"Sıfırla",
+    srv_title:"Canlı sunucu", srv_offline:"Çevrimdışı", srv_connecting:"Bağlanıyor…",
+    srv_online:"Çevrimiçi", srv_failed:"Bağlantı başarısız",
+    srv_connect:"Bağlan", srv_disconnect:"Bağlantıyı kes",
+    srv_quake:"Sunucudan deprem", srv_fire:"Sunucudan yanlış alarm",
+    srv_hint_ok:"Sunucudan gelen her uyarı size ulaşmadan önce kriptografik olarak doğrulanır.",
+    srv_hint_nocrypto:"Bu tarayıcı imzaları doğrulayamıyor — güncel Chrome, Edge veya Safari kullanın.",
+    footnote:"Demo sürümü · canlı sunucudan gelen uyarılar size ulaşmadan önce kriptografik olarak doğrulanır.",
+    set_title:"Ayarlar", lbl_lang:"Dil", lbl_theme:"Görünüm",
+    th_system:"Sistem", th_dark:"Koyu", th_light:"Açık",
+    lbl_cb:"Renk körlüğüne uygun renkler", set_done:"Tamam",
+    lbl_dev:"Geliştirici / test modu", desc_dev:"Ağ sekmesinde canlı sunucu test panelini gösterir.", dev_panel_note:"Test aracı — yalnızca demo/tatbikat alarmı üretir.",
+    conf_prelim:"Erken uyarı", conf_confirmed:"Doğrulanmış deprem",
+    alert_title:"DEPREM", now_confirmed:"Şimdi doğrulandı",
+    cd_unit:"saniye", cd_caption:"sarsıntı size ulaşana kadar", cd_arrived:"Sarsıntı geliyor",
+    pwave:"İlk (zayıf) dalgalar ~%1 sn içinde",
+    protect_strong:"ÇÖK · KAPAN · TUTUN", protect_moderate:"Korunmaya geçin — sarsıntı olabilir",
+    protect_weak:"Muhtemelen güvenli — sakin olun",
+    m_strength:"Büyüklük", m_shaking:"Buradaki sarsıntı", m_distance:"Uzaklık", m_lead:"Uyarı süresi",
+    mag_prelim:"ön tahmin", mag_confirmed:"ölçülen",
+    alert_note:"Kaba tahmin — bilimsel ölçüm değildir.",
+    btn_report:"Olay raporu", btn_close:"Kapat",
+    dist_title:"Gerçek deprem yok",
+    dist_reason:"Şehir genelinde, eşzamanlı, ilerleyen bir dalga cephesi olmayan sinyal — havai fişek veya trafik tipiktir, deprem değil. Alarm verilmedi.",
+    btn_ok:"Tamam",
+    report_title:"Olay raporu", report_empty:"Henüz olay yok. Önce bir simülasyon çalıştırın.",
+    report_share:"Paylaş", report_back:"Geri",
+    tl_origin:"Deprem başladı", tl_detect:"Algılandı (erken uyarı)", tl_confirm:"Doğrulandı",
+    tl_swave:"Konumunuzda sarsıntı",
+    int_none:"zar zor hissedilir", int_light:"hafif", int_felt:"belirgin",
+    int_strong:"güçlü", int_severe:"çok güçlü", int_extreme:"aşırı",
+    unit_km:"km", unit_s:"sn", unit_mi:"mil",
+    map_title:"Canlı deprem haritası", list_title:"Son depremler", list_source:"Kaynaklar: EMSC + USGS · birkaç dakikada bir güncellenir",
+    list_loading:"Yükleniyor…", list_error:"Yüklenemedi — bağlantınızı kontrol edin.", list_empty:"Filtrelerinize uyan deprem yok.",
+    vw_nearby:"Yakın", vw_felt:"Hissedilen (M≥4)", vw_global:"Tümü",
+    recenter:"Ortala", refresh:"Yenile", map_offline:"Harita için internet gerekir.", you_label:"Siz",
+    adv_title:"Gelişmiş", lbl_units:"Uzaklık birimi", lbl_radius:"Uyarı yarıçapı", lbl_minmag:"En düşük büyüklük",
+    desc_radius:"Yalnızca bu mesafedeki depremler sizi ilgilendirir.", desc_minmag:"Zayıf depremler haritada gösterilir ama alarm vermez.",
+    lbl_sound:"Alarm sesi", lbl_ntf_realtime:"Gerçek zamanlı algılamalar", lbl_ntf_reports:"Kullanıcı bildirimli depremler",
+    ago_min:"%1 dk önce", ago_hour:"%1 sa önce", ago_day:"%1 g önce", just_now:"az önce",
+    lbl_hazards:"Diğer doğal afetleri göster", lg_hazards:"diğer afetler",
+    hz_wildfire:"Orman yangını", hz_storm:"Şiddetli fırtına", hz_volcano:"Yanardağ", hz_flood:"Sel", hz_ice:"Deniz/göl buzu", hz_drought:"Kuraklık", hz_landslide:"Heyelan", hz_temp:"Aşırı sıcaklık", hz_other:"Tehlike", hz_tsunami:"Tsunami", hz_cyclone:"Siklon", hz_source:"Kaynak", hz_alert_red:"Kırmızı alarm", hz_alert_orange:"Turuncu alarm", hz_alert_green:"Bilgilendirme",
+    net_title:"Algılama ağı", net_join:"Ağa katıl", net_online_label:"cihaz çevrimiçi", net_devices:"cihaz", net_triggers:"tetik", net_detecting:"Küme algılıyor", net_detecting_banner:"Yakında sarsıntı algılayan %1 küme", net_trigger_btn:"Test tetiği gönder", net_trigger_sent:"Tetik gönderildi", net_joined:"Ağa katıldınız", net_note:"Cihazınız sarsıldığında yalnızca kaba bir ızgara hücresi + zaman damgası paylaşır — asla tam konumunuzu değil. Ne kadar çok kişi katılırsa herkes o kadar erken uyarılır. Dünya çapında çalışır.",
+    kat_title:"Son afetler", f_type:"Tür", f_region:"Bölge", f_time:"Süre", f_sort:"Sırala", f_minmag:"En düşük büyüklük",
+    ty_all:"Tümü", ty_quake:"Depremler", ty_tsunami:"Tsunami", ty_flood:"Sel", ty_storm:"Fırtına", ty_volcano:"Yanardağ", ty_wildfire:"Orman yangını",
+    rg_global:"Küresel", rg_tr:"TR + komşular", rg_near:"Yakınımda",
+    sort_time:"Zaman", sort_near:"Uzaklık", sort_severity:"Şiddet",
+    f_minalert:"En düşük afet alarmı", al_all:"Tümü", al_orange:"Turuncu+", al_red:"Kırmızı",
+    desc_minmag2:"Yalnızca depremler (Richter).", desc_minalert:"Fırtına, sel, tsunami… (GDACS düzeyi).",
+    kat_empty:"Bu filtre için olay yok.", src_down:"%1 kaynağı erişilemiyor — diğerleri gösteriliyor.",
+    ob_next:"İleri", ob_finish:"Bitti", ob_back:"Geri", ob_skip:"Atla", p_cautious:"Dikkatli", p_balanced:"Dengeli", p_strong:"Sadece güçlü", ob_notify:"Bildirimlere izin ver", ob_drill:"Prova alarmı göster",
+    faq_title:"SSS", faq_restart:"Tanıtımı yeniden başlat",
+    prep_title:"Hazırlık", prep_amazon:"Amazon'da ara", prep_local:"Yerel satıcı",
+    prep_disclosure:"Öneri bağlantıları — satın alırsan TDA küçük bir komisyon kazanabilir, sana ek ücret olmadan. Yalnızca burada, asla alarm sırasında.",
+    prep_sec_all:"Her afet için", prep_sec_quake:"Deprem", prep_sec_flood:"Sel", prep_sec_storm:"Fırtına", prep_sec_wildfire:"Orman yangını",
+  },
+  ru: {
+    app_name:"Оповещение о ЧС в Турции", tagline:"Раннее предупреждение о землетрясениях",
+    tab_start:"Начало", tab_map:"Карта", tab_disasters:"Бедствия", tab_network:"Сеть", tab_vorsorge:"Подготовка", tab_faq:"Вопросы", tab_settings:"Настройки", start_recent:"Ближайшее событие",
+    hero_ready_t:"Всё спокойно", hero_ready_s:"Система активна — следит за землетрясениями",
+    hero_attention_t:"Возможны толчки", hero_attention_s:"Проверка сигнала…",
+    hero_warning_t:"Тревога активна", hero_warning_s:"Немедленно укройтесь",
+    hero_confirmed_t:"Землетрясение подтверждено", hero_confirmed_s:"Следуйте указаниям на экране",
+    hero_disturbance_t:"Ложная тревога предотвращена", hero_disturbance_s:"Это не настоящее землетрясение",
+    loc_title:"Ваше местоположение", loc_use_gps:"Использовать моё местоположение",
+    loc_search_ph:"Поиск адреса или места…", loc_search_hint:"Необязательно — нужен интернет.",
+    places_title:"Мои местоположения", places_desc:"Получай предупреждения и для близких — добавь их город.",
+    places_add_ph:"Поиск города…", places_label_ph:"Имя (напр. Мама)", places_empty:"Пока нет других мест.", places_dup:"Это место уже в списке.",
+    ob_places_t:"Добавить семью и друзей?", ob_places_b:"Получай предупреждение, когда землетрясение угрожает близким — добавь их город. Необязательно, можно несколько.",
+    loc_searching:"Поиск…", loc_none:"Ничего не найдено", loc_gps_name:"Моё местоположение (GPS)",
+    loc_gps_denied:"Доступ к местоположению запрещён", loc_gps_unavail:"Местоположение недоступно",
+    seis_title:"Живая сейсмограмма",
+    seis_sub:"Подвигайте устройство, чтобы увидеть реакцию графика. Ничего не записывается и не передаётся.",
+    seis_nosensor:"На этом устройстве нет датчика движения.", btn_motion:"Включить датчик движения",
+    sm_device:"Это устройство", sm_station:"Живая станция", seis_station_hint:"Настоящий сейсмометр · задержка ~2–3 мин", seis_station_live:"В эфире", seis_station_nodata:"Нет данных — выберите другую станцию.",
+    so_grid:"Сетка и подписи", so_gain:"Авто-усиление", so_info:"О станции", lbl_gain:"Усиление", seis_amp_auto:"авто", seis_axis_now:"сейчас", seis_axis_older:"раньше", seis_delay:"задержка ~2–3 мин", seis_device_note:"Акселерометр телефона — только на экране, ничего не загружается.", seis_note_anto:"На IRIS доступна единственная станция реального времени внутри Турции. Плотнее — нужен доступ KOERI/AFAD.", seis_note_regional:"Региональная / опорная станция — не в Турции.",
+    seq_title:"Серия землетрясений", seq_main:"Главный толчок", seq_after:"Афтершок",
+    demo_title:"Демо и тест", demo_quake:"Смоделировать землетрясение",
+    demo_after:"Смоделировать серию афтершоков", demo_fire:"Смоделировать ложную тревогу (фейерверк)",
+    demo_report:"Отчёт о последнем событии", demo_reset:"Сбросить",
+    srv_title:"Живой сервер", srv_offline:"Не в сети", srv_connecting:"Подключение…",
+    srv_online:"В сети", srv_failed:"Ошибка подключения",
+    srv_connect:"Подключить", srv_disconnect:"Отключить",
+    srv_quake:"Землетрясение с сервера", srv_fire:"Ложная тревога с сервера",
+    srv_hint_ok:"Каждое оповещение с сервера криптографически проверяется, прежде чем дойти до вас.",
+    srv_hint_nocrypto:"Этот браузер не может проверять подписи — используйте современный Chrome, Edge или Safari.",
+    footnote:"Демоверсия · оповещения с живого сервера криптографически проверяются, прежде чем дойти до вас.",
+    set_title:"Настройки", lbl_lang:"Язык", lbl_theme:"Оформление",
+    th_system:"Система", th_dark:"Тёмное", th_light:"Светлое",
+    lbl_cb:"Цвета для дальтоников", set_done:"Готово",
+    lbl_dev:"Режим разработчика", desc_dev:"Показывает тестовую панель сервера во вкладке «Сеть».", dev_panel_note:"Тестовый инструмент — только демо-сигналы.",
+    conf_prelim:"Раннее предупреждение", conf_confirmed:"Подтверждённое землетрясение",
+    alert_title:"ЗЕМЛЕТРЯСЕНИЕ", now_confirmed:"Теперь подтверждено",
+    cd_unit:"секунд", cd_caption:"до прихода тряски", cd_arrived:"Тряска приближается",
+    pwave:"Первые (слабые) волны через ~%1 с",
+    protect_strong:"ЛЯГ · УКРОЙСЯ · ДЕРЖИСЬ", protect_moderate:"Укройтесь — возможна тряска",
+    protect_weak:"Вероятно безопасно — сохраняйте спокойствие",
+    m_strength:"Магнитуда", m_shaking:"Тряска здесь", m_distance:"Расстояние", m_lead:"Время до тряски",
+    mag_prelim:"предварительно", mag_confirmed:"измерено",
+    alert_note:"Грубая оценка — не научное измерение.",
+    btn_report:"Отчёт о событии", btn_close:"Закрыть",
+    dist_title:"Настоящего землетрясения нет",
+    dist_reason:"Одновременный сигнал по всему городу без движущегося волнового фронта — типично для фейерверков или транспорта, а не землетрясения. Тревога не подавалась.",
+    btn_ok:"OK",
+    report_title:"Отчёт о событии", report_empty:"Событий пока нет. Сначала запустите симуляцию.",
+    report_share:"Поделиться", report_back:"Назад",
+    tl_origin:"Землетрясение началось", tl_detect:"Обнаружено (раннее предупреждение)", tl_confirm:"Подтверждено",
+    tl_swave:"Тряска в вашем месте",
+    int_none:"едва заметно", int_light:"лёгкое", int_felt:"явно ощутимо",
+    int_strong:"сильное", int_severe:"очень сильное", int_extreme:"экстремальное",
+    unit_km:"км", unit_s:"с", unit_mi:"миль",
+    map_title:"Карта землетрясений", list_title:"Недавние землетрясения", list_source:"Источники: EMSC + USGS · обновляется каждые несколько минут",
+    list_loading:"Загрузка…", list_error:"Не удалось загрузить — проверьте соединение.", list_empty:"Нет землетрясений по вашим фильтрам.",
+    vw_nearby:"Рядом", vw_felt:"Ощутимые (M≥4)", vw_global:"Все",
+    recenter:"Центр", refresh:"Обновить", map_offline:"Для карты нужен интернет.", you_label:"Вы",
+    adv_title:"Дополнительно", lbl_units:"Единицы расстояния", lbl_radius:"Радиус оповещения", lbl_minmag:"Мин. магнитуда",
+    desc_radius:"Вас касаются только землетрясения в этом радиусе.", desc_minmag:"Слабые толчки видны на карте, но не вызывают тревогу.",
+    lbl_sound:"Звук тревоги", lbl_ntf_realtime:"Обнаружение в реальном времени", lbl_ntf_reports:"Землетрясения от пользователей",
+    ago_min:"%1 мин назад", ago_hour:"%1 ч назад", ago_day:"%1 дн назад", just_now:"только что",
+    lbl_hazards:"Показывать другие стихийные бедствия", lg_hazards:"другие бедствия",
+    hz_wildfire:"Лесной пожар", hz_storm:"Сильный шторм", hz_volcano:"Вулкан", hz_flood:"Наводнение", hz_ice:"Морской/озёрный лёд", hz_drought:"Засуха", hz_landslide:"Оползень", hz_temp:"Экстремальная температура", hz_other:"Опасность", hz_tsunami:"Цунами", hz_cyclone:"Циклон", hz_source:"Источник", hz_alert_red:"Красный уровень", hz_alert_orange:"Оранжевый уровень", hz_alert_green:"Уведомление",
+    net_title:"Сеть обнаружения", net_join:"Присоединиться к сети", net_online_label:"устройств онлайн", net_devices:"устройств", net_triggers:"срабатываний", net_detecting:"Кластер обнаруживает", net_detecting_banner:"Кластеров, чувствующих тряску рядом: %1", net_trigger_btn:"Отправить тестовый сигнал", net_trigger_sent:"Сигнал отправлен", net_joined:"Вы в сети", net_note:"Когда устройство трясёт, оно делится только грубой ячейкой сетки и меткой времени — никогда точным местоположением. Чем больше участников, тем раньше предупреждение для всех. Работает по всему миру.",
+    kat_title:"Недавние бедствия", f_type:"Тип", f_region:"Регион", f_time:"Период", f_sort:"Сортировка", f_minmag:"Мин. магнитуда",
+    ty_all:"Все", ty_quake:"Землетрясения", ty_tsunami:"Цунами", ty_flood:"Наводнение", ty_storm:"Шторм", ty_volcano:"Вулкан", ty_wildfire:"Пожар",
+    rg_global:"Глобально", rg_tr:"Турция + соседи", rg_near:"Рядом",
+    sort_time:"Время", sort_near:"Расстояние", sort_severity:"Сила",
+    f_minalert:"Мин. уровень тревоги", al_all:"Все", al_orange:"Оранжевый+", al_red:"Красный",
+    desc_minmag2:"Только землетрясения (Рихтер).", desc_minalert:"Штормы, наводнения, цунами… (уровень GDACS).",
+    kat_empty:"Нет событий для этого фильтра.", src_down:"Источник %1 недоступен — показаны остальные.",
+    ob_next:"Далее", ob_finish:"Готово", ob_back:"Назад", ob_skip:"Пропустить", p_cautious:"Осторожный", p_balanced:"Сбалансированный", p_strong:"Только сильные", ob_notify:"Включить уведомления", ob_drill:"Показать пробную тревогу",
+    faq_title:"Вопросы", faq_restart:"Заново пройти введение",
+    prep_title:"Подготовка", prep_amazon:"Искать на Amazon", prep_local:"Местный магазин",
+    prep_disclosure:"Рекомендательные ссылки — при покупке TDA может получить небольшую комиссию без доплаты для вас. Только здесь, никогда во время тревоги.",
+    prep_sec_all:"Для любой катастрофы", prep_sec_quake:"Землетрясение", prep_sec_flood:"Наводнение", prep_sec_storm:"Шторм", prep_sec_wildfire:"Пожар",
+  },
+  ar: {
+    app_name:"إنذار الكوارث في تركيا", tagline:"إنذار مبكر بالزلازل",
+    tab_start:"البداية", tab_map:"الخريطة", tab_disasters:"الكوارث", tab_network:"الشبكة", tab_vorsorge:"الاستعداد", tab_faq:"الأسئلة", tab_settings:"الإعدادات", start_recent:"الأقرب حديثًا",
+    hero_ready_t:"كل شيء هادئ", hero_ready_s:"النظام نشط — يراقب الزلازل",
+    hero_attention_t:"اهتزاز محتمل", hero_attention_s:"جارٍ فحص الإشارة…",
+    hero_warning_t:"تحذير نشط", hero_warning_s:"احتمِ الآن",
+    hero_confirmed_t:"تم تأكيد الزلزال", hero_confirmed_s:"اتبع الإرشادات على الشاشة",
+    hero_disturbance_t:"تم تفادي إنذار كاذب", hero_disturbance_s:"لم يكن زلزالاً حقيقياً",
+    loc_title:"موقعك", loc_use_gps:"استخدم موقعي",
+    loc_search_ph:"ابحث عن عنوان أو مكان…", loc_search_hint:"اختياري — يحتاج إنترنت.",
+    places_title:"مواقعي", places_desc:"احصل على تحذيرات لعائلتك وأصدقائك أيضًا — أضف مدينتهم.",
+    places_add_ph:"ابحث عن مدينة…", places_label_ph:"الاسم (مثل أمي)", places_empty:"لا مواقع إضافية بعد.", places_dup:"هذا الموقع موجود في قائمتك بالفعل.",
+    ob_places_t:"إضافة العائلة والأصدقاء؟", ob_places_b:"احصل على تحذير عندما يضرب زلزال أشخاصًا تهتم بهم — أضف مدينتهم. اختياري، أضف ما تشاء.",
+    loc_searching:"جارٍ البحث…", loc_none:"لا نتائج", loc_gps_name:"موقعي (GPS)",
+    loc_gps_denied:"تم رفض الوصول إلى الموقع", loc_gps_unavail:"الموقع غير متاح",
+    seq_title:"سلسلة الزلازل", seq_main:"الهزة الرئيسية", seq_after:"هزة ارتدادية",
+    conf_prelim:"إنذار مبكر", conf_confirmed:"زلزال مؤكد",
+    alert_title:"زلزال", now_confirmed:"تم التأكيد الآن",
+    cd_unit:"ثانية", cd_caption:"حتى وصول الاهتزاز إليك", cd_arrived:"الاهتزاز يصل",
+    pwave:"الموجات الأولى (الأضعف) خلال ~%1 ث",
+    protect_strong:"انبطح · احتمِ · تمسّك", protect_moderate:"احتمِ — قد يحدث اهتزاز",
+    protect_weak:"غالباً آمن — ابقَ هادئاً",
+    m_strength:"القوة", m_shaking:"الاهتزاز هنا", m_distance:"المسافة", m_lead:"وقت الإنذار",
+    mag_prelim:"مبدئي", mag_confirmed:"مقيس",
+    alert_note:"تقدير تقريبي — ليس قياساً علمياً.",
+    btn_report:"تقرير الحدث", btn_close:"إغلاق",
+    dist_title:"لا يوجد زلزال حقيقي",
+    dist_reason:"إشارة متزامنة على مستوى المدينة دون جبهة موجية متحركة — نموذجي للألعاب النارية أو المرور، وليس زلزالاً. لم يصدر إنذار.",
+    btn_ok:"حسناً",
+    report_title:"تقرير الحدث", report_empty:"لا حدث بعد. شغّل محاكاة أولاً.",
+    report_share:"مشاركة", report_back:"رجوع",
+    tl_origin:"بدأ الزلزال", tl_detect:"تم الرصد (إنذار مبكر)", tl_confirm:"تم التأكيد",
+    tl_swave:"الاهتزاز في موقعك",
+    int_none:"بالكاد ملحوظ", int_light:"خفيف", int_felt:"محسوس بوضوح",
+    int_strong:"قوي", int_severe:"قوي جداً", int_extreme:"شديد",
+    unit_km:"كم", unit_s:"ث", unit_mi:"ميل",
+    map_title:"خريطة الزلازل الحية", list_title:"الزلازل الأخيرة", list_source:"المصادر: EMSC + USGS",
+    vw_nearby:"قريب", vw_felt:"محسوس (M≥4)", vw_global:"الكل",
+    recenter:"توسيط", refresh:"تحديث", map_offline:"الخريطة تحتاج إنترنت.", you_label:"أنت",
+    adv_title:"متقدم", lbl_units:"وحدة المسافة", lbl_radius:"نطاق التنبيه", lbl_minmag:"أدنى قوة",
+    lbl_sound:"صوت الإنذار",
+    lbl_hazards:"إظهار الكوارث الطبيعية الأخرى", lg_hazards:"مخاطر أخرى",
+    hz_wildfire:"حريق غابات", hz_storm:"عاصفة شديدة", hz_volcano:"بركان", hz_flood:"فيضان", hz_ice:"جليد", hz_drought:"جفاف", hz_landslide:"انزلاق أرضي", hz_temp:"حرارة قصوى", hz_other:"خطر", hz_tsunami:"تسونامي", hz_cyclone:"إعصار", hz_source:"المصدر", hz_alert_red:"إنذار أحمر", hz_alert_orange:"إنذار برتقالي", hz_alert_green:"إرشادي",
+    net_title:"شبكة الرصد", net_join:"انضم إلى الشبكة", net_online_label:"جهاز متصل", net_devices:"أجهزة", net_triggers:"إشارات", net_detecting:"عنقود يرصد", net_detecting_banner:"عناقيد ترصد اهتزازاً قريباً: %1", net_trigger_btn:"إرسال إشارة اختبار", net_trigger_sent:"تم إرسال الإشارة", net_joined:"انضممت إلى الشبكة", net_note:"عند اهتزاز جهازك يشارك فقط خلية شبكة تقريبية وطابعاً زمنياً — لا موقعك الدقيق أبداً. كلما زاد المشاركون بكّر التحذير للجميع. يعمل عالمياً.",
+    kat_title:"الكوارث الأخيرة", f_type:"النوع", f_region:"المنطقة", f_time:"الفترة", f_sort:"الترتيب", f_minmag:"أدنى قوة",
+    ty_all:"الكل", ty_quake:"الزلازل", ty_tsunami:"تسونامي", ty_flood:"فيضان", ty_storm:"عاصفة", ty_volcano:"بركان", ty_wildfire:"حريق",
+    rg_global:"عالمي", rg_tr:"تركيا والجوار", rg_near:"قربي",
+    f_minalert:"أدنى مستوى إنذار", al_all:"الكل", al_orange:"برتقالي+", al_red:"أحمر",
+    kat_empty:"لا أحداث لهذا المرشح.", src_down:"المصدر %1 غير متاح — عرض الباقي.",
+    lbl_dev:"وضع المطور / الاختبار", desc_dev:"يعرض لوحة اختبار الخادم في تبويب الشبكة.", dev_panel_note:"أداة اختبار — تطلق تنبيهات تجريبية فقط.",
+    ob_next:"التالي", ob_finish:"تم", ob_back:"رجوع", ob_skip:"تخطٍّ", p_cautious:"حذر", p_balanced:"متوازن", p_strong:"القوية فقط", ob_notify:"تفعيل الإشعارات", ob_drill:"عرض تنبيه تجريبي",
+    faq_title:"الأسئلة الشائعة", faq_restart:"إعادة التعريف",
+    prep_title:"الاستعداد", prep_amazon:"ابحث في أمازون", prep_local:"متجر محلي",
+    prep_disclosure:"روابط توصية — عند الشراء قد يحصل TDA على عمولة صغيرة دون تكلفة إضافية عليك. تظهر هنا فقط، وليس أثناء التنبيه.",
+    prep_sec_all:"لكل كارثة", prep_sec_quake:"زلزال", prep_sec_flood:"فيضان", prep_sec_storm:"عاصفة", prep_sec_wildfire:"حريق",
+    // AR falls back to EN for any label not listed here
+  },
+};
+let lang = "en";
+function t(k) { return (STR[lang] && STR[lang][k] != null) ? STR[lang][k] : STR.en[k]; }
+function intensityWord(level) {
+  const k = level<=2 ? "int_none" : level<=4 ? "int_light" : level<=5 ? "int_felt"
+          : level<=7 ? "int_strong" : level<=9 ? "int_severe" : "int_extreme";
+  return t(k);
+}
+
+/* ==========================================================================
+   State
+   ========================================================================== */
+const State = {
+  status:"READY", sequence:[], report:null,
+  loc:{ name:"Adana", lat:37.00, lon:35.32, source:"preset", id:"adana" },
+  places:[],   // weitere beobachtete Orte (z.B. Familienmitglieder): {id,label,name,lat,lon,source}
+  colorblind:false, theme:"system",
+  lastLaunchedAlarmId:null, activeAlert:null, network:null,
+  activeTab:"start",
+};
+
+/* Advanced settings (persisted). */
+const Settings = { units:"km", radiusKm:150, minMag:4.0, alarmMinMag:6.0, stormFlood:false, stormNotify:"orange", stormAlarm:"red", floodNotify:"orange", floodAlarm:"red", tsunamiNotify:"orange", tsunamiAlarm:"orange", sound:true, notifyRealtime:true, notifyReports:true, view:"nearby", hazards:true, seisMode:"device", station:"IU ANTO 00 BHZ", network:false, devMode:false, onboarded:false,
+  seis:{ grid:true, autogain:true, gain:1.0, info:true }
+  , disasterFilter:{ typen:[], region:"global", fensterH:24, minMag:0, minAlert:"all", sort:"zeit" } };
+function loadPrefs() {
+  try {
+    const raw = localStorage.getItem("tda_prefs"); if (!raw) return;
+    const p = JSON.parse(raw);
+    if (p.settings) { Object.assign(Settings, p.settings); Settings.seis = Object.assign({ grid:true, autogain:true, gain:1.0, info:true }, Settings.seis);
+      Settings.disasterFilter = Object.assign({ typen:[], region:"global", fensterH:24, minMag:0, minAlert:"all", sort:"zeit" }, Settings.disasterFilter); }
+    if (p.lang) lang = p.lang;
+    if (p.theme) State.theme = p.theme;
+    if (typeof p.colorblind === "boolean") State.colorblind = p.colorblind;
+    if (p.loc && typeof p.loc.lat === "number") State.loc = p.loc;
+    if (Array.isArray(p.places)) State.places = p.places.filter(x => x && typeof x.lat === "number");
+    if (p.activeTab) State.activeTab = p.activeTab;
+  } catch(e) {}
+}
+function savePrefs() {
+  try { localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, loc:State.loc, places:State.places, activeTab:State.activeTab })); } catch(e) {}
+}
+/* unit-aware distance formatting */
+function kmToDisplay(km) { return Settings.units==="mi" ? km*0.621371 : km; }
+function unitLabel() { return Settings.units==="mi" ? t("unit_mi") : t("unit_km"); }
+function fmtDist(km) { return `${Math.round(kmToDisplay(km))} ${unitLabel()}`; }
+
+/* ==========================================================================
+   Signing — Ed25519, canonical bytes identical to backend & Signing.kt
+   ========================================================================== */
+const Signing = {
+  SERVER_PUBLIC_KEY_B64:"6kcriusWuSdd8wJ6IUXfYhasu7oN2LAIhW1HZGnaJhc=",
+  _key:null, _supported:null,
+  b64(b) { const s=atob(b), o=new Uint8Array(s.length); for(let i=0;i<s.length;i++)o[i]=s.charCodeAt(i); return o; },
+  canonicalBytes(p) {
+    const keys = Object.keys(p).filter(k=>k!=="sig").sort();
+    return new TextEncoder().encode(keys.map(k=>`${k}=${p[k]}`).join("\n"));
+  },
+  async ensureKey() {
+    if (this._supported===false) return null;
+    if (this._key) return this._key;
+    try { this._key = await crypto.subtle.importKey("raw", this.b64(this.SERVER_PUBLIC_KEY_B64), {name:"Ed25519"}, false, ["verify"]); this._supported=true; return this._key; }
+    catch(e) { this._supported=false; return null; }
+  },
+  async verify(p) {
+    const key = await this.ensureKey(); if (!key) return null;
+    try { return await crypto.subtle.verify("Ed25519", key, this.b64(p.sig||""), this.canonicalBytes(p)); }
+    catch(e) { return false; }
+  },
+};
+
+/* ==========================================================================
+   DOM helpers
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+let toastTimer=null;
+function toast(msg) { const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3400); }
+function fmtTime(ts){ const d=new Date(ts),p=n=>String(n).padStart(2,"0"); return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
+
+/* status → accent + hero */
+const STATUS = {
+  READY:                 { accent:"var(--calm)",  accent2:"var(--calm-2)", glyph:"🛡", t:"hero_ready_t", s:"hero_ready_s" },
+  ATTENTION:             { accent:"var(--warn)",  accent2:"#ff8a3d",       glyph:"👁", t:"hero_attention_t", s:"hero_attention_s" },
+  ALARM_P0:              { accent:"var(--alarm)", accent2:"#ff2d55",       glyph:"⚡", t:"hero_warning_t", s:"hero_warning_s" },
+  CONFIRMED_P2:          { accent:"var(--confirm)",accent2:"#ff2d55",      glyph:"⚠",  t:"hero_confirmed_t", s:"hero_confirmed_s" },
+  DISTURBANCE_DISCARDED: { accent:"var(--neutral)",accent2:"var(--neutral)",glyph:"✓", t:"hero_disturbance_t", s:"hero_disturbance_s" },
+};
+function applyAccent() {
+  const m = STATUS[State.status];
+  document.documentElement.style.setProperty("--accent", m.accent);
+  document.documentElement.style.setProperty("--accent-2", m.accent2);
+  document.body.dataset.status = State.status;
+}
+function renderHero() {
+  const m = STATUS[State.status];
+  $("heroGlyph").textContent = m.glyph;
+  $("heroTitle").textContent = t(m.t);
+  $("heroSub").textContent = t(m.s);
+  $("heroLoc").textContent = State.loc.name;
+}
+function setStatus(s) { State.status=s; applyAccent(); renderHero(); }
+
+/* ==========================================================================
+   Sequence
+   ========================================================================== */
+function renderSequence() {
+  const panel=$("seqPanel"), c=$("seqContainer");
+  if (State.sequence.length===0) { panel.style.display="none"; c.innerHTML=""; return; }
+  panel.style.display=""; c.innerHTML="";
+  for (const e of State.sequence) {
+    const label = e.isMainshock ? t("seq_main") : t("seq_after");
+    const row=document.createElement("div"); row.className="seq-item";
+    row.innerHTML = `<div class="seq-badge ${e.isMainshock?"seq-main":"seq-after"}">M${e.mag.toFixed(1)}</div>
+      <div style="flex:1"><div class="m">${label} · ${intensityWord(Eew.mmiLevel(e.mmi))}</div>
+      <div class="t">${fmtTime(e.ts)}</div></div>`;
+    c.appendChild(row);
+  }
+}
+function appendSequence(e){ State.sequence.push(e); renderSequence(); }
+function resetSequence(){ State.sequence=[]; renderSequence(); }
+
+/* ==========================================================================
+   Alert overlay
+   ========================================================================== */
+let countdownTimer=null;
+const RING_CIRC = 2*Math.PI*96; // r=96
+function launchAlert(p) {
+  const d = Eew.haversineKm(State.loc.lat, State.loc.lon, p.lat, p.lon);
+  State.activeAlert = { ...p, distKm:d, initialEta:Math.max(1, d/Eew.V_S_KM_S) };
+  $("alertOverlay").classList.add("show");
+  $("escalationBox").classList.remove("show");
+  renderAlert(); initAlertMap(State.activeAlert); startCountdown();
+  playAlarmSound(p.tier === "P2");
+  notifyNativeAlert(State.activeAlert);
+}
+function updateAlert(p) {
+  const a=State.activeAlert; if(!a||p.id!==a.id) return;
+  if (p.tier==="P2" && a.tier!=="P2") { a.tier="P2"; a.mag=p.mag; a.state=p.state; a.src=p.src; $("escalationBox").classList.add("show"); renderAlert(); playAlarmSound(true); notifyNativeAlert(a); }
+}
+/* Hybrid-Brücke: löst in der nativen App-Hülle den DND-durchdringenden Vollbild-Alarm
+   + Nachbeben-/Beacon-Kette aus (no-op im reinen Browser). */
+function notifyNativeAlert(a){
+  try{
+    // Lauter Native-Alarm nur ab der eingestellten Alarm-Schwelle (Benachrichtigung darunter).
+    if(a && a.mag >= (Settings.alarmMinMag ?? 6) && window.AndroidBridge && AndroidBridge.onAlert){
+      AndroidBridge.onAlert(JSON.stringify({
+        id:a.id, lat:a.lat, lon:a.lon, depthKm:a.depthKm||10,
+        originTs:a.originTs, mag:a.mag, tier:a.tier,
+        mmi:Eew.mmi(a.mag, a.distKm),
+        userLat:State.loc.lat, userLon:State.loc.lon, cityName:State.loc.name||"",
+        lang:lang, sound:Settings.sound!==false, test:!!a.test
+      }));
+    }
+  }catch(e){}
+}
+function renderAlert() {
+  const a=State.activeAlert; if(!a) return;
+  const confirmed = a.tier==="P2";
+  $("alertScreen").classList.toggle("confirmed", confirmed);
+  $("confBadge").firstChild.textContent = confirmed ? "✓ " : "⚡ ";
+  $("confText").textContent = confirmed ? t("conf_confirmed") : t("conf_prelim");
+  $("alertTitle").textContent = t("alert_title");
+  $("escalationBox").textContent = t("now_confirmed");
+  $("cdCaption").textContent = t("cd_caption");
+  $("ringUnit").textContent = t("cd_unit");
+
+  $("mkStrength").textContent = t("m_strength");
+  $("mvStrength").textContent = a.mag.toFixed(1);
+  $("mnStrength").textContent = confirmed ? t("mag_confirmed") : t("mag_prelim");
+
+  const mmi = Eew.mmi(a.mag, a.distKm), lvl = Eew.mmiLevel(mmi);
+  $("mkShaking").textContent = t("m_shaking");
+  $("mvShaking").textContent = intensityWord(lvl);
+  $("mkDist").textContent = t("m_distance");
+  $("mvDist").textContent = fmtDist(a.distKm);
+  $("mkLead").textContent = t("m_lead");
+
+  const pl = Eew.protectionLevel(mmi);
+  $("instruct").textContent = pl==="STRONG" ? t("protect_strong") : pl==="MODERATE" ? t("protect_moderate") : t("protect_weak");
+  $("alertNote").textContent = t("alert_note");
+  $("btnAlertReport").textContent = t("btn_report");
+  $("btnAlertClose").textContent = t("btn_close");
+}
+function startCountdown() {
+  clearInterval(countdownTimer);
+  const tick=()=>{
+    const a=State.activeAlert; if(!a) return;
+    const elapsed=(Date.now()-a.originTs)/1000;
+    const remaining=Eew.sWaveEtaSeconds(a.distKm, elapsed);
+    const pRem=Eew.pWaveEtaSeconds(a.distKm, elapsed);
+    const frac=Math.max(0, Math.min(1, remaining/a.initialEta));
+    $("ringFg").style.strokeDasharray = RING_CIRC;
+    $("ringFg").style.strokeDashoffset = RING_CIRC*(1-frac);
+    if (remaining<=0) { $("ringNum").textContent="0"; $("cdCaption").textContent=t("cd_arrived"); }
+    else { $("ringNum").textContent=Math.ceil(remaining); $("cdCaption").textContent=t("cd_caption"); }
+    $("pwaveNote").textContent = pRem>0 ? t("pwave").replace("%1", Math.ceil(pRem)) : "";
+    $("mvLead").textContent = `${remaining.toFixed(0)} ${t("unit_s")}`;
+    updateAlertRings(a, elapsed);
+  };
+  tick(); countdownTimer=setInterval(tick,1000);
+}
+function closeAlert(){ $("alertOverlay").classList.remove("show"); clearInterval(countdownTimer); try{ if(window.AndroidBridge && AndroidBridge.onAlertCleared) AndroidBridge.onAlertCleared(); }catch(e){} }
+
+/* ==========================================================================
+   Report
+   ========================================================================== */
+function setReport(r){ State.report=r; }
+function openReport() {
+  const r=State.report;
+  $("reportTitle").textContent=t("report_title");
+  $("btnShare").textContent=t("report_share");
+  $("btnReportBack").textContent=t("report_back");
+  if (!r) {
+    $("reportEmpty").textContent=t("report_empty"); $("reportEmpty").style.display="block";
+    $("reportBody").style.display="none"; $("btnShare").style.display="none";
+  } else {
+    $("reportEmpty").style.display="none"; $("reportBody").style.display="block"; $("btnShare").style.display="";
+    $("reportHeader").textContent = `M${r.mag.toFixed(1)} · ${r.depthKm.toFixed(0)} ${t("unit_km")} · ${r.src}`;
+    const tl=$("reportTl"); tl.innerHTML="";
+    const rows=[
+      [t("tl_origin"),0.0],
+      [t("tl_detect"),(r.p0IssuedTs-r.originTs)/1000],
+      [t("tl_confirm"), r.p2IssuedTs!=null ? (r.p2IssuedTs-r.originTs)/1000 : null],
+      [t("tl_swave"), Eew.sWaveEtaSeconds(r.userDistKm,0)],
+    ];
+    for (const [lbl,sec] of rows) {
+      const li=document.createElement("li");
+      li.innerHTML=`<span class="lbl">${lbl}</span><span class="val">${sec==null?"—":"+"+sec.toFixed(1)+" "+t("unit_s")}</span>`;
+      tl.appendChild(li);
+    }
+  }
+  $("reportOverlay").classList.add("show");
+}
+function shareReport() {
+  const r=State.report; if(!r) return;
+  let s=`${t("report_title")}: M${r.mag.toFixed(1)} · ${r.depthKm.toFixed(0)} ${t("unit_km")}\n`;
+  s+=`${t("tl_origin")}: +0.0 ${t("unit_s")}\n`;
+  s+=`${t("tl_detect")}: +${((r.p0IssuedTs-r.originTs)/1000).toFixed(1)} ${t("unit_s")}\n`;
+  if (r.p2IssuedTs!=null) s+=`${t("tl_confirm")}: +${((r.p2IssuedTs-r.originTs)/1000).toFixed(1)} ${t("unit_s")}\n`;
+  s+=`${t("tl_swave")}: +${Eew.sWaveEtaSeconds(r.userDistKm,0).toFixed(1)} ${t("unit_s")}\n`;
+  if (navigator.share) navigator.share({title:t("report_title"),text:s}).catch(()=>{});
+  else if (navigator.clipboard) navigator.clipboard.writeText(s).then(()=>toast("✓")).catch(()=>toast(s));
+  else toast(s);
+}
+
+/* ==========================================================================
+   TestScenarios — identical timing/values to the Android client
+   ========================================================================== */
+const EPI_LAT=37.58, EPI_LON=36.93;
+let scenarioTimers=[], scenarioCounter=0;
+function clearScenario(){ scenarioTimers.forEach(clearTimeout); scenarioTimers=[]; }
+function after(ms,fn){ scenarioTimers.push(setTimeout(fn,ms)); }
+function nextId(pfx){ scenarioCounter++; return `${pfx}-${Date.now()}-${scenarioCounter}`; }
+function emitAlarm(p){ if (State.lastLaunchedAlarmId!==p.id && p.ver===1){ State.lastLaunchedAlarmId=p.id; launchAlert(p); } else updateAlert(p); }
+
+function runEarthquakeDrill() {
+  clearScenario(); resetSequence();
+  const d=Eew.haversineKm(State.loc.lat,State.loc.lon,EPI_LAT,EPI_LON), id=nextId("eq");
+  setStatus("ATTENTION");
+  after(1500, ()=>{
+    const originTs=Date.now()-2000, p0IssuedTs=Date.now();
+    const p0={ v:"1",id,ver:1,state:"issued",tier:"P0",test:true,originTs,lat:EPI_LAT,lon:EPI_LON,depthKm:10.0,mag:6.8,magHi:null,src:"phone-cluster",issuedTs:p0IssuedTs };
+    setStatus("ALARM_P0");
+    appendSequence({mag:p0.mag,mmi:Eew.mmi(p0.mag,d),ts:originTs,isMainshock:true});
+    setReport({mag:p0.mag,depthKm:p0.depthKm,originTs,p0IssuedTs,p2IssuedTs:null,userDistKm:d,src:p0.src});
+    emitAlarm(p0);
+    after(4500, ()=>{
+      const p2IssuedTs=Date.now();
+      const p2={...p0,state:"confirmed",tier:"P2",ver:2,mag:7.8,magHi:7.9,src:"instrument",issuedTs:p2IssuedTs};
+      setStatus("CONFIRMED_P2");
+      setReport({mag:p2.mag,depthKm:p2.depthKm,originTs,p0IssuedTs,p2IssuedTs,userDistKm:d,src:p2.src});
+      emitAlarm(p2);
+    });
+  });
+}
+function runAftershockSequence() {
+  clearScenario(); resetSequence();
+  const d=Eew.haversineKm(State.loc.lat,State.loc.lon,EPI_LAT,EPI_LON), mainId=nextId("seq");
+  setStatus("ATTENTION");
+  after(1200, ()=>{
+    const originTs=Date.now()-2000, p0IssuedTs=Date.now();
+    const main={ v:"1",id:mainId,ver:1,state:"issued",tier:"P0",test:true,originTs,lat:EPI_LAT,lon:EPI_LON,depthKm:12.0,mag:7.8,magHi:null,src:"phone-cluster",issuedTs:p0IssuedTs };
+    setStatus("ALARM_P0");
+    appendSequence({mag:main.mag,mmi:Eew.mmi(main.mag,d),ts:originTs,isMainshock:true});
+    setReport({mag:main.mag,depthKm:main.depthKm,originTs,p0IssuedTs,p2IssuedTs:null,userDistKm:d,src:main.src});
+    emitAlarm(main);
+    after(4000, ()=>{
+      const p2IssuedTs=Date.now();
+      const confirmed={...main,state:"confirmed",tier:"P2",ver:2,src:"instrument",issuedTs:p2IssuedTs};
+      setStatus("CONFIRMED_P2");
+      setReport({mag:confirmed.mag,depthKm:confirmed.depthKm,originTs,p0IssuedTs,p2IssuedTs,userDistKm:d,src:confirmed.src});
+      emitAlarm(confirmed);
+    });
+    const aftershocks=[[7.5,3.0],[4.2,3.0],[5.1,4.0],[3.6,4.0],[4.8,4.0]];
+    let cum=0,ts=originTs;
+    for (const [mag,gap] of aftershocks) {
+      cum+=gap; ts+=gap*1000; const at=ts;
+      after(cum*1000, ()=>{
+        const entry={mag,mmi:Eew.mmi(mag,d),ts:at,isMainshock:false};
+        appendSequence(entry);
+        if (mag>=5.0) toast(`${t("seq_after")} · M${mag.toFixed(1)} · ${intensityWord(Eew.mmiLevel(entry.mmi))}`);
+      });
+    }
+  });
+}
+function runFireworksDisturbance() {
+  clearScenario();
+  after(800, ()=>{
+    setStatus("DISTURBANCE_DISCARDED");
+    $("distTitle").textContent=t("dist_title");
+    $("distReason").textContent=t("dist_reason");
+    $("btnDistOk").textContent=t("btn_ok");
+    $("distModal").classList.add("show");
+  });
+}
+function resetAll() {
+  clearScenario();
+  State.sequence=[]; State.report=null; State.lastLaunchedAlarmId=null; State.activeAlert=null;
+  closeAlert(); setStatus("READY"); renderSequence();
+}
+
+/* ==========================================================================
+   ServerLink — WebSocket + Ed25519 verify
+   ========================================================================== */
+let srvStateNow="OFFLINE";
+const ServerLink = {
+  socket:null, p0ByEvent:{},
+  setState(s) {
+    srvStateNow=s;
+    const map={ OFFLINE:["var(--neutral)","srv_offline"], CONNECTING:["var(--warn)","srv_connecting"], ONLINE:["var(--calm)","srv_online"], FAILED:["var(--alarm)","srv_failed"] };
+    const [col,key]=map[s]; $("srvDot").style.background=col; $("srvStatusText").textContent=t(key);
+  },
+  connect(url) {
+    this.disconnect(); this.setState("CONNECTING");
+    let ws; try { ws=new WebSocket(url); } catch(e){ this.setState("FAILED"); return; }
+    this.socket=ws;
+    ws.onopen=()=>{ this.setState("ONLINE"); if(Settings.network) this.sendJoin(); };
+    ws.onclose=()=>this.setState("OFFLINE");
+    ws.onerror=()=>this.setState("FAILED");
+    ws.onmessage=ev=>this.handleMessage(ev.data);
+  },
+  disconnect(){ if(this.socket){ try{this.socket.close(1000,"bye");}catch(e){} this.socket=null; } this.p0ByEvent={}; this.setState("OFFLINE"); },
+  send(obj){ if(this.socket&&this.socket.readyState===WebSocket.OPEN){ this.socket.send(JSON.stringify(obj)); return true; } return false; },
+  sendSimulate(kind){ if(!this.send({cmd:"simulate",kind})) toast(t("srv_offline")); },
+  sendJoin(){ this.send({cmd:"join",lat:State.loc.lat,lon:State.loc.lon}); },
+  sendTrigger(){ return this.send({cmd:"trigger",lat:State.loc.lat,lon:State.loc.lon}); },
+  sendLeave(){ this.send({cmd:"leave"}); },
+  async handleMessage(text){ let m; try{m=JSON.parse(text);}catch(e){return;}
+    if(m.type==="alert"&&m.payload) await this.handleAlert(m.payload);
+    else if(m.type==="network"){ State.network=m; renderNetReadout(); renderNetwork(); }
+  },
+  async handleAlert(pj){
+    const f={}; for(const k of Object.keys(pj)) f[k]=String(pj[k]);
+    const ok=await Signing.verify(f);
+    if (ok===null) { toast(t("srv_hint_nocrypto")); return; }
+    if (ok!==true) { toast("⚠ signature invalid — discarded"); return; }
+    const p=this.toPayload(f); if(!p) return; this.publish(p);
+  },
+  toPayload(f){ try {
+    // origin_ts / issued_ts are epoch MILLISECONDS (backend build_payload).
+    return { v:f.v||"1", id:f.id, ver:parseInt(f.ver||"1",10)||1, state:f.state||"", tier:f.tier,
+      test:f.test==="1"||f.test==="true", originTs:parseInt(f.origin_ts,10), lat:parseFloat(f.lat), lon:parseFloat(f.lon),
+      depthKm:parseFloat(f.depth_km)||0, mag:parseFloat(f.mag), magHi:f.mag_hi?parseFloat(f.mag_hi):null,
+      src:f.src||"", issuedTs:parseInt(f.issued_ts,10)||Date.now() };
+  } catch(e){ return null; } },
+  publish(p){
+    setStatus(p.tier==="P0"?"ALARM_P0":p.tier==="P2"?"CONFIRMED_P2":"ATTENTION");
+    const d=Eew.haversineKm(State.loc.lat,State.loc.lon,p.lat,p.lon);
+    if (p.tier==="P0") this.p0ByEvent[p.id]=p.issuedTs;
+    const p0=this.p0ByEvent[p.id]||p.issuedTs, p2=p.tier==="P2"?p.issuedTs:null;
+    setReport({mag:p.mag,depthKm:p.depthKm,originTs:p.originTs,p0IssuedTs:p0,p2IssuedTs:p2,userDistKm:d,src:p.src});
+    emitAlarm(p);
+  },
+};
+
+/* ==========================================================================
+   Location — GPS + address search (OpenStreetMap Nominatim, optional/online)
+   ========================================================================== */
+function setLocation(name, lat, lon, source, id) {
+  State.loc={ name, lat, lon, source, id:id||null };
+  renderHero();
+  const cc=$("cityChips"); if(cc) for (const b of cc.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.id===State.loc.id));
+  updateUserMarker(); recenterMap(); renderFeed(); savePrefs();
+}
+
+/* Weitere beobachtete Orte (z.B. Familienmitglieder). State.loc bleibt der Heimatort;
+   diese Liste sind zusätzliche Orte, für die (mit dem Backend) ebenfalls gewarnt wird. */
+function placeKey(lat,lon){ return Math.round(lat*1000)+"_"+Math.round(lon*1000); }
+function addPlace(name, lat, lon, source){
+  const key=placeKey(lat,lon);
+  if (placeKey(State.loc.lat,State.loc.lon)===key || State.places.some(p=>placeKey(p.lat,p.lon)===key)) { toast(t("places_dup")); return; }
+  State.places.push({ id:"pl"+Date.now(), label:"", name, lat, lon, source:source||"search" });
+  savePrefs(); renderAllPlaces();
+}
+function removePlace(id){ State.places=State.places.filter(p=>p.id!==id); savePrefs(); renderAllPlaces(); }
+function setPlaceLabel(id,label){ const p=State.places.find(x=>x.id===id); if(p){ p.label=label; savePrefs(); } }
+function renderPlacesList(containerId){
+  const c=$(containerId); if(!c) return; c.innerHTML="";
+  if(!State.places.length){ const e=document.createElement("p"); e.className="set-desc"; e.textContent=t("places_empty"); c.appendChild(e); return; }
+  State.places.forEach(p=>{
+    const row=document.createElement("div"); row.style.cssText="display:flex; gap:8px; align-items:center; margin-top:8px";
+    const inp=document.createElement("input"); inp.type="text"; inp.value=p.label||""; inp.placeholder=t("places_label_ph");
+    inp.style.cssText="flex:0 0 42%; min-width:0"; inp.oninput=()=>setPlaceLabel(p.id, inp.value.trim());
+    const nm=document.createElement("span"); nm.textContent=p.name;
+    nm.style.cssText="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); font-size:14px";
+    const rm=document.createElement("button"); rm.type="button"; rm.textContent="✕"; rm.setAttribute("aria-label","remove");
+    rm.style.cssText="flex:none; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px 8px"; rm.onclick=()=>removePlace(p.id);
+    row.appendChild(inp); row.appendChild(nm); row.appendChild(rm); c.appendChild(row);
+  });
+}
+function renderAllPlaces(){ renderPlacesList("obPlacesList"); renderPlacesList("setPlacesList"); }
+function useGps() {
+  if (!navigator.geolocation) { toast(t("loc_gps_unavail")); return; }
+  const btn=$("btnGpsText"), prev=btn.textContent; btn.innerHTML=`<span class="spin"></span>`;
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude:lat, longitude:lon}=pos.coords;
+    btn.textContent=t("loc_use_gps");
+    setLocation(t("loc_gps_name"), lat, lon, "gps");
+    // best-effort reverse geocode for a friendly street-level name (needs internet)
+    try {
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=16&lat=${lat}&lon=${lon}&accept-language=${lang}`, {headers:{"Accept":"application/json"}});
+      if (r.ok) { const j=await r.json(); const a=j.address||{};
+        const label=[a.road, a.suburb||a.neighbourhood, a.city||a.town||a.village||a.county].filter(Boolean).slice(0,2).join(", ");
+        if (label) setLocation(label, lat, lon, "gps"); }
+    } catch(e){}
+  }, err=>{
+    btn.textContent=t("loc_use_gps");
+    toast(err.code===1 ? t("loc_gps_denied") : t("loc_gps_unavail"));
+  }, { enableHighAccuracy:true, timeout:10000 });
+}
+let searchTimer=null;
+function onAddrInput(e, boxId="results", inputId="addrInput", onPick=null) {
+  const q=e.target.value.trim(); clearTimeout(searchTimer);
+  const box=$(boxId);
+  if (q.length<3) { box.classList.remove("show"); box.innerHTML=""; return; }
+  searchTimer=setTimeout(()=>doSearch(q, boxId, inputId, onPick), 450);
+}
+async function doSearch(q, boxId="results", inputId="addrInput", onPick=null) {
+  const box=$(boxId);
+  box.innerHTML=`<button disabled><span class="spin"></span> ${t("loc_searching")}</button>`; box.classList.add("show");
+  try {
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&accept-language=${lang}&q=${encodeURIComponent(q)}`, {headers:{"Accept":"application/json"}});
+    if (!r.ok) throw 0;
+    const list=await r.json();
+    if (!list.length) { box.innerHTML=`<button disabled>${t("loc_none")}</button>`; return; }
+    box.innerHTML="";
+    for (const it of list) {
+      const a=it.address||{};
+      const label=[a.road||a.pedestrian, a.suburb||a.neighbourhood||a.city_district, a.city||a.town||a.village||a.county||a.state].filter(Boolean).slice(0,3).join(", ") || it.display_name.split(",").slice(0,3).join(",");
+      const b=document.createElement("button");
+      b.textContent=label;
+      b.onclick=()=>{ if(onPick) onPick(label, parseFloat(it.lat), parseFloat(it.lon)); else setLocation(label, parseFloat(it.lat), parseFloat(it.lon), "search"); box.classList.remove("show"); $(inputId).value=""; };
+      box.appendChild(b);
+    }
+  } catch(e) { box.innerHTML=`<button disabled>${t("loc_none")}</button>`; }
+}
+
+/* ==========================================================================
+   Live seismogram — DeviceMotion (|a| - g), rolling trace
+   ========================================================================== */
+const seisCanvas=$("seis"), seisCtx=seisCanvas.getContext("2d");
+const BUF=220, buf=new Float32Array(BUF); let widx=0, filled=false, motionActive=false;
+function pushSample(v){ buf[widx]=v; widx=(widx+1)%BUF; if(widx===0)filled=true; }
+let lastTriggerMs=0;
+function onMotion(ev){
+  const a=ev.accelerationIncludingGravity; if(!a||a.x==null) return; motionActive=true;
+  const v=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2)-9.81; pushSample(v);
+  // Crowdsource trigger: a strong shake while joined sends a coarse-cell trigger
+  // (self-calibrated per-device thresholds are a later refinement, spec §2.2).
+  if(Settings.network && Math.abs(v)>2.5 && Date.now()-lastTriggerMs>4000){
+    lastTriggerMs=Date.now(); if(ServerLink.sendTrigger()) toast(t("net_trigger_sent"));
+  }
+}
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+/* Live station seismogram — real seismometer waveform via IRIS/EarthScope
+   timeseries web service (CORS ok). ~2-3 min delayed rolling window, normalized. */
+const STATIONS = [
+  { id:"IU ANTO 00 BHZ", label:"Ankara, Türkiye (ANTO)" },
+  { id:"IU KIEV 00 BHZ", label:"Kyiv, regional (KIEV)" },
+  { id:"IU ANMO 00 BHZ", label:"New Mexico, reference (ANMO)" },
+];
+let stationTrace=null, stationTimer=null, stationSps=null, stationPeak=1, stationWindowS=300;
+const STATION_REF_COUNTS=1500, DEVICE_REF_MS2=8;
+async function fetchStation() {
+  if (Settings.seisMode !== "station") return;
+  const [net,sta,loc,cha] = Settings.station.split(" ");
+  const iso = d => new Date(d).toISOString().replace(/\.\d+Z$/, "");
+  const end = Date.now()-150*1000, start = end-stationWindowS*1000;   // rolling window, ~2.5-min latency margin
+  const url = `https://service.iris.edu/irisws/timeseries/1/query?net=${net}&sta=${sta}&loc=${loc==="--"?"":loc}&cha=${cha}&starttime=${iso(start)}&endtime=${iso(end)}&format=ascii&output=ascii1`;
+  try {
+    const r = await fetch(url, { cache:"no-store" });
+    if (!r.ok) { stationTrace=null; renderSeisInfo(); $("seisSub").textContent=t("seis_station_nodata"); return; }
+    const txt = await r.text();
+    const nl = txt.indexOf("\n");
+    const spsM = txt.slice(0, nl).match(/(\d+)\s*sps/); stationSps = spsM ? parseInt(spsM[1],10) : null;
+    const vals = txt.slice(nl+1).split(/\s+/).map(Number).filter(Number.isFinite);
+    if (vals.length < 10) { stationTrace=null; renderSeisInfo(); $("seisSub").textContent=t("seis_station_nodata"); return; }
+    const bins = Math.min(Math.max(200, (seisCanvas.clientWidth||500)*2), vals.length);
+    const out = new Float32Array(bins), per = vals.length/bins;
+    for (let i=0;i<bins;i++){ let s=0,c=0; const a=Math.floor(i*per),b=Math.floor((i+1)*per); for(let k=a;k<b;k++){s+=vals[k];c++;} out[i]=c?s/c:0; }
+    let mean=0; for (const v of out) mean+=v; mean/=out.length;
+    let maxabs=1e-9; for (let i=0;i<out.length;i++){ out[i]-=mean; if(Math.abs(out[i])>maxabs) maxabs=Math.abs(out[i]); }
+    stationTrace = out; stationPeak = maxabs;   // mean-removed raw counts; peak kept for auto-gain
+    renderSeisInfo();
+    $("seisSub").textContent = `${t("seis_station_live")} · ${net}.${sta} · ${t("seis_station_hint")}`;
+  } catch(e) { stationTrace=null; renderSeisInfo(); $("seisSub").textContent=t("seis_station_nodata"); }
+}
+function setSeisMode(mode) {
+  Settings.seisMode = mode;
+  for (const b of $("seisModeSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.mode===mode));
+  $("stationSelect").style.display = mode==="station" ? "" : "none";
+  if (mode==="station") {
+    $("btnMotion").style.display="none";
+    $("seisSub").textContent = t("seis_station_hint");
+    fetchStation();
+    if (!stationTimer) stationTimer = setInterval(fetchStation, 10000);
+  } else {
+    clearInterval(stationTimer); stationTimer=null;
+    $("seisSub").textContent = t("seis_sub");
+  }
+  applySeisOpts();
+  savePrefs();
+}
+const STATION_INFO = {
+  "IU ANTO 00 BHZ": { place:"Ankara, Türkiye", note:"seis_note_anto", warn:true },
+  "IU KIEV 00 BHZ": { place:"Kyiv", note:"seis_note_regional" },
+  "IU ANMO 00 BHZ": { place:"New Mexico, USA", note:"seis_note_regional" },
+};
+function renderSeisInfo() {
+  const el = $("seisInfo"); if (!el) return;
+  if (!Settings.seis.info) { el.style.display="none"; return; }
+  el.style.display="block";
+  if (Settings.seisMode === "station") {
+    const [net, sta] = Settings.station.split(" ");
+    const meta = STATION_INFO[Settings.station] || { place:"", note:"seis_note_regional" };
+    const sps = stationSps ? `${stationSps} sps · ` : "";
+    const noteCls = meta.warn ? ' class="warn"' : '';
+    el.innerHTML = `<b>${net}.${sta}</b> · ${meta.place} · ${sps}${t("seis_delay")}<br><span${noteCls}>${t(meta.note)}</span>`;
+  } else {
+    el.innerHTML = `<b>${t("sm_device")}</b> · ${t("seis_device_note")}`;
+  }
+}
+function applySeisOpts() {
+  for (const b of $("seisOpts").querySelectorAll("button")) b.setAttribute("aria-pressed", String(!!Settings.seis[b.dataset.opt]));
+  $("gainWrap").style.display = Settings.seis.autogain ? "none" : "block";
+  $("gainSlider").value = Settings.seis.gain;
+  $("valGain").textContent = `${Settings.seis.gain.toFixed(1)}×`;
+  renderSeisInfo();
+}
+
+function drawSeisGrid(w, h, midY, ampLabel, timeLabels){
+  const g="rgba(138,151,168,.35)", txt="rgba(138,151,168,.85)";
+  seisCtx.strokeStyle=g; seisCtx.lineWidth=1;
+  // amplitude guides: center + ±90%
+  for (const yy of [midY, midY-(h/2)*0.9, midY+(h/2)*0.9]) { seisCtx.beginPath(); seisCtx.moveTo(0,yy); seisCtx.lineTo(w,yy); seisCtx.stroke(); }
+  // vertical time ticks
+  const ticks=4;
+  for (let i=0;i<=ticks;i++){ const x=w*i/ticks; seisCtx.beginPath(); seisCtx.moveTo(x,0); seisCtx.lineTo(x,h); seisCtx.globalAlpha=.5; seisCtx.stroke(); seisCtx.globalAlpha=1; }
+  seisCtx.fillStyle=txt; seisCtx.font="10px system-ui, sans-serif";
+  seisCtx.textAlign="left"; seisCtx.fillText(ampLabel, 4, 12);
+  seisCtx.textBaseline="alphabetic";
+  if (timeLabels && timeLabels.length){
+    seisCtx.textAlign="left"; seisCtx.fillText(timeLabels[0], 4, h-4);
+    seisCtx.textAlign="right"; seisCtx.fillText(timeLabels[1], w-4, h-4);
+    seisCtx.textAlign="left";
+  }
+}
+function drawSeis(){
+  const dpr=window.devicePixelRatio||1, w=seisCanvas.clientWidth, h=seisCanvas.clientHeight;
+  if (seisCanvas.width!==w*dpr||seisCanvas.height!==h*dpr){ seisCanvas.width=w*dpr; seisCanvas.height=h*dpr; }
+  seisCtx.setTransform(dpr,0,0,dpr,0,0); seisCtx.clearRect(0,0,w,h);
+  const midY=h/2, col=cssVar("--accent")||"#22e3b0", amp=(h/2)*0.9;
+  const station = Settings.seisMode==="station";
+
+  // amplitude + time labels (only meaningful when grid is on)
+  let ampLabel, timeLabels;
+  if (Settings.seis.autogain) ampLabel = "↕ "+t("seis_amp_auto");
+  else if (station) ampLabel = `±${Math.round(STATION_REF_COUNTS/Settings.seis.gain)} cnt`;
+  else ampLabel = `±${(DEVICE_REF_MS2/Settings.seis.gain).toFixed(1)} m/s²`;
+  if (station) { const mins=(t=>t>=1?`−${t.toFixed(1)} min`:`−${Math.round(t*60)} s`); timeLabels=[mins((150+stationWindowS)/60), mins(150/60)]; }
+  else timeLabels=[t("seis_axis_older"), t("seis_axis_now")];
+
+  if (Settings.seis.grid) drawSeisGrid(w,h,midY,ampLabel,timeLabels);
+  else { seisCtx.strokeStyle="rgba(128,140,160,.22)"; seisCtx.lineWidth=1; seisCtx.beginPath(); seisCtx.moveTo(0,midY); seisCtx.lineTo(w,midY); seisCtx.stroke(); }
+
+  if (station) {
+    if (stationTrace && stationTrace.length>1) {
+      const dx=w/(stationTrace.length-1);
+      const k = Settings.seis.autogain ? amp/(stationPeak||1) : amp*Settings.seis.gain/STATION_REF_COUNTS;
+      seisCtx.strokeStyle=col; seisCtx.lineWidth=1.5; seisCtx.lineJoin="round"; seisCtx.shadowColor=col; seisCtx.shadowBlur=6;
+      seisCtx.beginPath();
+      for (let i=0;i<stationTrace.length;i++){ const y=Math.min(h,Math.max(0,midY-stationTrace[i]*k)); i===0?seisCtx.moveTo(i*dx,y):seisCtx.lineTo(i*dx,y); }
+      seisCtx.stroke(); seisCtx.shadowBlur=0;
+    }
+  } else {
+    const count=filled?BUF:widx;
+    if (count>=2){
+      let peak=1e-9; for (let i=0;i<count;i++){ const idx=filled?(widx+i)%BUF:i; if(Math.abs(buf[idx])>peak) peak=Math.abs(buf[idx]); }
+      const k = Settings.seis.autogain ? amp/peak : amp*Settings.seis.gain/DEVICE_REF_MS2;
+      const dx=w/(BUF-1);
+      seisCtx.strokeStyle=col; seisCtx.lineWidth=2; seisCtx.lineJoin="round"; seisCtx.shadowColor=col; seisCtx.shadowBlur=8;
+      seisCtx.beginPath();
+      for (let i=0;i<count;i++){ const idx=filled?(widx+i)%BUF:i; const y=Math.min(h,Math.max(0,midY-buf[idx]*k)); i===0?seisCtx.moveTo(i*dx,y):seisCtx.lineTo(i*dx,y); }
+      seisCtx.stroke(); seisCtx.shadowBlur=0;
+    }
+  }
+  requestAnimationFrame(drawSeis);
+}
+function initMotion() {
+  if (typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function") { $("btnMotion").style.display="block"; }
+  else if (typeof DeviceMotionEvent!=="undefined") { window.addEventListener("devicemotion",onMotion); setTimeout(()=>{ if(!motionActive && $("seisSub")) $("seisSub").textContent=t("seis_sub"); },2500); }
+  else { $("seisSub").textContent=t("seis_nosensor"); }
+}
+
+/* ==========================================================================
+   Map + live earthquake feed (Leaflet + OpenStreetMap + USGS GeoJSON)
+   ========================================================================== */
+const mapReady = () => typeof L !== "undefined";
+let map=null, userMarker=null, quakeLayer=null;
+let alertMap=null, alertLayers=[];
+let quakes=[];
+
+/* Turkey + neighbouring countries (Greece, Bulgaria, Georgia, Armenia, Azerbaijan,
+   NW Iran, N Iraq, Syria, Cyprus, Aegean) — bounds the "Recent earthquakes" list. */
+function magColor(m){ return m>=6 ? "#ff405d" : m>=4 ? "#ff9f1c" : "#ffd23f"; }
+function magRadiusPx(m){ return Math.max(5, (m||0)*2.4); }
+const OSM = { url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", opt:{ maxZoom:18, attribution:"© OpenStreetMap" } };
+/* Local tda backend proxy (GDACS hazards + AFAD official quakes, both lack CORS).
+   Optional: if the server isn't running these simply return [] and the app still
+   works standalone on USGS/EMSC/EONET. */
+const SERVER_HTTP = "http://localhost:8001";
+async function fetchAfad() {
+  try {
+    const r = await fetch(`${SERVER_HTTP}/afad`, { cache:"no-store" });
+    if (!r.ok) return [];
+    const list = await r.json();
+    return list.map(a => ({ id:"afad:"+a.time+":"+a.lat, source:"AFAD", mag:a.mag, place:a.place, time:a.time, lat:a.lat, lon:a.lon, depth:a.depth, url:"https://deprem.afad.gov.tr/" }));
+  } catch(e) { return []; }
+}
+
+function initMap() {
+  if (!mapReady()) { $("mapFallback").classList.add("show"); return; }
+  map = L.map("map", { zoomControl:true, worldCopyJump:true }).setView([State.loc.lat, State.loc.lon], 6);
+  L.tileLayer(OSM.url, OSM.opt).addTo(map);
+  quakeLayer = L.layerGroup().addTo(map);
+  updateUserMarker();
+}
+function updateUserMarker() {
+  if (!map) return;
+  const ll = [State.loc.lat, State.loc.lon];
+  if (!userMarker) userMarker = L.circleMarker(ll, { radius:8, color:"#fff", weight:2, fillColor:"#22e3b0", fillOpacity:1 }).addTo(map).bindPopup(t("you_label"));
+  else userMarker.setLatLng(ll);
+}
+function recenterMap() { if (map) map.setView([State.loc.lat, State.loc.lon], 7); }
+
+function filteredQuakes() {
+  const v = Settings.view;
+  return quakes.filter(q => {
+    if (q.mag == null) return false;
+    const d = Eew.haversineKm(State.loc.lat, State.loc.lon, q.lat, q.lon);
+    q._dist = d;
+    if (v === "nearby") return d <= Settings.radiusKm;
+    if (v === "felt")   return q.mag >= 4;
+    return true; // global
+  }).sort((a,b) => b.time - a.time);
+}
+function renderQuakeMarkers(list) {
+  if (!map || !quakeLayer) return;
+  quakeLayer.clearLayers();
+  for (const q of list) {
+    const m = L.circleMarker([q.lat, q.lon], {
+      radius: magRadiusPx(q.mag), color:"#0008", weight:1, fillColor:magColor(q.mag), fillOpacity:.82,
+    }).bindPopup(`<b>M${(q.mag||0).toFixed(1)}</b> · ${q.depth?.toFixed?.(0) ?? "?"} km<br>${q.place||""}<br>${fmtAgo(q.time)}`);
+    q._marker = m; m.addTo(quakeLayer);
+  }
+}
+function fmtAgo(ts) {
+  const s = (Date.now()-ts)/1000;
+  if (s < 90) return t("just_now");
+  if (s < 3600) return t("ago_min").replace("%1", Math.round(s/60));
+  if (s < 86400) return t("ago_hour").replace("%1", Math.round(s/3600));
+  return t("ago_day").replace("%1", Math.round(s/86400));
+}
+function renderFeed() {
+  renderQuakeMarkers(filteredQuakes());                 // map markers follow the Nearby/Felt/Global toggle
+  renderHazards();
+  renderStartNearest();
+  if (State.activeTab === "disasters") renderDisasters();
+}
+
+/* ---- Disasters tab: unified, filtered, sorted list of all hazards ---- */
+const DISASTER_ICON = { quake:"🟠", tsunami:"🌊", flood:"💧", storm:"🌀", volcano:"🌋", wildfire:"🔥", drought:"🏜", ice:"🧊", landslide:"⛰", temp:"🌡" };
+const DISASTER_TYPES = ["quake","tsunami","flood","storm","volcano","wildfire"];
+const sourceErrors = new Set(); // names of ALWAYS-available sources (USGS/EMSC/EONET) that failed — shown honestly.
+                                // GDACS/AFAD are optional (need the local proxy); their absence is normal, never flagged.
+let quakesLoadFailed = false;   // true when every quake source failed this cycle, so the list shows an error not "Loading…"
+function disasterTypeLabel(typ) {
+  const k = { quake:"ty_quake", tsunami:"ty_tsunami", flood:"ty_flood", storm:"ty_storm", volcano:"ty_volcano", wildfire:"ty_wildfire", drought:"hz_drought", ice:"hz_ice", landslide:"hz_landslide", temp:"hz_temp" }[typ];
+  return k ? t(k) : typ;
+}
+function renderKatTypeChips() {
+  const c = $("katTypeChips"); if (!c) return; c.innerHTML = "";
+  const f = Settings.disasterFilter;
+  const mkChip = (typ, label, pressed) => {
+    const b = document.createElement("button"); b.className = "chip-btn"; b.dataset.typ = typ;
+    b.textContent = label; b.setAttribute("aria-pressed", String(pressed)); return b;
+  };
+  c.appendChild(mkChip("__all", t("ty_all"), f.typen.length === 0));
+  for (const typ of DISASTER_TYPES) c.appendChild(mkChip(typ, `${DISASTER_ICON[typ]} ${disasterTypeLabel(typ)}`, f.typen.includes(typ)));
+}
+function renderDisasters() {
+  if (!window.Disasters) return;
+  renderKatTypeChips();
+  const f = Settings.disasterFilter, origin = { lat:State.loc.lat, lon:State.loc.lon, radiusKm:Settings.radiusKm };
+  const unified = Disasters.toUnified(quakes, hazards, gdacsHazards);
+  const filtered = Disasters.filterDisasters(unified, f, origin, Date.now());
+  const sorted = Disasters.sortDisasters(filtered, f.sort, origin);
+  const note = $("katSourceNote");
+  if (sourceErrors.size) { note.style.display = "block"; note.textContent = t("src_down").replace("%1", [...sourceErrors].join(", ")); }
+  else note.style.display = "none";
+  const box = $("disasterList"); box.innerHTML = "";
+  if (!sorted.length) {
+    const hasData = quakes.length || hazards.length || gdacsHazards.length;
+    box.innerHTML = `<p class="q-empty">${hasData ? t("kat_empty") : (quakesLoadFailed ? t("list_error") : t("list_loading"))}</p>`;
+    return;
+  }
+  for (const d of sorted.slice(0, 60)) {
+    const dist = Eew.haversineKm(State.loc.lat, State.loc.lon, d.lat, d.lon);
+    const badge = d.typ === "quake" ? `M ${(+d.schwere).toFixed(1)}` : (typeof d.schwere === "string" ? (t("hz_alert_" + d.schwere) || d.schwere) : t("hz_" + d.typ) || "");
+    const row = document.createElement("div"); row.className = "q-item";
+    row.innerHTML = `<div class="q-mag" style="background:${d.typ==="quake"?magColor(d.schwere):"var(--panel-strong)"};font-size:1.3rem">${DISASTER_ICON[d.typ]||"⚠"}</div>
+      <div class="q-info"><div class="q-place">${badge ? badge + " · " : ""}${d.ort || disasterTypeLabel(d.typ)}</div>
+      <div class="q-meta">${d.zeit ? fmtAgo(d.zeit) + " · " : ""}${fmtDist(dist)} · ${d.quelle}</div></div>`;
+    row.onclick = () => { switchTab("map"); if (map) map.setView([d.lat, d.lon], 6); };
+    box.appendChild(row);
+  }
+}
+function applyKatUI() {
+  const f = Settings.disasterFilter;
+  for (const b of $("katRegionSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.region === f.region));
+  for (const b of $("katWindowSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(+b.dataset.win === f.fensterH));
+  for (const b of $("katAlertSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.alert === f.minAlert));
+  $("katSortSelect").value = f.sort;
+  $("katMinMag").value = f.minMag;
+  $("katMinMagVal").textContent = `M ${f.minMag.toFixed(1)}`;
+}
+
+/* Two live sources, merged + deduplicated:
+   - USGS all_day GeoJSON (global, CORS ok)
+   - EMSC seismicportal FDSN (regional detail incl. small Turkish quakes, CORS ok)
+   AFAD (official Turkey) has no CORS header -> only reachable via the tda backend. */
+function titleCase(s) { return String(s||"").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); }
+async function fetchUsgs() {
+  const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", { cache:"no-store" });
+  if (!r.ok) throw 0;
+  const j = await r.json();
+  return (j.features || []).map(f => ({
+    id:"usgs:"+f.id, source:"USGS", mag:f.properties.mag, place:f.properties.place, time:f.properties.time,
+    lon:f.geometry.coordinates[0], lat:f.geometry.coordinates[1], depth:f.geometry.coordinates[2], url:f.properties.url,
+  }));
+}
+async function fetchEmsc(lat, lon) {
+  const since = new Date(Date.now() - 24*3600*1000).toISOString();
+  const url = `https://www.seismicportal.eu/fdsnws/event/1/query?format=json&limit=500&orderby=time&start=${since}`
+    + `&minlat=${(lat-8).toFixed(2)}&maxlat=${(lat+8).toFixed(2)}&minlon=${(lon-10).toFixed(2)}&maxlon=${(lon+10).toFixed(2)}`;
+  const r = await fetch(url, { headers:{ "Accept":"application/json" }, cache:"no-store" });
+  if (!r.ok) throw 0;
+  const j = await r.json();
+  return (j.features || []).map(f => {
+    const p = f.properties;
+    return { id:"emsc:"+p.unid, source:"EMSC", mag:p.mag, place:titleCase(p.flynn_region), time:Date.parse(p.time),
+      lat:p.lat, lon:p.lon, depth:p.depth, url:`https://www.seismicportal.eu/eventdetails.html?unid=${p.unid}` };
+  });
+}
+function dedupQuakes(list) {
+  list.sort((a,b) => b.time - a.time);
+  const kept = [];
+  for (const q of list) {
+    if (q.mag == null || q.lat == null) continue;
+    const dup = kept.find(k => Math.abs(k.time - q.time) < 70000 && Eew.haversineKm(k.lat,k.lon,q.lat,q.lon) < 120);
+    if (!dup) { kept.push(q); continue; }
+    // same event from both networks: keep EMSC's regional place name if we don't have one
+    if (q.source === "EMSC" && dup.source !== "EMSC") { dup.place = q.place || dup.place; dup.source = "EMSC+USGS"; }
+  }
+  return kept;
+}
+async function fetchQuakes() {
+  const [u, e, a] = await Promise.allSettled([ fetchUsgs(), fetchEmsc(State.loc.lat, State.loc.lon), fetchAfad() ]);
+  if (u.status === "rejected") sourceErrors.add("USGS"); else sourceErrors.delete("USGS");
+  if (e.status === "rejected") sourceErrors.add("EMSC"); else sourceErrors.delete("EMSC");
+  if (a.status === "rejected") sourceErrors.add("AFAD"); else sourceErrors.delete("AFAD");
+  let all = [];
+  if (a.status === "fulfilled") all = all.concat(a.value);   // AFAD first: official TR wins dedup
+  if (e.status === "fulfilled") all = all.concat(e.value);
+  if (u.status === "fulfilled") all = all.concat(u.value);
+  if (!all.length) { quakesLoadFailed = true; if (!quakes.length) $("disasterList").innerHTML = `<p class="q-empty">${t("list_error")}</p>`; return; }
+  quakesLoadFailed = false;
+  quakes = dedupQuakes(all);
+  renderFeed();
+}
+
+/* ---- other natural disasters (NASA EONET, CORS ok): wildfires, storms,
+   volcanoes, floods, ice, drought, landslides. Tsunami / cyclone alert-levels
+   come from GDACS, which lacks CORS -> served via the tda backend proxy. ---- */
+const HAZ_META = {
+  "Wildfires":        { emoji:"🔥", key:"hz_wildfire" },
+  "Severe Storms":    { emoji:"🌀", key:"hz_storm" },
+  "Volcanoes":        { emoji:"🌋", key:"hz_volcano" },
+  "Floods":           { emoji:"🌊", key:"hz_flood" },
+  "Sea and Lake Ice": { emoji:"🧊", key:"hz_ice" },
+  "Drought":          { emoji:"🏜", key:"hz_drought" },
+  "Landslides":       { emoji:"⛰", key:"hz_landslide" },
+  "Temperature Extremes": { emoji:"🌡", key:"hz_temp" },
+};
+function hazMeta(cat) { return HAZ_META[cat] || { emoji:"⚠", key:"hz_other" }; }
+/* Map legend for the hazard layer — each entry carries a hover tooltip with the
+   hazard name + its data source (the most relevant at-a-glance info). */
+const HAZ_LEGEND = [
+  { emoji:"🔥", key:"hz_wildfire", src:"NASA EONET" },
+  { emoji:"🌋", key:"hz_volcano",  src:"EONET · GDACS" },
+  { emoji:"🌀", key:"hz_storm",    src:"EONET · GDACS" },
+  { emoji:"🌊", key:"hz_tsunami",  src:"GDACS" },
+  { emoji:"💧", key:"hz_flood",    src:"GDACS" },
+];
+function renderHazLegend() {
+  const c = $("hazLegend"); if (!c) return; c.innerHTML = "";
+  for (const h of HAZ_LEGEND) {
+    const s = document.createElement("span");
+    s.textContent = `${h.emoji} ${t(h.key)}`;
+    s.title = `${t(h.key)} · ${t("hz_source")}: ${h.src}`;
+    c.appendChild(s);
+  }
+}
+/* GDACS hazard-type codes (via the tda backend proxy) — adds tsunami + cyclone
+   alert levels that EONET does not carry. */
+const GDACS_META = {
+  TS:{ emoji:"🌊", key:"hz_tsunami" }, TC:{ emoji:"🌀", key:"hz_cyclone" }, FL:{ emoji:"💧", key:"hz_flood" },
+  VO:{ emoji:"🌋", key:"hz_volcano" }, WF:{ emoji:"🔥", key:"hz_wildfire" }, DR:{ emoji:"🏜", key:"hz_drought" },
+};
+const ALERT_COLOR = { red:"#ff405d", orange:"#ff9f1c", green:"#ffd23f" };
+let hazards=[], gdacsHazards=[], hazardLayer=null;
+async function fetchServerHazards() {
+  try {
+    const r = await fetch(`${SERVER_HTTP}/hazards`, { cache:"no-store" });
+    if (!r.ok) return; // optional source: a missing/failing proxy is the normal standalone case, not an error
+    const list = await r.json();
+    gdacsHazards = list.filter(h => h.type !== "EQ" && GDACS_META[h.type]).map(h => ({
+      type:h.type, title:h.title, country:h.country, lat:h.lat, lon:h.lon, date:h.event_ms, alert:h.alert, url:h.url,
+    }));
+    renderHazards();
+  } catch(e) {}
+  if (State.activeTab === "disasters") renderDisasters();
+}
+async function fetchHazards() {
+  if (!mapReady()) return;
+  try {
+    const r = await fetch("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=400", { cache:"no-store" });
+    if (!r.ok) throw 0;
+    const j = await r.json();
+    hazards = (j.events || []).map(ev => {
+      const cat = ev.categories?.[0]?.title || "";
+      if (cat === "Earthquakes") return null; // EMSC/USGS own quakes
+      const g = ev.geometry?.[ev.geometry.length - 1]; if (!g) return null;
+      let lon, lat;
+      if (g.type === "Point") { [lon, lat] = g.coordinates; }
+      else { const ring = g.coordinates?.[0]; if (!ring?.length) return null; let sx=0, sy=0; for (const c of ring){ sx+=c[0]; sy+=c[1]; } lon=sx/ring.length; lat=sy/ring.length; }
+      return { id:ev.id, cat, title:ev.title, lat, lon, date:g.date?Date.parse(g.date):null, url:ev.link || ev.sources?.[0]?.url };
+    }).filter(Boolean);
+    sourceErrors.delete("EONET");
+    renderHazards();
+  } catch(e) { sourceErrors.add("EONET"); }
+  if (State.activeTab === "disasters") renderDisasters();
+}
+function renderHazards() {
+  if (!map) return;
+  if (!hazardLayer) hazardLayer = L.layerGroup().addTo(map);
+  hazardLayer.clearLayers();
+  if (!Settings.hazards) return;
+  const nearbyOnly = Settings.view === "nearby";
+  for (const hz of hazards) {
+    if (nearbyOnly && Eew.haversineKm(State.loc.lat, State.loc.lon, hz.lat, hz.lon) > Settings.radiusKm * 3) continue;
+    const m = hazMeta(hz.cat);
+    const icon = L.divIcon({ className:"", html:`<div class="haz-icon">${m.emoji}</div>`, iconSize:[24,24], iconAnchor:[12,12] });
+    L.marker([hz.lat, hz.lon], { icon })
+      .bindTooltip(`${m.emoji} ${t(m.key)}${hz.date ? " · "+fmtAgo(hz.date) : ""}`, { direction:"top" })
+      .bindPopup(`<b>${m.emoji} ${t(m.key)}</b><br>${hz.title}${hz.date ? "<br>"+fmtAgo(hz.date) : ""}<br><span style="opacity:.7">${t("hz_source")}: NASA EONET</span>`).addTo(hazardLayer);
+  }
+  // GDACS layer (tsunami / cyclone / flood / volcano / wildfire / drought), coloured by alert level
+  for (const hz of gdacsHazards) {
+    if (nearbyOnly && Eew.haversineKm(State.loc.lat, State.loc.lon, hz.lat, hz.lon) > Settings.radiusKm * 3) continue;
+    const m = GDACS_META[hz.type]; const col = ALERT_COLOR[hz.alert] || "#ffd23f";
+    const icon = L.divIcon({ className:"", html:`<div class="haz-icon" style="text-shadow:0 0 4px ${col},0 0 4px ${col}">${m.emoji}</div>`, iconSize:[26,26], iconAnchor:[13,13] });
+    L.marker([hz.lat, hz.lon], { icon })
+      .bindTooltip(`${m.emoji} ${t(m.key)} · ${t("hz_alert_"+hz.alert)||hz.alert}${hz.country ? " · "+hz.country : ""}`, { direction:"top" })
+      .bindPopup(`<b>${m.emoji} ${t(m.key)}</b> · <span style="color:${col};text-transform:uppercase">${t("hz_alert_"+hz.alert)||hz.alert}</span><br>${hz.title}${hz.country ? "<br>"+hz.country : ""}<br><span style="opacity:.7">${t("hz_source")}: GDACS</span>`).addTo(hazardLayer);
+  }
+}
+
+/* ---- detection network: live map of participating devices + triggers + cluster
+   detections. Global by construction (server uses worldwide grid cells). ---- */
+let networkLayer=null;
+function renderNetReadout() {
+  const net = State.network;
+  $("netOnline").textContent = net ? net.online_total : 0;
+  const det = $("netDetect");
+  if (net && net.detections.length) { det.style.display="block"; det.textContent = "⚡ " + t("net_detecting_banner").replace("%1", net.detections.length); }
+  else det.style.display="none";
+}
+function renderNetwork() {
+  if (!map) return;
+  if (!networkLayer) networkLayer = L.layerGroup().addTo(map);
+  networkLayer.clearLayers();
+  const net = State.network; if (!net) return;
+  for (const c of net.cells) {
+    if (c.online > 0) {
+      L.circleMarker([c.lat, c.lon], { radius:Math.min(16, 5+c.online*2), color:"#22e3b0", weight:1, fillColor:"#22e3b0", fillOpacity:.22 })
+        .bindPopup(`${c.online} ${t("net_online_label")}${c.triggers ? " · "+c.triggers+" "+t("net_triggers") : ""}`).addTo(networkLayer);
+    } else if (c.triggers > 0) {
+      L.circleMarker([c.lat, c.lon], { radius:5, color:"#ffb62e", weight:1, fillColor:"#ffb62e", fillOpacity:.5 })
+        .bindPopup(`${c.triggers} ${t("net_triggers")}`).addTo(networkLayer);
+    }
+  }
+  for (const d of net.detections) {
+    L.circle([d.lat, d.lon], { radius:12000, color:"#ff405d", weight:2, fillColor:"#ff405d", fillOpacity:.12 }).addTo(networkLayer);
+    const icon = L.divIcon({ className:"", html:`<div style="width:20px;height:20px;border-radius:50%;background:#ff405d;box-shadow:0 0 0 6px rgba(255,64,93,.3);animation:netpulse 1.2s ease-out infinite"></div>`, iconSize:[20,20], iconAnchor:[10,10] });
+    L.marker([d.lat, d.lon], { icon }).bindPopup(`⚡ ${t("net_detecting")} · ${d.devices} ${t("net_devices")}`).addTo(networkLayer);
+  }
+}
+function joinNetwork() {
+  Settings.network = true; savePrefs();
+  const url = ($("srvUrl").value.trim()) || "ws://localhost:8000";
+  if (srvStateNow === "ONLINE") ServerLink.sendJoin();
+  else ServerLink.connect(url);   // onopen re-sends join because Settings.network is set
+  toast(t("net_joined"));
+}
+function leaveNetwork() {
+  Settings.network = false; savePrefs();
+  ServerLink.sendLeave();
+  State.network = null; renderNetReadout(); renderNetwork();
+}
+
+/* ---- alert map: epicenter, you, and live-expanding S/P wavefronts ---- */
+function initAlertMap(a) {
+  if (!mapReady()) return;
+  const epi = [a.lat, a.lon], you = [State.loc.lat, State.loc.lon];
+  if (!alertMap) { alertMap = L.map("alertMap", { zoomControl:false, attributionControl:false, dragging:true, scrollWheelZoom:false }).setView(epi, 6); L.tileLayer(OSM.url, OSM.opt).addTo(alertMap); }
+  else alertLayers.forEach(l => alertMap.removeLayer(l));
+  const epiM = L.circleMarker(epi, { radius:7, color:"#fff", weight:2, fillColor:"#ff405d", fillOpacity:1 }).addTo(alertMap);
+  const youM = L.circleMarker(you, { radius:7, color:"#fff", weight:2, fillColor:"#22e3b0", fillOpacity:1 }).addTo(alertMap);
+  const line = L.polyline([epi, you], { color:"#fff", weight:1.5, dashArray:"5,6", opacity:.7 }).addTo(alertMap);
+  a._sCircle = L.circle(epi, { radius:0, color:"#ff405d", weight:2.5, fill:false }).addTo(alertMap);
+  a._pCircle = L.circle(epi, { radius:0, color:"#ffd23f", weight:1.5, fill:false, dashArray:"4,5", opacity:.8 }).addTo(alertMap);
+  alertLayers = [epiM, youM, line, a._sCircle, a._pCircle];
+  try { alertMap.fitBounds(L.latLngBounds([epi, you]).pad(0.5)); } catch(e) {}
+  setTimeout(() => alertMap && alertMap.invalidateSize(), 250);
+}
+function updateAlertRings(a, elapsedSec) {
+  if (!a._sCircle) return;
+  a._sCircle.setRadius(Math.max(0, Eew.V_S_KM_S * elapsedSec * 1000));
+  a._pCircle.setRadius(Math.max(0, Eew.V_P_KM_S * elapsedSec * 1000));
+}
+
+/* ==========================================================================
+   Alarm sound (Web Audio) — plays only if enabled in settings
+   ========================================================================== */
+let audioCtx=null;
+function playAlarmSound(strong) {
+  if (!Settings.sound) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime, beeps = strong ? 4 : 2, freq = strong ? 880 : 620;
+    for (let i=0;i<beeps;i++) {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = "square"; o.frequency.value = freq; o.connect(g); g.connect(audioCtx.destination);
+      const s = now + i*0.34;
+      g.gain.setValueAtTime(0.0001, s);
+      g.gain.exponentialRampToValueAtTime(0.28, s+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, s+0.30);
+      o.start(s); o.stop(s+0.32);
+    }
+  } catch(e) {}
+}
+
+/* ==========================================================================
+   Settings UI
+   ========================================================================== */
+function applySettingsUI() {
+  for (const b of $("unitSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.unit===Settings.units));
+  $("rngRadius").value = Settings.radiusKm;
+  $("valRadius").textContent = `${Math.round(kmToDisplay(Settings.radiusKm))} ${unitLabel()}`;
+  $("rngMinMag").value = Settings.minMag;
+  $("valMinMag").textContent = `M ${Settings.minMag.toFixed(1)}`;
+  $("soundSwitch").checked = Settings.sound;
+  $("ntfRealtime").checked = Settings.notifyRealtime;
+  $("ntfReports").checked = Settings.notifyReports;
+  $("hazSwitch").checked = Settings.hazards;
+  for (const b of $("viewSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.view===Settings.view));
+  applyKatUI();
+}
+function applyDevMode() {
+  const demo = document.querySelector("details.demo");
+  if (demo) demo.style.display = Settings.devMode ? "" : "none";
+  const sw = $("devSwitch"); if (sw) sw.checked = Settings.devMode;
+}
+
+const AFFILIATE_TAG = "TDA-PLACEHOLDER-21"; // replace with a real Amazon Associates tag to earn
+function renderPrep() {
+  if (!window.Prep) return;
+  $("prepDisclosure").textContent = t("prep_disclosure");
+  const box = $("prepList"); box.innerHTML = "";
+  for (const sec of Prep.PREP_CATALOG) {
+    const s = document.createElement("div"); s.className = "prep-sec";
+    const h = document.createElement("h3"); h.textContent = t("prep_sec_" + sec.typ); s.appendChild(h);
+    for (const it of sec.items) {
+      const d = document.createElement("div"); d.className = "prep-item";
+      d.innerHTML = `<div class="prep-name">${t("prep_item_" + it.key)}</div>
+        <div class="prep-why">${t("prep_why_" + it.key)}</div>
+        <div class="prep-links">
+          <a class="amz" target="_blank" rel="noopener nofollow sponsored" href="${Prep.buildAffiliateUrl(it.query, AFFILIATE_TAG)}">${t("prep_amazon")}</a>
+          <a target="_blank" rel="noopener" href="${Prep.localSearchUrl(it.query)}">${t("prep_local")}</a>
+        </div>`;
+      s.appendChild(d);
+    }
+    box.appendChild(s);
+  }
+}
+
+/* ==========================================================================
+   Theme / language
+   ========================================================================== */
+function applyTheme() {
+  const root=document.documentElement;
+  if (State.theme==="system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", State.theme);
+  root.setAttribute("data-cb", State.colorblind?"1":"0");
+  for (const b of $("themeSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.theme===State.theme));
+  applyAccent();
+}
+function applyLanguage() {
+  document.documentElement.lang=lang;
+  document.documentElement.dir = (lang==="ar") ? "rtl" : "ltr";
+  const set=(id,key)=>{ const el=$(id); if(el) el.textContent=t(key); };
+  set("appName","app_name"); set("tagline","tagline");
+  set("tabStart","tab_start"); set("tabMap","tab_map"); set("tabDisasters","tab_disasters");
+  set("tabNetwork","tab_network"); set("tabVorsorge","tab_vorsorge"); set("tabFaq","tab_faq"); set("tabSettings","tab_settings"); set("startRecentTitle","start_recent");
+  renderStartNearest();
+  set("locTitle","loc_title"); set("btnGpsText","loc_use_gps"); set("searchHint","loc_search_hint");
+  $("addrInput").placeholder=t("loc_search_ph");
+  { const oa=$("obAddrInput"); if(oa) oa.placeholder=t("loc_search_ph"); }
+  set("seisTitle","seis_title"); set("btnMotion","btn_motion");
+  set("smDevice","sm_device"); set("smStation","sm_station");
+  set("soGrid","so_grid"); set("soGain","so_gain"); set("soInfo","so_info"); set("lblGain","lbl_gain");
+  renderSeisInfo();
+  if (Settings.seisMode !== "station") set("seisSub","seis_sub");
+  set("seqTitle","seq_title");
+  set("demoTitle","demo_title"); set("btnQuakeText","demo_quake"); set("btnAfterText","demo_after");
+  set("btnFireText","demo_fire"); set("btnReportText","demo_report"); set("btnResetText","demo_reset");
+  set("srvTitle","srv_title"); set("btnConnect","srv_connect"); set("btnDisconnect","srv_disconnect");
+  set("btnSrvQuake","srv_quake"); set("btnSrvFire","srv_fire"); set("footNote","footnote");
+  set("setTitle","set_title"); set("lblLang","lbl_lang"); set("lblTheme","lbl_theme");
+  set("thSystem","th_system"); set("thDark","th_dark"); set("thLight","th_light");
+  set("lblCb","lbl_cb"); set("btnSetDone","set_done");
+  set("lblDev","lbl_dev"); set("descDev","desc_dev"); set("devPanelNote","dev_panel_note");
+  // map + list + advanced settings labels
+  set("mapTitle","map_title"); set("listTitle","list_title"); set("listSource","list_source");
+  set("vwNearby","vw_nearby"); set("vwFelt","vw_felt"); set("vwGlobal","vw_global");
+  set("btnRecenterText","recenter"); set("btnRefreshText","refresh");
+  set("mapFallback","map_offline"); set("lgYou","you_label"); renderHazLegend();
+  set("advTitle","adv_title"); set("lblUnits","lbl_units"); set("lblRadius","lbl_radius"); set("lblMinMag","lbl_minmag");
+  set("descRadius","desc_radius"); set("descMinMag","desc_minmag");
+  set("lblSound","lbl_sound"); set("btnPickSoundText","pick_sound"); set("lblNotifyRealtime","lbl_ntf_realtime"); set("lblNotifyReports","lbl_ntf_reports");
+  set("placesTitle","places_title"); set("placesDesc","places_desc");
+  set("obPlacesT","ob_places_t"); set("obPlacesB","ob_places_b");
+  { const a=$("obPlaceInput"); if(a) a.placeholder=t("places_add_ph"); const b=$("setPlaceInput"); if(b) b.placeholder=t("places_add_ph"); }
+  renderAllPlaces();
+  set("lblHazards","lbl_hazards");
+  set("netTitle","net_title"); set("netJoinLabel","net_join"); set("netOnlineLabel","net_online_label");
+  set("btnTrigger","net_trigger_btn"); set("netNote","net_note");
+  renderNetReadout();
+  set("katTitle","kat_title"); set("fType","f_type"); set("fRegion","f_region"); set("fTime","f_time"); set("fSort","f_sort"); set("fMinMag","f_minmag");
+  set("rgGlobal","rg_global"); set("rgTr","rg_tr"); set("rgNear","rg_near");
+  set("sortTime","sort_time"); set("sortNear","sort_near"); set("sortSev","sort_severity");
+  set("fMinAlert","f_minalert"); set("alAll","al_all"); set("alOrange","al_orange"); set("alRed","al_red");
+  set("descMinMag2","desc_minmag2"); set("descMinAlert","desc_minalert");
+  set("prepTitle","prep_title"); if (State.activeTab === "vorsorge") renderPrep();
+  applyKatUI(); if (State.activeTab === "disasters") renderDisasters();
+  applySettingsUI(); renderFeed();
+  renderHero(); renderSequence(); ServerLink.setState(srvStateNow);
+  Signing.ensureKey().then(ok=>{ $("srvHint").textContent = ok ? t("srv_hint_ok") : t("srv_hint_nocrypto"); });
+  if ($("alertOverlay").classList.contains("show")) renderAlert();
+  set("ob1t","ob1_t"); set("ob1b","ob1_b"); set("ob2t","ob2_t"); set("ob2b","ob2_b"); set("obGpsText","ob_gps");
+  set("ob3t","ob3_t"); set("obNotifH","ob_notif_h"); set("obNotifD","ob_notif_d"); set("obNotifMagLbl","ob_mag"); set("obNotifRadLbl","ob_radius"); set("obAlarmH","ob_alarm_h"); set("obAlarmD","ob_alarm_d"); set("obAlarmMagLbl","ob_mag"); set("obStormFloodLbl","ob_stormflood"); set("obStormH","ob_haz_storm"); set("obFloodH","ob_haz_flood"); set("obTsunamiH","ob_haz_tsunami"); set("obStormNotifLbl","ob_notify_from"); set("obFloodNotifLbl","ob_notify_from"); set("obTsunamiNotifLbl","ob_notify_from"); set("obStormAlarmLbl","ob_alarm_from"); set("obFloodAlarmLbl","ob_alarm_from"); set("obTsunamiAlarmLbl","ob_alarm_from"); set("ob3fine","ob3_fine"); updateObLevelLabels(); renderObHaz();
+  set("ob4t","ob4_t"); set("ob4sound","ob4_sound"); set("obNotifyText","ob_notify"); set("ob4fine","ob4_fine");
+  set("ob5t","ob5_t"); set("ob5b","ob5_b"); set("ob6t","ob6_t"); set("ob6b","ob6_b"); set("obDrillText","ob_drill");
+  set("obBack","ob_back"); set("obSkip","ob_skip");
+  set("faqTitle","faq_title"); set("faqRestartText","faq_restart");
+  for (let i=1;i<=6;i++){ set("faqQ"+i,"faq_q"+i); set("faqA"+i,"faq_a"+i); }
+  if ($("onboarding").classList.contains("show")) obGoTo(obStep);
+}
+
+/* ==========================================================================
+   Init
+   ========================================================================== */
+function initCityChips() {
+  const c=$("cityChips"); if(!c) return;
+  Eew.CITIES.forEach(city=>{
+    const b=document.createElement("button"); b.className="chip-btn"; b.dataset.id=city.id; b.textContent=city.name;
+    b.setAttribute("aria-pressed", String(city.id===State.loc.id));
+    b.onclick=()=>setLocation(city.name, city.lat, city.lon, "preset", city.id);
+    c.appendChild(b);
+  });
+}
+const TABS = ["start","map","disasters","network","vorsorge","faq","settings"];
+function switchTab(name) {
+  if (!TABS.includes(name)) name = "start";
+  State.activeTab = name;
+  for (const v of document.querySelectorAll(".tab-view")) v.classList.toggle("active", v.dataset.tab === name);
+  for (const b of $("tabbar").querySelectorAll("button")) b.setAttribute("aria-selected", String(b.dataset.tab === name));
+  if (name === "map" && map) setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 60); // Leaflet needs this after unhide
+  if (name === "disasters" && typeof renderDisasters === "function") renderDisasters();
+  if (name === "vorsorge" && typeof renderPrep === "function") renderPrep();
+  savePrefs();
+}
+function renderStartNearest() {
+  const panel = $("startNearestPanel"), box = $("startNearest");
+  if (!panel || !box || !quakes.length) { if (panel) panel.style.display = "none"; return; }
+  // "Most recent nearby": newest quake within the alert radius; if none are that
+  // close, fall back to the single nearest so the panel is never empty.
+  const withDist = quakes.map(q => ({ q, d: Eew.haversineKm(State.loc.lat, State.loc.lon, q.lat, q.lon) }));
+  const near = withDist.filter(x => x.d <= Settings.radiusKm).sort((a, b) => b.q.time - a.q.time);
+  const pick = near.length ? near[0] : withDist.slice().sort((a, b) => a.d - b.d)[0];
+  const best = pick.q, bestD = pick.d;
+  panel.style.display = "block";
+  box.innerHTML = `<div class="q-mag" style="background:${magColor(best.mag)}">${(best.mag||0).toFixed(1)}</div>
+    <div class="q-info"><div class="q-place">${best.place || "—"}</div>
+    <div class="q-meta">${fmtAgo(best.time)} · ${fmtDist(bestD)}</div></div>`;
+  box.onclick = () => { switchTab("map"); if (map) { map.setView([best.lat, best.lon], 7); } };
+}
+let obStep = 1;
+const OB_STEPS = 8;
+const OB_LANGS = [["tr","Türkçe"],["en","English"],["de","Deutsch"],["ru","Русский"],["ar","العربية"]];
+function renderObLangs() {
+  const c = $("obLangs"); if (!c) return; c.innerHTML = "";
+  OB_LANGS.forEach(([code,label]) => {
+    const b = document.createElement("button"); b.className = "chip-btn"; b.textContent = label;
+    b.setAttribute("aria-pressed", String(code === lang));
+    b.onclick = () => { lang = code; applyLanguage(); savePrefs(); renderObLangs(); };
+    c.appendChild(b);
+  });
+}
+function renderObRetro() {
+  const el = $("obRetro"); if (!el) return;
+  const within = quakes.filter(q => Eew.haversineKm(State.loc.lat, State.loc.lon, q.lat, q.lon) <= Settings.radiusKm);
+  if (!within.length) { el.textContent = ""; return; }
+  const warned = within.filter(q => (q.mag || 0) >= Settings.minMag).length;
+  el.textContent = t("ob_retro").replace("%1", warned).replace("%2", within.length);
+}
+function obGoTo(step) {
+  obStep = Math.max(1, Math.min(OB_STEPS, step));
+  for (const c of document.querySelectorAll("#onboarding .ob-card")) c.hidden = (+c.dataset.ob !== obStep);
+  const dots = $("obDots"); dots.innerHTML = "";
+  for (let i = 1; i <= OB_STEPS; i++) { const d = document.createElement("i"); if (i === obStep) d.className = "on"; dots.appendChild(d); }
+  $("obBack").style.visibility = obStep === 1 ? "hidden" : "visible";
+  $("obNext").textContent = obStep === OB_STEPS ? t("ob_finish") : t("ob_next");
+  if (obStep === 4) renderAllPlaces();
+  if (obStep === 5) renderObLevels();
+}
+function renderObLevels() {
+  const nm = $("obNotifMag"); if (!nm) return;
+  nm.value = Settings.minMag; $("obNotifRadius").value = Settings.radiusKm; $("obAlarmMag").value = Settings.alarmMinMag;
+  $("obStormFlood").checked = !!Settings.stormFlood;
+  updateObLevelLabels();
+  renderObHaz();
+}
+const HAZ_LEVELS = [["off","al_off"],["orange","al_orange"],["red","al_red"]];
+function renderHazSeg(containerId, current, onPick) {
+  const c = $(containerId); if (!c) return; c.innerHTML = "";
+  HAZ_LEVELS.forEach(([lvl,key]) => {
+    const b = document.createElement("button"); b.textContent = t(key);
+    b.setAttribute("aria-pressed", String(lvl === current));
+    b.onclick = () => { onPick(lvl); renderHazSeg(containerId, lvl, onPick); };
+    c.appendChild(b);
+  });
+}
+function renderObHaz() {
+  const box = $("obHazSettings"); if (!box) return;
+  box.hidden = !Settings.stormFlood;
+  renderHazSeg("obStormNotify", Settings.stormNotify, v => { Settings.stormNotify = v; savePrefs(); });
+  renderHazSeg("obStormAlarm", Settings.stormAlarm, v => { Settings.stormAlarm = v; savePrefs(); });
+  renderHazSeg("obFloodNotify", Settings.floodNotify, v => { Settings.floodNotify = v; savePrefs(); });
+  renderHazSeg("obFloodAlarm", Settings.floodAlarm, v => { Settings.floodAlarm = v; savePrefs(); });
+  renderHazSeg("obTsunamiNotify", Settings.tsunamiNotify, v => { Settings.tsunamiNotify = v; savePrefs(); });
+  renderHazSeg("obTsunamiAlarm", Settings.tsunamiAlarm, v => { Settings.tsunamiAlarm = v; savePrefs(); });
+}
+function updateObLevelLabels() {
+  if (!$("obNotifMag")) return;
+  $("obNotifVal").textContent = `${t("ob_from")} ${parseFloat($("obNotifMag").value).toFixed(1)} · ${$("obNotifRadius").value} km`;
+  $("obAlarmVal").textContent = `${t("ob_from")} ${parseFloat($("obAlarmMag").value).toFixed(1)}`;
+}
+function startOnboarding() {
+  $("onboarding").classList.add("show");
+  renderObLangs();
+  renderObLevels();
+  obGoTo(1);
+}
+function finishOnboarding() {
+  Settings.onboarded = true; savePrefs();
+  $("onboarding").classList.remove("show");
+}
+function profileGuess() {
+  if (Settings.radiusKm >= 450 && Settings.minMag <= 3) return "vorsichtig";
+  if (Settings.radiusKm <= 200 && Settings.minMag >= 4.5) return "starkbeben";
+  return "ausgewogen";
+}
+function applyObProfile(profile) {
+  const s = Prep.profileToSettings(profile);
+  Settings.radiusKm = s.radiusKm; Settings.minMag = s.minMag;
+  for (const b of $("obProfiles").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.profile === profile));
+  applySettingsUI(); savePrefs(); renderObRetro();
+}
+function highlightObProfile(profile) {
+  for (const b of $("obProfiles").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.profile === profile));
+}
+function renderObCities() {
+  const c = $("obCities"); if (!c) return; c.innerHTML = "";
+  Eew.CITIES.forEach(city => {
+    const b = document.createElement("button"); b.className = "chip-btn"; b.textContent = city.name;
+    b.onclick = () => setLocation(city.name, city.lat, city.lon, "preset", city.id);
+    c.appendChild(b);
+  });
+}
+function bind() {
+  $("btnSettings").onclick = () => switchTab("settings");
+  $("btnSetDone").onclick = () => switchTab("start");
+  $("tabbar").onclick = e => { const b = e.target.closest("button"); if (b) switchTab(b.dataset.tab); };
+  $("obNext").onclick = () => { if (obStep === OB_STEPS) finishOnboarding(); else obGoTo(obStep + 1); };
+  $("obBack").onclick = () => obGoTo(obStep - 1);
+  $("obSkip").onclick = finishOnboarding;
+  $("obGps").onclick = useGps;
+  $("obNotifMag").oninput = e => { Settings.minMag = parseFloat(e.target.value); updateObLevelLabels(); };
+  $("obNotifMag").onchange = savePrefs;
+  $("obNotifRadius").oninput = e => { Settings.radiusKm = parseInt(e.target.value, 10); updateObLevelLabels(); };
+  $("obNotifRadius").onchange = savePrefs;
+  $("obAlarmMag").oninput = e => { Settings.alarmMinMag = parseFloat(e.target.value); updateObLevelLabels(); };
+  $("obAlarmMag").onchange = savePrefs;
+  $("obStormFlood").onchange = e => { Settings.stormFlood = e.target.checked; if (e.target.checked) Settings.hazards = true; savePrefs(); renderObHaz(); };
+  $("obSound").onchange = e => { Settings.sound = e.target.checked; savePrefs(); };
+  $("obNotify").onclick = async () => { try { if (window.Notification) { const r = await Notification.requestPermission(); $("obNotifyText").textContent = t(r === "granted" ? "ob_notify_on" : "ob_notify_off"); } } catch(e){} };
+  $("obDrill").onclick = runEarthquakeDrill;
+  $("faqRestart").onclick = () => startOnboarding();
+  $("langSelect").onchange=e=>{ lang=e.target.value; applyLanguage(); savePrefs(); };
+  $("themeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; State.theme=b.dataset.theme; applyTheme(); savePrefs(); };
+  $("cbSwitch").onchange=e=>{ State.colorblind=e.target.checked; applyTheme(); savePrefs(); };
+  // advanced settings
+  $("unitSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; Settings.units=b.dataset.unit; applySettingsUI(); renderFeed(); savePrefs(); if($("alertOverlay").classList.contains("show")) renderAlert(); };
+  $("rngRadius").oninput=e=>{ Settings.radiusKm=parseInt(e.target.value,10); $("valRadius").textContent=`${Math.round(kmToDisplay(Settings.radiusKm))} ${unitLabel()}`; renderFeed(); };
+  $("rngRadius").onchange=savePrefs;
+  $("rngMinMag").oninput=e=>{ Settings.minMag=parseFloat(e.target.value); $("valMinMag").textContent=`M ${Settings.minMag.toFixed(1)}`; };
+  $("rngMinMag").onchange=savePrefs;
+  $("soundSwitch").onchange=e=>{ Settings.sound=e.target.checked; savePrefs(); };
+  if (window.AndroidBridge && AndroidBridge.pickAlarmSound) {
+    $("btnPickSound").style.display="";
+    $("btnPickSound").onclick=()=>{ try{ AndroidBridge.pickAlarmSound(); }catch(e){} };
+  }
+  $("ntfRealtime").onchange=e=>{ Settings.notifyRealtime=e.target.checked; savePrefs(); };
+  $("ntfReports").onchange=e=>{ Settings.notifyReports=e.target.checked; savePrefs(); };
+  $("devSwitch").onchange = e => { Settings.devMode = e.target.checked; applyDevMode(); savePrefs(); };
+  $("viewSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; Settings.view=b.dataset.view; applySettingsUI(); renderFeed(); savePrefs(); };
+  $("hazSwitch").onchange=e=>{ Settings.hazards=e.target.checked; renderHazards(); savePrefs(); };
+  $("katTypeChips").onclick = e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const f = Settings.disasterFilter, typ = b.dataset.typ;
+    if (typ === "__all") f.typen = [];
+    else { const i = f.typen.indexOf(typ); if (i >= 0) f.typen.splice(i, 1); else f.typen.push(typ); }
+    savePrefs(); renderDisasters();
+  };
+  $("katRegionSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; Settings.disasterFilter.region = b.dataset.region; applyKatUI(); savePrefs(); renderDisasters(); };
+  $("katWindowSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; Settings.disasterFilter.fensterH = parseInt(b.dataset.win, 10); applyKatUI(); savePrefs(); renderDisasters(); };
+  $("katSortSelect").onchange = e => { Settings.disasterFilter.sort = e.target.value; savePrefs(); renderDisasters(); };
+  $("katMinMag").oninput = e => { Settings.disasterFilter.minMag = parseFloat(e.target.value); $("katMinMagVal").textContent = `M ${Settings.disasterFilter.minMag.toFixed(1)}`; renderDisasters(); };
+  $("katMinMag").onchange = savePrefs;
+  $("katAlertSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; Settings.disasterFilter.minAlert = b.dataset.alert; applyKatUI(); savePrefs(); renderDisasters(); };
+  $("btnRecenter").onclick=recenterMap;
+  $("btnRefresh").onclick=()=>{ fetchQuakes(); fetchHazards(); fetchServerHazards(); };
+  $("btnGps").onclick=useGps;
+  $("addrInput").oninput=onAddrInput;
+  $("obAddrInput").oninput=e=>onAddrInput(e,"obResults","obAddrInput");
+  { const addPick=(name,lat,lon)=>addPlace(name,lat,lon,"search");
+    const op=$("obPlaceInput"); if(op) op.oninput=e=>onAddrInput(e,"obPlaceResults","obPlaceInput",addPick);
+    const sp=$("setPlaceInput"); if(sp) sp.oninput=e=>onAddrInput(e,"setPlaceResults","setPlaceInput",addPick); }
+  $("btnQuake").onclick=runEarthquakeDrill;
+  $("btnAfter").onclick=runAftershockSequence;
+  $("btnFire").onclick=runFireworksDisturbance;
+  $("btnReport").onclick=openReport;
+  $("btnReset").onclick=resetAll;
+  $("btnAlertClose").onclick=closeAlert;
+  $("btnAlertReport").onclick=()=>{ closeAlert(); openReport(); };
+  $("btnReportBack").onclick=()=>$("reportOverlay").classList.remove("show");
+  $("btnShare").onclick=shareReport;
+  $("btnDistOk").onclick=()=>$("distModal").classList.remove("show");
+  $("btnConnect").onclick=()=>{ const u=$("srvUrl").value.trim(); if(u) ServerLink.connect(u); };
+  $("btnDisconnect").onclick=()=>ServerLink.disconnect();
+  $("btnSrvQuake").onclick=()=>ServerLink.sendSimulate("quake");
+  $("btnSrvFire").onclick=()=>ServerLink.sendSimulate("firework");
+  $("btnMotion").onclick=async()=>{ try{ const r=await DeviceMotionEvent.requestPermission(); if(r==="granted"){ window.addEventListener("devicemotion",onMotion); $("btnMotion").style.display="none"; } }catch(e){} };
+  $("seisModeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; setSeisMode(b.dataset.mode); };
+  $("stationSelect").onchange=e=>{ Settings.station=e.target.value; stationTrace=null; stationSps=null; renderSeisInfo(); fetchStation(); savePrefs(); };
+  $("seisOpts").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; const o=b.dataset.opt; Settings.seis[o]=!Settings.seis[o]; applySeisOpts(); savePrefs(); };
+  $("gainSlider").oninput=e=>{ Settings.seis.gain=parseFloat(e.target.value); $("valGain").textContent=`${Settings.seis.gain.toFixed(1)}×`; };
+  $("gainSlider").onchange=savePrefs;
+  $("netSwitch").onchange=e=>{ if(e.target.checked) joinNetwork(); else leaveNetwork(); };
+  $("btnTrigger").onclick=()=>{
+    const url=($("srvUrl").value.trim())||"ws://localhost:8000";
+    if(srvStateNow!=="ONLINE"){ ServerLink.connect(url); setTimeout(()=>{ toast(ServerLink.sendTrigger()?t("net_trigger_sent"):t("srv_offline")); }, 900); }
+    else toast(ServerLink.sendTrigger()?t("net_trigger_sent"):t("srv_offline"));
+  };
+}
+function initStationSelect() {
+  const sel=$("stationSelect");
+  STATIONS.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent=s.label; sel.appendChild(o); });
+  sel.value=Settings.station;
+}
+function init() {
+  loadPrefs();
+  $("langSelect").value = lang;
+  initCityChips(); bind();
+  applyTheme(); applySettingsUI(); applyDevMode(); applyLanguage(); setStatus("READY"); ServerLink.setState("OFFLINE");
+  switchTab(State.activeTab || "start");
+  $("netSwitch").checked = Settings.network; renderNetReadout();
+  if (Settings.network) joinNetwork();
+  initMotion(); initStationSelect(); applySeisOpts(); setSeisMode(Settings.seisMode); requestAnimationFrame(drawSeis);
+  initMap(); fetchQuakes(); setInterval(fetchQuakes, 180000);
+  fetchHazards(); setInterval(fetchHazards, 600000);
+  fetchServerHazards(); setInterval(fetchServerHazards, 600000);
+  if (!Settings.onboarded) startOnboarding();
+}
+init();
+</script>
+</body>
+</html>

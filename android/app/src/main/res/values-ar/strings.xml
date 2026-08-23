@@ -11,6 +11,7 @@
     <string name="status_alarm_p0">إنذار P0</string>
     <string name="status_confirmed_p2">تأكيد P2</string>
     <string name="status_disturbance_discarded">تم رصد تشويش – لم يصدر إنذار</string>
+    <string name="home_clear">مسح الإنذار</string>
 
     <string name="alert_title_p0">إنذار زلزال</string>
     <string name="alert_title_p2">تم تأكيد الزلزال</string>
@@ -43,4 +44,79 @@
         <item>XI</item>
         <item>XII</item>
     </string-array>
+
+    <!-- TP-3 -->
+    <string name="chan_critical">تنبيهات الزلازل الحرجة</string>
+    <string name="chan_critical_desc">تنبيهات مؤكدة منقذة للحياة. قد تصدر صوتًا حتى في الوضع الصامت.</string>
+    <string name="chan_test">تنبيهات اختبارية</string>
+    <string name="chan_test_desc">تنبيهات تجريبية — ليست صوت الإنذار الحقيقي أبدًا.</string>
+    <string name="chan_ready">وضع الاستعداد</string>
+    <string name="chan_ready_desc">إشعار صامت بعد زلزال قوي حتى تتمكن من الإبلاغ أنك بأمان.</string>
+    <string name="chan_service">مراقبة الهزات الارتدادية</string>
+    <string name="chan_service_desc">يراقب الهزات الارتدادية في الخلفية.</string>
+    <string name="svc_watching">مراقبة الهزات الارتدادية</string>
+    <string name="svc_grace">زلزال قوي — لديك وقت للتصرف. انقر عندما تكون بأمان.</string>
+    <string name="svc_beacon">إشارة الطوارئ نشطة</string>
+    <string name="beacon_ask_title">هل أنت بأمان؟</string>
+    <string name="beacon_ask_body">انقر للرد. عدم الرد يبدأ إشارة الطوارئ.</string>
+    <string name="beacon_active_title">إشارة الطوارئ نشطة</string>
+    <string name="beacon_safe_title">تم وضع علامة بأمان</string>
+    <string name="beacon_im_safe">أنا بأمان</string>
+    <string name="beacon_need_help">أحتاج المساعدة</string>
+    <string name="beacon_stop">إيقاف الإشارة</string>
+    <string name="beacon_share_safe">مشاركة ”أنا بأمان“</string>
+    <string name="beacon_share_text">أنا بأمان. — عبر Turkey Disaster Alert</string>
+    <string name="btn_test_beacon_chain">اختبار سلسلة الإشارة (اختبار)</string>
+    <string name="test_beacon_started">تم تجهيز سلسلة إشارة الاختبار — هذا تدريب فقط.</string>
+    <string name="dnd_optin_explain">اسمح للتطبيق بإصدار صوت أثناء ”عدم الإزعاج“. بدون ذلك قد يُسكت وضع عدم الإزعاج الكامل حتى تنبيهًا منقذًا للحياة.</string>
+
+    <!-- TP-5 -->
+    <string name="tab_home">البداية</string>
+    <string name="tab_readiness">الجاهزية</string>
+    <string name="tab_settings">الإعدادات</string>
+    <string name="dev_section_header">منطقة المطوّر</string>
+    <string name="readiness_score_format">%1$d/100</string>
+    <string name="readiness_missing_format">ينقصك %1$d أشياء لمدة 72 ساعة</string>
+    <string name="readiness_ready">أنت مستعد جيدًا.</string>
+    <string name="profile_pet">حيوان أليف</string>
+    <string name="profile_kids">أطفال</string>
+    <string name="profile_car">سيارة</string>
+    <string name="affiliate_notice">روابط إعلانية/تسويق بالعمولة: إذا اشتريت عبرها فقد نحصل على عمولة — السعر لا يتغير بالنسبة لك.</string>
+    <string name="btn_search_amazon">ابحث في أمازون</string>
+    <string name="btn_search_local">ابحث محليًا</string>
+    <string name="btn_prepare_aftershock">استعد لأيام الهزات الارتدادية</string>
+    <string name="prep_item_water">مخزون مياه الشرب</string>
+    <string name="prep_why_water">3 لترات للشخص يوميًا لمدة 72 ساعة على الأقل.</string>
+    <string name="prep_item_firstaid">حقيبة إسعافات أولية</string>
+    <string name="prep_why_firstaid">عالج الإصابات عند تأخر المساعدة.</string>
+    <string name="prep_item_gobag">حقيبة طوارئ</string>
+    <string name="prep_why_gobag">أساسيات جاهزة لإخلاء سريع.</string>
+    <string name="prep_item_docs">حافظة مستندات مقاومة للماء</string>
+    <string name="prep_why_docs">احفظ الهوية والأوراق بأمان وقابلة للحمل.</string>
+    <string name="prep_item_radio">راديو يدوي</string>
+    <string name="prep_why_radio">احصل على معلومات رسمية عند انقطاع الكهرباء والشبكة.</string>
+    <string name="prep_item_powerbank">بطارية محمولة</string>
+    <string name="prep_why_powerbank">أبقِ هاتفك يعمل للتنبيهات والمكالمات.</string>
+    <string name="prep_item_whistle">صافرة</string>
+    <string name="prep_why_whistle">أرسل إشارة للمنقذين إذا حوصرت.</string>
+    <string name="prep_item_helmet">خوذة</string>
+    <string name="prep_why_helmet">احمِ رأسك من الحطام المتساقط.</string>
+    <string name="prep_item_mask">كمامة غبار FFP2</string>
+    <string name="prep_why_mask">تنفّس عبر الغبار بعد الانهيار.</string>
+    <string name="prep_item_blanket">بطانية طوارئ</string>
+    <string name="prep_why_blanket">ابقَ دافئًا أثناء انتظار المساعدة.</string>
+    <string name="prep_item_petcarrier">قفص نقل الحيوان</string>
+    <string name="prep_why_petcarrier">أخلِ حيوانك بأمان.</string>
+    <string name="prep_item_petfood">مخزون طعام الحيوان</string>
+    <string name="prep_why_petfood">طعام وماء لعدة أيام لحيوانك.</string>
+    <string name="prep_item_kidsfirstaid">حقيبة إسعاف للأطفال</string>
+    <string name="prep_why_kidsfirstaid">مستلزمات طبية مناسبة للأطفال.</string>
+    <string name="prep_item_kidssupplies">مستلزمات الرضّع/الأطفال</string>
+    <string name="prep_why_kidssupplies">حفاضات وطعام وأغراض مريحة.</string>
+    <string name="prep_item_jumpstarter">جهاز بدء تشغيل البطارية</string>
+    <string name="prep_why_jumpstarter">شغّل السيارة عند نفاد البطارية.</string>
+    <string name="prep_item_warnvest">سترة تحذيرية</string>
+    <string name="prep_why_warnvest">كن مرئيًا على الطريق.</string>
+    <string name="prep_item_towrope">حبل قطر</string>
+    <string name="prep_why_towrope">حرّك السيارة بعد العطل.</string>
 </resources>

@@ -11,6 +11,7 @@
     <string name="status_alarm_p0">HIŞYARÎ P0</string>
     <string name="status_confirmed_p2">PIŞTRAST P2</string>
     <string name="status_disturbance_discarded">Aloziyek hate dîtin – hişyarî nehat dayîn</string>
+    <string name="home_clear">Hişyariyê paqij bike</string>
 
     <string name="alert_title_p0">HIŞYARIYA BÛYERA ERDHEJÊ</string>
     <string name="alert_title_p2">BÛYERA ERDHEJÊ PIŞTRAST BÛ</string>
@@ -43,4 +44,79 @@
         <item>XI</item>
         <item>XII</item>
     </string-array>
+
+    <!-- TP-3 -->
+    <string name="chan_critical">Hişyariyên krîtîk ên erdhejê</string>
+    <string name="chan_critical_desc">Hişyariyên pejirandî yên jiyanparêz. Di dema bêdengiyê de jî dikare bibe deng.</string>
+    <string name="chan_test">Hişyariyên ceribandinê</string>
+    <string name="chan_test_desc">Hişyariyên ceribandinê — tu carî dengê alarma rastîn nine.</string>
+    <string name="chan_ready">Moda amadebûnê</string>
+    <string name="chan_ready_desc">Piştî erdhejeke bihêz agahdariyeke bêdeng; tu dikarî ewlehiya xwe ragihînî.</string>
+    <string name="chan_service">Şopandina paşerdhejan</string>
+    <string name="chan_service_desc">Di paşperdeyê de paşerdhejan dişopîne.</string>
+    <string name="svc_watching">Paşerdhej têne şopandin</string>
+    <string name="svc_grace">Erdheja bihêz — wextê te heye. Gava ewle bî bitikîne.</string>
+    <string name="svc_beacon">Sînyala awarte çalak e</string>
+    <string name="beacon_ask_title">Tu ewle yî?</string>
+    <string name="beacon_ask_body">Bo bersivê bitikîne. Bê bersiv, sînyala awarte dest pê dike.</string>
+    <string name="beacon_active_title">Sînyala awarte çalak e</string>
+    <string name="beacon_safe_title">Wek ewle hate nîşankirin</string>
+    <string name="beacon_im_safe">Ez ewle me</string>
+    <string name="beacon_need_help">Alîkariya min divê</string>
+    <string name="beacon_stop">Sînyalê rawestîne</string>
+    <string name="beacon_share_safe">“Ez ewle me” parve bike</string>
+    <string name="beacon_share_text">Ez ewle me. — bi Turkey Disaster Alert</string>
+    <string name="btn_test_beacon_chain">Zincîra sînyalê biceribîne (TEST)</string>
+    <string name="test_beacon_started">Zincîra sînyalê ya TEST hate amadekirin — ev tenê şêwirandin e.</string>
+    <string name="dnd_optin_explain">Destûrê bide ku app di “Aciz neke” de bibe deng. Bêyî vê, DND-a temam dikare hişyariyeke jiyanparêz jî bêdeng bike.</string>
+
+    <!-- TP-5 -->
+    <string name="tab_home">Destpêk</string>
+    <string name="tab_readiness">Amadekarî</string>
+    <string name="tab_settings">Mîheng</string>
+    <string name="dev_section_header">Qada pêşdebir</string>
+    <string name="readiness_score_format">%1$d/100</string>
+    <string name="readiness_missing_format">Ji bo 72 saetan %1$d tişt kêm in</string>
+    <string name="readiness_ready">Tu baş amade yî.</string>
+    <string name="profile_pet">Heywanê malê</string>
+    <string name="profile_kids">Zarok</string>
+    <string name="profile_car">Erebe</string>
+    <string name="affiliate_notice">Girêdanên reklamê/hevkariyê: eger tu ji van bikirî, dibe ku em komîsyonê bistînin — biha ji bo te naguhere.</string>
+    <string name="btn_search_amazon">Li Amazon bigere</string>
+    <string name="btn_search_local">Herêmî bigere</string>
+    <string name="btn_prepare_aftershock">Ji bo rojên paşerdhejan amade be</string>
+    <string name="prep_item_water">Embara ava vexwarinê</string>
+    <string name="prep_why_water">Rojê 3 lître ji bo her kesî, herî kêm 72 saet.</string>
+    <string name="prep_item_firstaid">Kîta alîkariya pêşîn</string>
+    <string name="prep_why_firstaid">Dema alîkarî dereng be birînan derman bike.</string>
+    <string name="prep_item_gobag">Çenteyê acîl</string>
+    <string name="prep_why_gobag">Tiştên bingehîn ji bo valakirina bilez.</string>
+    <string name="prep_item_docs">Çenteyê belgeyan ê av-neguhêz</string>
+    <string name="prep_why_docs">Nasname û kaxezan ewle û bar bike.</string>
+    <string name="prep_item_radio">Radyoya destan</string>
+    <string name="prep_why_radio">Dema kar û tor tune ne agahiya fermî bistîne.</string>
+    <string name="prep_item_powerbank">Powerbank</string>
+    <string name="prep_why_powerbank">Telefonê ji bo hişyarî û bangan vekirî bihêle.</string>
+    <string name="prep_item_whistle">Fîk</string>
+    <string name="prep_why_whistle">Eger di bin xîzê de bimînî, işaretê bide.</string>
+    <string name="prep_item_helmet">Kum</string>
+    <string name="prep_why_helmet">Serê xwe ji ketina keviran biparêze.</string>
+    <string name="prep_item_mask">Maskeya toza FFP2</string>
+    <string name="prep_why_mask">Piştî hilweşînê di tozê de bêhna xwe bikişîne.</string>
+    <string name="prep_item_blanket">Betaniya acîl</string>
+    <string name="prep_why_blanket">Dema li benda alîkariyê germ bimîne.</string>
+    <string name="prep_item_petcarrier">Qutiya veguhastina heywan</string>
+    <string name="prep_why_petcarrier">Heywanê xwe ewle valake.</string>
+    <string name="prep_item_petfood">Embara xwarina heywan</string>
+    <string name="prep_why_petfood">Çend rojan xwarin û av ji bo heywanê te.</string>
+    <string name="prep_item_kidsfirstaid">Kîta alîkariya pêşîn a zarokan</string>
+    <string name="prep_why_kidsfirstaid">Malzemeya tibbî ya li gorî zarokan.</string>
+    <string name="prep_item_kidssupplies">Malzemeyên pitik/zarokan</string>
+    <string name="prep_why_kidssupplies">Bêz, xwarin û tiştên aramkirinê.</string>
+    <string name="prep_item_jumpstarter">Amûra destpêka bataryayê</string>
+    <string name="prep_why_jumpstarter">Dema batarya vala be erebê bide destpêkirin.</string>
+    <string name="prep_item_warnvest">Îzafeya hişyariyê</string>
+    <string name="prep_why_warnvest">Li ser rê xuya bibe.</string>
+    <string name="prep_item_towrope">Kabloya kişandinê</string>
+    <string name="prep_why_towrope">Piştî xerabûnê erebê bilivîne.</string>
 </resources>
