@@ -1,9 +1,9 @@
-plugins{ id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
+plugins{ id 'com.android.application'; id 'org.jetbrains.kotlin.android'; id 'com.google.gms.google-services' }
 android{
-  namespace 'app.tda'
+  namespace 'app.alearthapp'
   compileSdk 36
   defaultConfig{
-    applicationId 'app.tda'
+    applicationId 'app.alearthapp'
     minSdk 26
     targetSdk 36
     versionCode 1
@@ -22,5 +22,7 @@ dependencies{
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
   implementation 'com.squareup.okhttp3:okhttp:4.12.0'
   implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+  implementation platform('com.google.firebase:firebase-bom:34.18.0')
+  implementation 'com.google.firebase:firebase-messaging'
   testImplementation 'junit:junit:4.13.2'
 }

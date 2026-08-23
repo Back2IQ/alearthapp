@@ -49,6 +49,14 @@
             android:theme="@style/Theme.Tda.Alert" />
 
         <service
+            android:name=".PushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".AlarmService"
             android:exported="false"
             android:foregroundServiceType="specialUse">

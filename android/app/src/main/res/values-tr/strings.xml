@@ -2,7 +2,7 @@
 <!-- Turkish. Machine-assisted translation; needs native-speaker review before
      production use, per spec i18n note. -->
 <resources>
-    <string name="app_name">Türkiye Afet Uyarısı</string>
+    <string name="app_name">AlearthApp</string>
 
     <string name="status_ready">Sistem hazır</string>
     <string name="status_attention">Dikkat</string>

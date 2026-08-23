@@ -4,7 +4,7 @@
      other strings fall back to the English default. NEEDS NATIVE-SPEAKER REVIEW
      before production; these are machine-assisted translations. -->
 <resources>
-    <string name="app_name">Hişyariya Karesatê ya Tirkiyeyê</string>
+    <string name="app_name">AlearthApp</string>
 
     <string name="status_ready">Sîstem amade ye</string>
     <string name="status_attention">Balkêşî</string>

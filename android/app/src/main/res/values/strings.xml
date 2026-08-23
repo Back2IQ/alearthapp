@@ -4,7 +4,7 @@
      values-ku, values-ar). Remaining UI strings are at least TR/EN today;
      native-speaker review is still needed before production, see spec i18n note. -->
 <resources>
-    <string name="app_name">Turkey Disaster Alert</string>
+    <string name="app_name">AlearthApp</string>
 
     <!-- Status chip -->
     <string name="status_ready">System ready</string>
