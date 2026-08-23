@@ -1,0 +1,17 @@
+{
+  "name": "tda-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Turkey Disaster Alert backend: polls earthquake feeds, matches against device subscriptions, sends FCM pushes.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
