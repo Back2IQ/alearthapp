@@ -5,6 +5,7 @@ import os
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from tda_server.serve.http_proxy import start_http_proxy
 from tda_server.serve.ws_bridge import serve
 
 
@@ -29,5 +30,8 @@ if __name__ == "__main__":
     priv_key_b64, pub_key_b64 = _load_or_generate_keys()
     host = os.environ.get("TDA_WS_HOST", "0.0.0.0")
     port = int(os.environ.get("TDA_WS_PORT", "8000"))
+    http_port = int(os.environ.get("TDA_HTTP_PORT", "8001"))
+    start_http_proxy(host, http_port)
+    print(f"starting TDA HTTP proxy on http://{host}:{http_port} (/hazards, /afad)")
     print(f"starting TDA WebSocket bridge on ws://{host}:{port}")
     asyncio.run(serve(host, port, priv_key_b64=priv_key_b64, pub_key_b64=pub_key_b64))

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="safety_section_signal">Notsignal</string>
+    <string name="safety_signal_whistle">Pfeifton</string>
+    <string name="safety_signal_screen_strobe">Bildschirm-Blitz</string>
+    <string name="safety_signal_torch_strobe">Taschenlampen-Blitz</string>
+
+    <string name="safety_section_beacon">Beacon / Bist-du-sicher</string>
+    <string name="safety_beacon_enabled">Automatischen Beacon aktivieren</string>
+    <string name="safety_beacon_mmi_label">Auslöse-Schwelle (MMI)</string>
+    <string name="safety_beacon_mmi_value">MMI %1$d</string>
+    <string name="safety_grace_label">Schonfrist</string>
+    <string name="safety_grace_value">%1$d Min.</string>
+    <string name="safety_deadman_label">Totmann-Countdown</string>
+    <string name="safety_deadman_value">%1$d s</string>
+
+    <string name="safety_section_dnd">Durch „Nicht stören" durchdringen</string>
+    <string name="safety_dnd_bypass">„Nicht stören" bei kritischen Alarmen durchbrechen</string>
+    <string name="safety_dnd_explain">Best-effort: Ist der Zugriff gewährt, kann die App einen kritischen Alarm auch bei aktivem „Nicht stören"-Modus auslösen. Erfordert eine einmalige Systemberechtigung.</string>
+    <string name="safety_btn_open_dnd_settings">System-Zugriffseinstellung öffnen</string>
+    <string name="safety_dnd_status_granted">Systemzugriff: erteilt</string>
+    <string name="safety_dnd_status_not_granted">Systemzugriff: nicht erteilt</string>
+
+    <string name="safety_section_test">Test</string>
+    <string name="safety_btn_test_signal_chain">Signalkette testen (TEST)</string>
+    <string name="safety_test_toast">TEST-Signalkette ausgelöst — dies ist nur eine Übung.</string>
+</resources>

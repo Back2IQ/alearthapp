@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_start" android:icon="@drawable/ic_nav_home" android:title="@string/tab_home" />
+        <item android:id="@+id/nav_network" android:icon="@drawable/ic_nav_network" android:title="@string/nav_network" />
+        <item android:id="@+id/nav_safety" android:icon="@drawable/ic_nav_safety" android:title="@string/nav_safety" />
+        <item android:id="@+id/nav_readiness" android:icon="@drawable/ic_nav_readiness" android:title="@string/tab_readiness" />
+        <item android:id="@+id/nav_faq" android:icon="@drawable/ic_nav_faq" android:title="@string/nav_faq" />
+        <item android:id="@+id/nav_settings" android:icon="@drawable/ic_nav_settings" android:title="@string/tab_settings" />
+    </group>
+</menu>

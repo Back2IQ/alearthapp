@@ -9,6 +9,7 @@
     <string name="status_alarm_p0">ALARM P0</string>
     <string name="status_confirmed_p2">DOĞRULANDI P2</string>
     <string name="status_disturbance_discarded">Parazit – alarm verilmedi</string>
+    <string name="home_clear">Alarmı temizle</string>
 
     <string name="label_city">Konumunuz</string>
     <string name="label_language">Dil</string>
@@ -101,4 +102,79 @@
         <item>İzmir</item>
         <item>Ankara</item>
     </string-array>
+
+    <!-- TP-3 -->
+    <string name="chan_critical">Kritik deprem uyarıları</string>
+    <string name="chan_critical_desc">Hayat kurtaran onaylı uyarılar. Sessizde bile çalabilir.</string>
+    <string name="chan_test">Test uyarıları</string>
+    <string name="chan_test_desc">Deneme uyarıları — asla gerçek alarm sesi değil.</string>
+    <string name="chan_ready">Bekleme modu</string>
+    <string name="chan_ready_desc">Güçlü depremden sonra sessiz bildirim; güvende olduğunu bildirebilirsin.</string>
+    <string name="chan_service">Artçı takibi</string>
+    <string name="chan_service_desc">Arka planda artçı sarsıntıları izler.</string>
+    <string name="svc_watching">Artçılar izleniyor</string>
+    <string name="svc_grace">Güçlü deprem — harekete zamanın var. Güvendeysen dokun.</string>
+    <string name="svc_beacon">Acil sinyal etkin</string>
+    <string name="beacon_ask_title">Güvende misin?</string>
+    <string name="beacon_ask_body">Yanıtlamak için dokun. Yanıt yoksa acil sinyal başlar.</string>
+    <string name="beacon_active_title">Acil sinyal etkin</string>
+    <string name="beacon_safe_title">Güvende olarak işaretlendi</string>
+    <string name="beacon_im_safe">Güvendeyim</string>
+    <string name="beacon_need_help">Yardıma ihtiyacım var</string>
+    <string name="beacon_stop">Sinyali durdur</string>
+    <string name="beacon_share_safe">“Güvendeyim”i paylaş</string>
+    <string name="beacon_share_text">Güvendeyim. — Turkey Disaster Alert ile</string>
+    <string name="btn_test_beacon_chain">Sinyal zincirini test et (TEST)</string>
+    <string name="test_beacon_started">TEST sinyal zinciri kuruldu — bu yalnızca bir tatbikat.</string>
+    <string name="dnd_optin_explain">Uygulamanın “Rahatsız Etmeyin”de çalmasına izin ver. Bu olmadan tam DND, hayat kurtaran bir uyarıyı bile susturabilir.</string>
+
+    <!-- TP-5 -->
+    <string name="tab_home">Başlangıç</string>
+    <string name="tab_readiness">Hazırlık</string>
+    <string name="tab_settings">Ayarlar</string>
+    <string name="dev_section_header">Geliştirici alanı</string>
+    <string name="readiness_score_format">%1$d/100</string>
+    <string name="readiness_missing_format">72 saat için %1$d eşya eksik</string>
+    <string name="readiness_ready">İyi hazırlanmışsın.</string>
+    <string name="profile_pet">Evcil hayvan</string>
+    <string name="profile_kids">Çocuk</string>
+    <string name="profile_car">Araba</string>
+    <string name="affiliate_notice">Reklam/ortaklık bağlantıları: buradan alışveriş yaparsan komisyon alabiliriz — fiyat senin için değişmez.</string>
+    <string name="btn_search_amazon">Amazon\'da ara</string>
+    <string name="btn_search_local">Yerel ara</string>
+    <string name="btn_prepare_aftershock">Artçı günlerine hazırlan</string>
+    <string name="prep_item_water">İçme suyu stoğu</string>
+    <string name="prep_why_water">Kişi başı günde 3 litre, en az 72 saat.</string>
+    <string name="prep_item_firstaid">İlk yardım seti</string>
+    <string name="prep_why_firstaid">Yardım gecikince yaralanmalara müdahale.</string>
+    <string name="prep_item_gobag">Acil çantası</string>
+    <string name="prep_why_gobag">Hızlı tahliye için hazır temel eşyalar.</string>
+    <string name="prep_item_docs">Su geçirmez belge çantası</string>
+    <string name="prep_why_docs">Kimlik ve evrakları güvenli ve taşınabilir tut.</string>
+    <string name="prep_item_radio">Kollu radyo</string>
+    <string name="prep_why_radio">Elektrik ve şebeke yokken resmi bilgi al.</string>
+    <string name="prep_item_powerbank">Taşınabilir şarj</string>
+    <string name="prep_why_powerbank">Telefonu uyarılar ve aramalar için açık tut.</string>
+    <string name="prep_item_whistle">Düdük</string>
+    <string name="prep_why_whistle">Enkaz altında kalırsan kurtarıcılara işaret ver.</string>
+    <string name="prep_item_helmet">Kask</string>
+    <string name="prep_why_helmet">Düşen molozlardan başını koru.</string>
+    <string name="prep_item_mask">FFP2 toz maskesi</string>
+    <string name="prep_why_mask">Çökme sonrası tozda nefes al.</string>
+    <string name="prep_item_blanket">Acil battaniye</string>
+    <string name="prep_why_blanket">Yardım beklerken sıcak kal.</string>
+    <string name="prep_item_petcarrier">Evcil hayvan taşıma kutusu</string>
+    <string name="prep_why_petcarrier">Hayvanını güvenle tahliye et.</string>
+    <string name="prep_item_petfood">Evcil hayvan mama stoğu</string>
+    <string name="prep_why_petfood">Hayvanın için birkaç günlük mama ve su.</string>
+    <string name="prep_item_kidsfirstaid">Çocuk ilk yardım seti</string>
+    <string name="prep_why_kidsfirstaid">Çocuğa uygun tıbbi malzeme.</string>
+    <string name="prep_item_kidssupplies">Bebek/çocuk malzemeleri</string>
+    <string name="prep_why_kidssupplies">Bez, mama ve rahatlatıcı eşyalar.</string>
+    <string name="prep_item_jumpstarter">Akü takviye cihazı</string>
+    <string name="prep_why_jumpstarter">Akü bitince arabayı çalıştır.</string>
+    <string name="prep_item_warnvest">Uyarı yeleği</string>
+    <string name="prep_why_warnvest">Yolda görünür ol.</string>
+    <string name="prep_item_towrope">Çekme halatı</string>
+    <string name="prep_why_towrope">Arıza sonrası aracı hareket ettir.</string>
 </resources>

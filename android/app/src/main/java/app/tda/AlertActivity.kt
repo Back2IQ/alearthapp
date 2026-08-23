@@ -92,6 +92,8 @@ class AlertActivity : AppCompatActivity() {
                     renderTier(currentTier)
                     findViewById<android.view.View>(R.id.escalationText).visibility = android.view.View.VISIBLE
                     triggerAlertFeedback(currentTier)
+                    val mmiNow = Eew.mmi(mag, distKm)
+                    AlarmService.arm(this@AlertActivity, mmiNow, Eew.Tier.P2, isTest = false)
                 }
             }
         }
@@ -180,8 +182,15 @@ class AlertActivity : AppCompatActivity() {
      * not wired here.
      */
     private fun triggerAlertFeedback(tier: Eew.Tier) {
+        val plan = CriticalAlarmPolicy.plan(
+            tier = tier,
+            isTest = false,
+            soundEnabled = true,
+            dndOptIn = Prefs.dndBypassOptIn,
+            dndAccessGranted = dndAccessGranted()
+        )
         val vibrator = getSystemService(VIBRATOR_SERVICE) as? Vibrator
-        if (tier == Eew.Tier.P2) {
+        if (plan.playAlarmSound) {
             try {
                 val uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
                     ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
@@ -193,13 +202,18 @@ class AlertActivity : AppCompatActivity() {
                         .build()
                 }
                 ringtone?.play()
-            } catch (_: Exception) {
-                // Best-effort only; never let a missing ringtone crash the alert screen.
-            }
-            vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 400, 200, 400, 200, 400), -1))
-        } else {
-            vibrator?.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE))
+            } catch (_: Exception) { }
         }
+        if (plan.vibrate) {
+            val pattern = if (tier == Eew.Tier.P2) longArrayOf(0, 400, 200, 400, 200, 400) else longArrayOf(0, 250)
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
+        }
+    }
+
+    private fun dndAccessGranted(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
+        val nm = getSystemService(android.app.NotificationManager::class.java)
+        return nm?.isNotificationPolicyAccessGranted == true
     }
 
     override fun onDestroy() {

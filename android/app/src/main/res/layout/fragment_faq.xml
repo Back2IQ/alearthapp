@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/faq_title" android:textStyle="bold" android:textSize="20sp"
+            android:layout_marginBottom="12dp" />
+
+        <Button android:id="@+id/btnRestartOnboarding" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_restart_onboarding" android:layout_marginBottom="16dp" />
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" android:layout_marginBottom="8dp" />
+
+        <TextView android:id="@+id/faqQ1" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q1" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA1" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a1" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+        <TextView android:id="@+id/faqQ2" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q2" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA2" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a2" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+        <TextView android:id="@+id/faqQ3" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q3" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA3" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a3" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+        <TextView android:id="@+id/faqQ4" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q4" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA4" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a4" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+        <TextView android:id="@+id/faqQ5" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q5" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA5" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a5" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+        <TextView android:id="@+id/faqQ6" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_q6" android:textStyle="bold" android:padding="12dp"
+            android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/faqA6" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/faq_a6" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp"
+            android:visibility="gone" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33808080" />
+
+    </LinearLayout>
+</ScrollView>

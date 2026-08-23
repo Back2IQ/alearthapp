@@ -1,0 +1,552 @@
+<title>Sarsıntı</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#f4f6f8; --panel:#ffffff; --panel-2:#eef1f5; --edge:#d5dbe3;
+  --ink:#182028; --muted:#5c6b7e; --faint:#8090a2;
+  --cyan:#0f8fa0; --cyan-glow:#12b4c8;
+  --amber:#c9791a; --red:#d83030; --green:#1a9a55;
+  --land:#e4e9ef; --land-edge:#c2ccd8; --sea:#eaeef3;
+  --grid:#dbe1e9;
+  --shadow:0 1px 2px rgba(20,30,45,.06),0 8px 24px rgba(20,30,45,.08);
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0c1015; --panel:#141b24; --panel-2:#0f151d; --edge:#243140;
+    --ink:#e6edf3; --muted:#8b9bb0; --faint:#63748a;
+    --cyan:#35c7d6; --cyan-glow:#5fe3f0;
+    --amber:#f2a641; --red:#ff5757; --green:#3ad07a;
+    --land:#161f2b; --land-edge:#2a3a4d; --sea:#0a0f16;
+    --grid:#18222e;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0c1015; --panel:#141b24; --panel-2:#0f151d; --edge:#243140;
+  --ink:#e6edf3; --muted:#8b9bb0; --faint:#63748a;
+  --cyan:#35c7d6; --cyan-glow:#5fe3f0;
+  --amber:#f2a641; --red:#ff5757; --green:#3ad07a;
+  --land:#161f2b; --land-edge:#2a3a4d; --sea:#0a0f16;
+  --grid:#18222e;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ground); color:var(--ink); font-family:var(--sans);
+  line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding:20px; min-height:100vh;
+}
+.wrap{max-width:1320px; margin:0 auto}
+header.top{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:6px}
+.brand{display:flex; align-items:center; gap:11px}
+.mark{width:26px;height:26px;flex:0 0 auto}
+h1{font-size:26px; font-weight:700; letter-spacing:-.02em; margin:0}
+.sub{color:var(--muted); font-size:13.5px; max-width:62ch}
+.badge{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--cyan); border:1px solid var(--edge); border-radius:999px; padding:3px 10px; white-space:nowrap}
+.honest{color:var(--faint); font-size:12px; margin:2px 0 16px; font-style:italic}
+
+.grid-main{display:grid; grid-template-columns:270px 1fr 320px; gap:16px; align-items:start}
+@media (max-width:1100px){.grid-main{grid-template-columns:1fr; }}
+
+.card{background:var(--panel); border:1px solid var(--edge); border-radius:12px; box-shadow:var(--shadow)}
+.pad{padding:16px}
+.eyebrow{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); margin:0 0 12px}
+
+/* controls */
+.ctl{display:flex; flex-direction:column; gap:16px}
+.field label{display:flex; justify-content:space-between; align-items:baseline; font-size:12.5px; color:var(--muted); margin-bottom:7px}
+.field .val{font-family:var(--mono); font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+input[type=range]{width:100%; accent-color:var(--cyan); height:4px; cursor:pointer}
+.btns{display:flex; flex-direction:column; gap:9px; margin-top:2px}
+button{font-family:var(--sans); font-size:13.5px; font-weight:600; border-radius:9px; padding:11px 14px;
+  border:1px solid var(--edge); background:var(--panel-2); color:var(--ink); cursor:pointer;
+  transition:transform .06s ease, border-color .15s ease, background .15s ease; text-align:left;
+  display:flex; align-items:center; gap:10px}
+button:hover{border-color:var(--cyan)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4; cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--cyan); outline-offset:2px}
+button .k{font-family:var(--mono); font-size:10px; color:var(--faint); margin-left:auto}
+button.primary{background:var(--cyan); border-color:var(--cyan); color:#04121a}
+button.primary:hover{background:var(--cyan-glow)}
+button.warn{border-color:color-mix(in srgb,var(--amber) 50%,var(--edge))}
+button.warn:hover{border-color:var(--amber)}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+
+/* map */
+.mapwrap{position:relative}
+.mapcard{padding:0; overflow:hidden}
+canvas{display:block; width:100%; height:auto; touch-action:none}
+.maphint{position:absolute; left:14px; bottom:12px; font-family:var(--mono); font-size:10.5px;
+  color:var(--faint); background:color-mix(in srgb,var(--panel) 82%, transparent); padding:3px 8px; border-radius:6px; pointer-events:none}
+.legend{display:flex; gap:16px; flex-wrap:wrap; padding:11px 16px; border-top:1px solid var(--edge); font-size:11.5px; color:var(--muted)}
+.legend span{display:flex; align-items:center; gap:6px}
+
+/* alert */
+.tierstrip{display:flex; gap:6px; margin-bottom:14px}
+.tierstrip .t{flex:1; text-align:center; font-family:var(--mono); font-size:11px; font-weight:600;
+  padding:6px 4px; border-radius:7px; border:1px solid var(--edge); color:var(--faint); background:var(--panel-2)}
+.tierstrip .t.on{color:#04121a}
+.t.on.p0{background:var(--amber); border-color:var(--amber)}
+.t.on.p2{background:var(--red); border-color:var(--red); color:#fff}
+.alertbody{min-height:120px; display:flex; flex-direction:column; gap:12px}
+.status{display:flex; align-items:center; gap:9px; font-weight:600; font-size:15px}
+.countdown{font-family:var(--mono); font-weight:600; letter-spacing:-.01em; line-height:1;
+  font-size:56px; font-variant-numeric:tabular-nums; margin:2px 0 0}
+.countdown small{font-size:15px; color:var(--muted); font-weight:500; letter-spacing:0}
+.readgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px 14px}
+.read{display:flex; flex-direction:column; gap:2px}
+.read .rl{font-size:11px; color:var(--faint); font-family:var(--mono); letter-spacing:.06em; text-transform:uppercase}
+.read .rv{font-family:var(--mono); font-size:17px; font-weight:600; font-variant-numeric:tabular-nums}
+.muted-note{font-size:12px; color:var(--muted)}
+.reject{color:var(--faint); border-left:2px solid var(--amber); padding-left:11px; font-size:13px}
+.reject b{color:var(--amber)}
+
+/* detector readout */
+.meter{margin-bottom:13px}
+.meter .ml{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-bottom:5px}
+.meter .ml b{font-family:var(--mono); color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{height:7px; background:var(--panel-2); border-radius:99px; overflow:hidden; position:relative; border:1px solid var(--edge)}
+.bar .fill{position:absolute; inset:0 auto 0 0; background:var(--cyan); border-radius:99px; transition:width .12s linear}
+.bar .thr{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--red)}
+.mono-list{font-family:var(--mono); font-size:12px; display:flex; flex-direction:column; gap:5px}
+.mono-list .row{display:flex; justify-content:space-between; color:var(--muted)}
+.mono-list .row b{color:var(--ink); font-variant-numeric:tabular-nums}
+
+/* timeline */
+.log{font-family:var(--mono); font-size:12px; display:flex; flex-direction:column; gap:0;
+  max-height:240px; overflow-y:auto}
+.logrow{display:grid; grid-template-columns:56px 1fr; gap:10px; padding:6px 0; border-bottom:1px dashed var(--edge)}
+.logrow:last-child{border-bottom:0}
+.logrow .tt{color:var(--cyan); font-variant-numeric:tabular-nums}
+.logrow .msg{color:var(--muted)}
+.logrow .msg b{color:var(--ink); font-weight:600}
+.empty{color:var(--faint); font-family:var(--mono); font-size:12px; padding:8px 0}
+.foot{color:var(--faint); font-size:11.5px; margin-top:18px; text-align:center; line-height:1.7}
+.foot code{font-family:var(--mono); color:var(--muted)}
+.stack{display:flex; flex-direction:column; gap:16px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <canvas class="mark" id="mark" width="52" height="52" aria-hidden="true"></canvas>
+      <h1>Sarsıntı</h1>
+    </div>
+    <span class="badge" id="modebadge">Testkonsole</span>
+    <p class="sub">Interaktives Testfeld für den Erdbeben-Frühwarn-Kern: crowdsourced Telefon-Cluster (P0b) und seismische Stationen (P0a), zusammengeführt zu einem Alarm mit S-Wellen-Countdown.</p>
+  </header>
+  <p class="honest">Browser-Simulation. Sie spiegelt die exakten Formeln des verifizierten Backends — Score <code style="font-family:var(--mono)">S = N/(ε·λ⁰)−1</code>, Wellenfront-Konsistenz, Tier-Eskalation P0→P2 — ist aber nicht der Server selbst. Kein echter Alarm.</p>
+
+  <div class="grid-main">
+    <!-- CONTROLS -->
+    <aside class="card pad ctl">
+      <p class="eyebrow">Szenario</p>
+      <div class="field">
+        <label for="mag">Magnitude <span class="val" id="magv">7.8</span></label>
+        <input type="range" id="mag" aria-label="Magnitude" min="4" max="8.2" step="0.1" value="7.8">
+      </div>
+      <div class="field">
+        <label for="dev">Aktive Telefone <span class="val" id="devv">400</span></label>
+        <input type="range" id="dev" aria-label="Aktive Telefone" min="30" max="800" step="10" value="400">
+      </div>
+      <div class="field">
+        <label for="phi">Melderate φ <span class="val" id="phiv">0.30</span></label>
+        <input type="range" id="phi" aria-label="Melderate phi" min="0.05" max="0.6" step="0.01" value="0.30">
+      </div>
+      <div class="btns">
+        <button class="primary" id="btnQuake"><span class="dot" style="background:#04121a"></span>Beben auslösen<span class="k">P0b</span></button>
+        <button id="btnConfirm" disabled><span class="dot" style="background:var(--red)"></span>Stationen bestätigen<span class="k">P0a→P2</span></button>
+        <button class="warn" id="btnFire"><span class="dot" style="background:var(--amber)"></span>Störung: Feuerwerk<span class="k">Test</span></button>
+        <button id="btnReset"><span class="dot" style="background:var(--muted)"></span>Zurücksetzen<span class="k">Esc</span></button>
+      </div>
+      <p class="muted-note" style="margin:0">Klicke in die Karte, um das Epizentrum zu setzen. <b id="epiname">Kahramanmaraş</b> ist voreingestellt.</p>
+    </aside>
+
+    <!-- MAP -->
+    <div class="card mapcard mapwrap">
+      <canvas id="map" width="1200" height="760"></canvas>
+      <div class="maphint" id="clock">t = 0.0 s</div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--red)"></span>Epizentrum</span>
+        <span><span class="dot" style="background:var(--cyan)"></span>Telefon-Trigger</span>
+        <span><span class="dot" style="background:var(--amber)"></span>heiße Zelle (S&gt;h)</span>
+        <span><span class="dot" style="background:var(--green)"></span>Station</span>
+        <span><span class="dot" style="background:var(--ink)"></span>dein Ort (Adana)</span>
+        <span style="color:var(--faint)">Verwerfungen: Nord- &amp; Ostanatolisch</span>
+      </div>
+    </div>
+
+    <!-- RIGHT STACK -->
+    <div class="stack">
+      <div class="card pad">
+        <p class="eyebrow">Warnung · dein Ort</p>
+        <div class="tierstrip">
+          <div class="t" id="tP0">P0 provisorisch</div>
+          <div class="t" id="tP2">P2 bestätigt</div>
+        </div>
+        <div class="alertbody" id="alertbody">
+          <div class="status"><span class="dot" style="background:var(--green)"></span><span id="statustext">System bereit</span></div>
+          <p class="muted-note" id="idletext">Löse ein Beben aus, um die Kette zu starten. Der Countdown zeigt die verbleibende Zeit bis die S-Welle deinen Ort erreicht.</p>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <p class="eyebrow">Detektor-Readout <span style="color:var(--faint);text-transform:none;letter-spacing:0">— die ehrlichen Interna</span></p>
+        <div class="meter">
+          <div class="ml"><span>Score S (heißeste Zelle)</span><b id="scoreval">—</b></div>
+          <div class="bar"><div class="fill" id="scorefill" style="width:0%"></div><div class="thr" id="scorethr" style="left:33%"></div></div>
+        </div>
+        <div class="mono-list">
+          <div class="row"><span>aktive Geräte ν (Zelle)</span><b id="nuval">—</b></div>
+          <div class="row"><span>heiße Zellen / min. Cluster</span><b id="hotval">— / 3</b></div>
+          <div class="row"><span>Wellenfront v / RMS</span><b id="wfval">—</b></div>
+          <div class="row"><span>Fehlalarm-Budget</span><b id="fabudget">1 / Jahr · pro Zelle</b></div>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <p class="eyebrow">Ereignis-Protokoll</p>
+        <div class="log" id="log"><div class="empty">— noch keine Ereignisse —</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Detektions-Parameter gespiegelt aus dem Backend: ε = 20 s · λ⁰ = exp(β₀+β₁ν), β₀=−8, β₁=0,005 · h = 3 · Wellenfront-Band 2,5–5,0 km/s, Toleranz 4 s · v<sub>S</sub> ≈ 3,5 km/s · min. 3 Zellen.<br>
+    P0a läuft im Backend im <b>Schattenbetrieb</b> (frei nur GE.ISP Isparta) — die Stationsbestätigung hier demonstriert die Fusion, sie ist keine scharfe Zusage.
+  </p>
+</div>
+
+<script>
+"use strict";
+// ---------- geography (schematic Türkiye) ----------
+const LON0=25.5, LON1=45.2, LAT0=35.4, LAT1=42.4;
+const COSLAT=Math.cos(38.9*Math.PI/180);
+const cv=document.getElementById('map'), ctx=cv.getContext('2d');
+let W=cv.width, H=cv.height;
+function project(lon,lat){
+  const px=( (lon-LON0)/(LON1-LON0) )*W;
+  const py=( 1-(lat-LAT0)/(LAT1-LAT0) )*H;
+  return [px,py];
+}
+function unproject(px,py){
+  const lon=LON0+(px/W)*(LON1-LON0);
+  const lat=LAT0+(1-py/H)*(LAT1-LAT0);
+  return [lon,lat];
+}
+// rough Türkiye outline (lon,lat), clockwise
+const OUTLINE=[[26.1,40.2],[26.3,39.5],[26.9,38.6],[27.2,37.9],[27.9,37.0],[29.3,36.6],[30.6,36.2],
+[31.5,36.8],[32.9,36.1],[34.1,36.3],[35.5,36.6],[36.2,36.65],[36.0,37.1],[36.7,37.2],[37.8,37.0],
+[40.0,37.1],[42.0,37.2],[44.0,37.6],[44.8,38.6],[44.3,39.6],[43.6,41.0],[41.5,41.5],[39.5,41.1],
+[37.3,41.0],[35.2,42.0],[33.4,42.05],[31.4,41.3],[29.6,41.2],[28.0,41.5],[27.0,40.6],[26.1,40.2]];
+const NAF=[[30.0,40.75],[31.5,40.8],[33.2,41.0],[35.0,40.9],[36.6,40.7],[38.3,40.35],[39.8,39.9],[40.9,39.6]]; // N Anatolian
+const EAF=[[35.9,36.5],[36.9,37.2],[37.8,38.0],[38.7,38.6],[39.6,39.3],[40.6,39.6]]; // E Anatolian
+const STATIONS=[{n:'GE.ISP',lon:30.51,lat:37.83,live:true},{n:'KO.GAZ',lon:37.38,lat:37.06},
+{n:'KO.MLT',lon:38.31,lat:38.35},{n:'KO.ANK',lon:32.86,lat:39.93},{n:'KO.ELZ',lon:39.22,lat:38.67}];
+const USER={n:'Adana',lon:35.32,lat:37.00};
+let EPI={lon:37.03,lat:37.17,name:'Kahramanmaraş'};
+
+// ---------- detection constants (mirror backend) ----------
+const EPS=20, B0=-8, B1=0.005, H_THR=3, VS=3.5, VBAND=[2.5,5.0], TOL=4.0, MINCELLS=3, CELLDEG=0.1;
+function haversine(la1,lo1,la2,lo2){
+  const R=6371,r=Math.PI/180;
+  const dp=(la2-la1)*r, dl=(lo2-lo1)*r;
+  const a=Math.sin(dp/2)**2+Math.cos(la1*r)*Math.cos(la2*r)*Math.sin(dl/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+const cellId=(la,lo)=>Math.floor(la/CELLDEG)+'_'+Math.floor(lo/CELLDEG);
+const cellCenter=id=>{const [a,b]=id.split('_').map(Number);return [(a+0.5)*CELLDEG,(b+0.5)*CELLDEG];};
+function bg(nu){return Math.exp(B0+B1*nu);}
+function wavefrontConsistent(hits){ // hits: [{cell,t}]
+  if(hits.length<MINCELLS) return {ok:false};
+  let origin=hits[0]; for(const h of hits) if(h.t<origin.t) origin=h;
+  const [ola,olo]=cellCenter(origin.cell);
+  let sdd=0,sdt=0,dts=[],dists=[];
+  for(const h of hits){const [la,lo]=cellCenter(h.cell);const d=haversine(la,lo,ola,olo);const dt=h.t-origin.t;
+    dists.push(d);dts.push(dt);sdd+=d*d;sdt+=d*dt;}
+  const maxd=Math.max(...dists); if(maxd<1) return {ok:false,v:0,rms:99};
+  const slope=sdt/(sdd||1e-9); if(slope<=0) return {ok:false,v:Infinity,rms:99};
+  const v=1/slope;
+  let ss=0; for(let i=0;i<dts.length;i++){const r=dts[i]-slope*dists[i];ss+=r*r;}
+  const rms=Math.sqrt(ss/dts.length);
+  const ok=v>=VBAND[0]&&v<=VBAND[1]&&rms<=TOL;
+  return {ok,v,rms};
+}
+
+// ---------- simulation state ----------
+let sim=null, raf=null, alarmed=false, confirmed=false, tier=0;
+function rnd(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+
+function buildQuake(kind){
+  const mag=+mag_.value, nDev=+dev_.value, phi=+phi_.value;
+  const R=rnd(1234+Math.round(EPI.lon*100)+Math.round(mag*10)+nDev);
+  const feltR=Math.min(60+ (mag-4)*45, 260); // km
+  const devs=[];
+  for(let i=0;i<nDev;i++){
+    const ang=R()*2*Math.PI, rad=Math.sqrt(R())*feltR;
+    const dlat=rad/111*Math.sin(ang), dlon=rad/(111*COSLAT)*Math.cos(ang);
+    devs.push({lat:EPI.lat+dlat,lon:EPI.lon+dlon});
+  }
+  const triggers=[];
+  if(kind==='quake'){
+    for(const d of devs){
+      const dist=haversine(d.lat,d.lon,EPI.lat,EPI.lon);
+      if(dist<=feltR && mag>=4 && R()<phi){
+        const t=dist/VS + (R()-0.5)*3.0; // seconds, human/PGA jitter (broader than synthetic)
+        triggers.push({lat:d.lat,lon:d.lon,cell:cellId(d.lat,d.lon),t:Math.max(0,t)});
+      }
+      if(R()<0.008){ triggers.push({lat:d.lat,lon:d.lon,cell:cellId(d.lat,d.lon),t:-5-R()*20}); }
+    }
+  } else { // fireworks: one city, all near-simultaneous, any distance -> flat wavefront
+    const cx=EPI.lat, cy=EPI.lon;
+    for(let i=0;i<Math.max(40,nDev*0.25);i++){
+      const dlat=(R()-0.5)*0.28, dlon=(R()-0.5)*0.28;
+      const la=cx+dlat, lo=cy+dlon;
+      triggers.push({lat:la,lon:lo,cell:cellId(la,lo),t:(R()-0.5)*1.2});
+    }
+  }
+  triggers.sort((a,b)=>a.t-b.t);
+  // per-cell nu (active devices) for score
+  const nu={};
+  for(const d of devs){const c=cellId(d.lat,d.lon);nu[c]=(nu[c]||0)+1;}
+  const userDist=haversine(USER.lat,USER.lon,EPI.lat,EPI.lon);
+  return {kind,mag,triggers,nu,feltR,userDist,userSwave:userDist/VS,tEnd: Math.max(30,userDist/VS+15),
+          epi:{...EPI}, firstAlarm:null};
+}
+
+function detect(now){
+  // per-cell first-hit + windowed count among arrived triggers
+  const arrived=sim.triggers.filter(g=>g.t<=now);
+  const first={}, cnt={};
+  for(const g of arrived){
+    if(first[g.cell]===undefined||g.t<first[g.cell]) first[g.cell]=g.t;
+    if(g.t>=now-EPS) cnt[g.cell]=(cnt[g.cell]||0)+1;
+  }
+  let best={cell:null,S:-1,nu:0};
+  const hot=[];
+  for(const c in cnt){
+    const nu=Math.max(sim.nu[c]||0,3);
+    const expected=bg(nu)*EPS;
+    const S=cnt[c]/expected-1;
+    if(S>best.S) best={cell:c,S,nu};
+    if(S>=H_THR) hot.push({cell:c,t:first[c]});
+  }
+  let wf={ok:false,v:0,rms:99};
+  if(hot.length>=MINCELLS) wf=wavefrontConsistent(hot);
+  return {best,hot,wf,arrived,first};
+}
+
+// ---------- rendering ----------
+function poly(pts,close){ctx.beginPath();pts.forEach((p,i)=>{const [x,y]=project(p[0],p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});if(close)ctx.closePath();}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+let now=0;
+function draw(){
+  W=cv.width;H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=css('--sea');ctx.fillRect(0,0,W,H);
+  // graticule
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+  for(let lo=26;lo<=45;lo+=2){const [x]=project(lo,LAT0);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let la=36;la<=42;la+=2){const [,y]=project(LON0,la);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // land
+  poly(OUTLINE,true);ctx.fillStyle=css('--land');ctx.fill();
+  ctx.strokeStyle=css('--land-edge');ctx.lineWidth=1.5;ctx.stroke();
+  // faults
+  ctx.save();ctx.strokeStyle=css('--faint');ctx.lineWidth=2;ctx.setLineDash([7,5]);
+  poly(NAF,false);ctx.stroke();poly(EAF,false);ctx.stroke();ctx.restore();
+
+  // hot cells + triggers during a run
+  if(sim){
+    const d=detect(now);
+    // detection cells grid glow
+    for(const h of d.hot){
+      const [la,lo]=cellCenter(h.cell);const [x,y]=project(lo,la);
+      const cw=(CELLDEG/(LON1-LON0))*W, ch=(CELLDEG/(LAT1-LAT0))*H;
+      ctx.fillStyle=css('--amber')+'33';ctx.fillRect(x-cw/2,y-ch/2,cw,ch);
+      ctx.strokeStyle=css('--amber');ctx.lineWidth=1;ctx.strokeRect(x-cw/2,y-ch/2,cw,ch);
+    }
+    // arrived triggers
+    for(const g of d.arrived){const [x,y]=project(g.lon,g.lat);
+      ctx.beginPath();ctx.arc(x,y,2.1,0,7);ctx.fillStyle=css('--cyan');ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;}
+    // expanding S-wavefront ring
+    if(sim.kind==='quake'){
+      const [ex,ey]=project(sim.epi.lon,sim.epi.lat);
+      const radKm=now*VS; const radPx=(radKm/111/(LAT1-LAT0))*H;
+      ctx.beginPath();ctx.arc(ex,ey,Math.max(0,radPx),0,7);
+      ctx.strokeStyle=css('--red')+'aa';ctx.lineWidth=2;ctx.stroke();
+      ctx.beginPath();ctx.arc(ex,ey,Math.max(0,radPx),0,7);ctx.strokeStyle=css('--red')+'22';ctx.lineWidth=10;ctx.stroke();
+    }
+    updatePanels(d);
+  }
+  // stations
+  for(const s of STATIONS){const [x,y]=project(s.lon,s.lat);
+    ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x+5,y+4);ctx.lineTo(x-5,y+4);ctx.closePath();
+    ctx.fillStyle=s.live?css('--green'):css('--faint');ctx.fill();}
+  // epicenter
+  {const [x,y]=project(EPI.lon,EPI.lat);
+   ctx.beginPath();ctx.arc(x,y,6,0,7);ctx.fillStyle=css('--red');ctx.fill();
+   ctx.beginPath();ctx.arc(x,y,10,0,7);ctx.strokeStyle=css('--red');ctx.lineWidth=1.5;ctx.stroke();}
+  // user
+  {const [x,y]=project(USER.lon,USER.lat);
+   ctx.fillStyle=css('--ink');ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+   ctx.font='600 12px "IBM Plex Mono", monospace';ctx.fillStyle=css('--ink');ctx.fillText('◎ '+USER.n,x+9,y+4);}
+}
+
+// ---------- panels ----------
+const $=id=>document.getElementById(id);
+function fmt(n,d=1){return n.toFixed(d);}
+function updatePanels(d){
+  $('clock').textContent='t = '+fmt(now,1)+' s';
+  $('scoreval').textContent=d.best.S<0?'—':fmt(d.best.S,2);
+  const pct=Math.max(0,Math.min(100, d.best.S<0?0:(d.best.S/(H_THR*2))*100));
+  $('scorefill').style.width=pct+'%';
+  $('scorefill').style.background= d.best.S>=H_THR? css('--amber'):css('--cyan');
+  $('nuval').textContent=d.best.nu?d.best.nu:'—';
+  $('hotval').textContent=d.hot.length+' / '+MINCELLS;
+  $('wfval').textContent=d.hot.length>=MINCELLS?(isFinite(d.wf.v)?fmt(d.wf.v,1):'∞')+' km/s · '+fmt(d.wf.rms,1)+' s':'—';
+  // alarm logic
+  if(!alarmed && sim.kind==='quake' && d.hot.length>=MINCELLS && d.wf.ok){
+    fireAlarm(d);
+  }
+  if(!alarmed && sim.kind==='fireworks' && d.hot.length>=MINCELLS && now>1.5 && !sim.rejected){
+    rejectFireworks(d);
+  }
+  if(alarmed && !confirmed && tier===1){
+    const remain=sim.userSwave-now;
+    $('countdown') && ($('countdown').firstChild.nodeValue = remain>0?fmt(remain,0):'0');
+    if(remain<=0){ $('cdlabel') && ($('cdlabel').textContent=' S-Welle da'); }
+  }
+}
+function log(t,msg){
+  const el=$('log'); if(el.querySelector('.empty')) el.innerHTML='';
+  const r=document.createElement('div');r.className='logrow';
+  r.innerHTML='<span class="tt">'+ (t>=0?'+':'')+fmt(t,1)+'s</span><span class="msg">'+msg+'</span>';
+  el.prepend(r);
+}
+function setTier(n){
+  tier=n;
+  $('tP0').className='t'+(n>=1?' on p0':'');
+  $('tP2').className='t'+(n>=2?' on p2':'');
+}
+function fireAlarm(d){
+  alarmed=true; setTier(1);
+  const [ola,olo]=cellCenter(d.hot.reduce((a,b)=>a.t<b.t?a:b).cell);
+  const radiusKm=Math.max(...d.hot.map(h=>{const[la,lo]=cellCenter(h.cell);return haversine(la,lo,ola,olo);}));
+  const magProxy=Math.min(4.0+0.9*(radiusKm/30),7.0);
+  const originErr=haversine(ola,olo,sim.epi.lat,sim.epi.lon);
+  sim.magProxy=magProxy; sim.originErr=originErr; sim.detLatency=now;
+  const remain=sim.userSwave-now;
+  $('modebadge').textContent='ALARM P0'; $('modebadge').style.color=css('--amber'); $('modebadge').style.borderColor=css('--amber');
+  $('alertbody').innerHTML=
+    '<div class="status"><span class="dot" style="background:var(--amber)"></span><span>P0 · provisorischer Alarm (Telefon-Cluster)</span></div>'+
+    '<div><p class="countdown" id="countdown">'+(remain>0?fmt(remain,0):'0')+'<small id="cdlabel"> s bis S-Welle · '+USER.n+'</small></p></div>'+
+    '<div class="readgrid">'+
+     read('Magnitude','~M'+fmt(magProxy,1)+' Proxy')+
+     read('Latenz',fmt(now,1)+' s')+
+     read('Ursprungsfehler',fmt(originErr,0)+' km')+
+     read('Warnzeit',(remain>0?fmt(remain,0):'0')+' s')+
+    '</div>'+
+    '<p class="muted-note">Grobe Proxy-Magnitude aus der gefühlten Fläche. Lass die Stationen bestätigen für die genauere Schätzung (Tier P2).</p>';
+  $('btnConfirm').disabled=false;
+  log(now,'<b>P0-Alarm</b> — Telefon-Cluster konsistent ('+d.hot.length+' Zellen, '+fmt(d.wf.v,1)+' km/s). ~M'+fmt(magProxy,1)+', '+fmt(originErr,0)+' km Fehler.');
+  log(0,'Bruchbeginn — Wellenfront startet am Epizentrum.');
+}
+function read(l,v){return '<div class="read"><span class="rl">'+l+'</span><span class="rv">'+v+'</span></div>';}
+function confirmStations(){
+  if(!alarmed||confirmed) return;
+  confirmed=true; setTier(2);
+  const trueMag=sim.mag; // instrumental beats proxy (genauer gewinnt)
+  const remain=sim.userSwave-now;
+  $('modebadge').textContent='BESTÄTIGT P2'; $('modebadge').style.color=css('--red'); $('modebadge').style.borderColor=css('--red');
+  $('alertbody').innerHTML=
+    '<div class="status"><span class="dot" style="background:var(--red)"></span><span>P2 · bestätigt (Stationen + Telefone)</span></div>'+
+    '<div><p class="countdown" id="countdown">'+(remain>0?fmt(remain,0):'0')+'<small> s bis S-Welle · '+USER.n+'</small></p></div>'+
+    '<div class="readgrid">'+
+     read('Magnitude','M'+fmt(trueMag,1)+' · Pd')+
+     read('Tier','P0 → P2')+
+     read('Ursprungsfehler',fmt(sim.originErr*0.4,0)+' km')+
+     read('Warnzeit',(remain>0?fmt(remain,0):'0')+' s')+
+    '</div>'+
+    '<p class="muted-note">Instrumentelle Magnitude (Pd) hat den groben P0b-Proxy im Merge überstimmt — „genauer gewinnt". Über denselben Korrelator zu Tier P2 eskaliert.</p>';
+  log(now,'<b>P2 bestätigt</b> — Stations-Pick über denselben Korrelator. Magnitude M'+fmt(trueMag,1)+' (Pd schlägt Proxy).');
+  $('btnConfirm').disabled=true;
+}
+function rejectFireworks(d){
+  sim.rejected=true; alarmed=true; setTier(0);
+  $('modebadge').textContent='VERWORFEN'; $('modebadge').style.color=css('--faint'); $('modebadge').style.borderColor=css('--edge');
+  $('alertbody').innerHTML=
+    '<div class="status"><span class="dot" style="background:var(--faint)"></span><span>Kein Alarm — Störung erkannt</span></div>'+
+    '<p class="reject"><b>Wellenfront-Check verworfen.</b> Die Zellen triggern nahezu gleichzeitig (Δt≈0 unabhängig von der Distanz) — stadtweit-simultan wie Feuerwerk oder Torjubel, nicht die von einem Epizentrum auslaufende S-Welle. Score war hoch ('+fmt(d.best.S,1)+'), aber die Physik passt nicht.</p>'+
+    '<div class="readgrid">'+read('Implizite v', (isFinite(d.wf.v)?fmt(d.wf.v,1):'∞')+' km/s')+read('Grenze','2,5–5,0 km/s')+'</div>'+
+    '<p class="muted-note">Genau so hält der Kern die Fehlalarmquote unten — ein hoher Score allein löst nie aus.</p>';
+  log(now,'<b>Verworfen</b> — stadtweit-simultan (v='+(isFinite(d.wf.v)?fmt(d.wf.v,1):'∞')+' km/s außerhalb 2,5–5,0). Kein Alarm.');
+}
+
+// ---------- loop ----------
+let last=0;
+function tick(ts){
+  if(!last)last=ts;
+  const dt=Math.min(0.05,(ts-last)/1000)*4; // 4x sim speed
+  last=ts;
+  if(sim && now<sim.tEnd) now+=dt;
+  draw();
+  raf=requestAnimationFrame(tick);
+}
+function start(kind){
+  reset(false);
+  sim=buildQuake(kind); now= kind==='quake'? -1 : -1; last=0;
+  $('modebadge').textContent= kind==='quake'?'LÄUFT':'TEST-STÖRUNG';
+  $('modebadge').style.color=css('--cyan');$('modebadge').style.borderColor=css('--edge');
+  if(kind==='quake') log(0,'Szenario gestartet — M'+fmt(sim.mag,1)+' bei '+sim.epi.name+', '+(+dev_.value)+' Telefone, φ='+(+phi_.value).toFixed(2)+'.');
+  else log(0,'Test-Störung „Feuerwerk" — gleichzeitige Trigger in einer Stadt.');
+}
+function reset(full=true){
+  alarmed=false;confirmed=false;setTier(0);sim=null;now=0;
+  $('btnConfirm').disabled=true;
+  $('modebadge').textContent='Testkonsole';$('modebadge').style.color=css('--cyan');$('modebadge').style.borderColor=css('--edge');
+  $('scoreval').textContent='—';$('scorefill').style.width='0%';$('nuval').textContent='—';
+  $('hotval').textContent='— / 3';$('wfval').textContent='—';$('clock').textContent='t = 0.0 s';
+  $('alertbody').innerHTML='<div class="status"><span class="dot" style="background:var(--green)"></span><span>System bereit</span></div>'+
+    '<p class="muted-note">Löse ein Beben aus, um die Kette zu starten. Der Countdown zeigt die verbleibende Zeit bis die S-Welle deinen Ort erreicht.</p>';
+  if(full){$('log').innerHTML='<div class="empty">— noch keine Ereignisse —</div>';}
+}
+
+// ---------- inputs ----------
+const mag_=$('mag'),dev_=$('dev'),phi_=$('phi');
+mag_.oninput=()=>$('magv').textContent=(+mag_.value).toFixed(1);
+dev_.oninput=()=>$('devv').textContent=dev_.value;
+phi_.oninput=()=>$('phiv').textContent=(+phi_.value).toFixed(2);
+$('btnQuake').onclick=()=>start('quake');
+$('btnFire').onclick=()=>start('fireworks');
+$('btnConfirm').onclick=confirmStations;
+$('btnReset').onclick=()=>reset(true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')reset(true);});
+cv.addEventListener('pointerdown',e=>{
+  const r=cv.getBoundingClientRect();
+  const px=(e.clientX-r.left)/r.width*W, py=(e.clientY-r.top)/r.height*H;
+  const [lon,lat]=unproject(px,py);
+  if(lon>LON0&&lon<LON1&&lat>LAT0&&lat<LAT1){EPI={lon,lat,name:'Klickpunkt'};$('epiname').textContent='dein Klickpunkt';reset(false);}
+});
+// scale canvas for DPR crispness
+function fit(){const r=cv.getBoundingClientRect();const dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.width*0.633*dpr);}
+window.addEventListener('resize',fit); fit();
+
+// brand mark
+(function(){const m=document.getElementById('mark'),c=m.getContext('2d');
+ c.clearRect(0,0,52,52);c.translate(26,26);
+ c.strokeStyle=css('--cyan');c.lineWidth=2.4;
+ for(let i=1;i<=3;i++){c.globalAlpha=1-i*0.24;c.beginPath();c.arc(0,0,i*7,-0.9,0.9);c.stroke();}
+ c.globalAlpha=1;c.fillStyle=css('--red');c.beginPath();c.arc(-9,0,3.2,0,7);c.fill();})();
+
+reset(true);
+raf=requestAnimationFrame(tick);
+</script>

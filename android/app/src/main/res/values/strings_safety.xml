@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English (default) strings for the Safety / Beacon settings screen (SafetySettingsFragment).
+     Separate file so the TP-3 signal chain controls stay independent of strings.xml. -->
+<resources>
+    <string name="safety_section_signal">Distress signal</string>
+    <string name="safety_signal_whistle">Whistle sound</string>
+    <string name="safety_signal_screen_strobe">Screen strobe</string>
+    <string name="safety_signal_torch_strobe">Flashlight strobe</string>
+
+    <string name="safety_section_beacon">Beacon / Are-you-safe check</string>
+    <string name="safety_beacon_enabled">Enable automatic beacon</string>
+    <string name="safety_beacon_mmi_label">Trigger threshold (MMI)</string>
+    <string name="safety_beacon_mmi_value">MMI %1$d</string>
+    <string name="safety_grace_label">Grace period</string>
+    <string name="safety_grace_value">%1$d min</string>
+    <string name="safety_deadman_label">Dead-man countdown</string>
+    <string name="safety_deadman_value">%1$d s</string>
+
+    <string name="safety_section_dnd">Break through \"Do Not Disturb\"</string>
+    <string name="safety_dnd_bypass">Bypass Do Not Disturb for critical alerts</string>
+    <string name="safety_dnd_explain">Best effort: if granted, the app may sound a critical alert even while Do Not Disturb is on. Requires a one-time system permission.</string>
+    <string name="safety_btn_open_dnd_settings">Open system DND access settings</string>
+    <string name="safety_dnd_status_granted">System access: granted</string>
+    <string name="safety_dnd_status_not_granted">System access: not granted</string>
+
+    <string name="safety_section_test">Test</string>
+    <string name="safety_btn_test_signal_chain">Test signal chain (TEST)</string>
+    <string name="safety_test_toast">TEST signal chain armed — this is only a drill.</string>
+</resources>

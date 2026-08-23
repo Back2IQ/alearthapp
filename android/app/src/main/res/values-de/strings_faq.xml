@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German strings for the FAQ screen (FaqFragment). Mirrors webapp/index.html
+     (#view-faq / faq_q1..6 / faq_a1..6, German dictionary). -->
+<resources>
+    <string name="faq_title">FAQ</string>
+    <string name="faq_restart_onboarding">Onboarding neu starten</string>
+
+    <string name="faq_q1">Wie früh warnt TDA?</string>
+    <string name="faq_a1">Von wenigen bis zu einigen zehn Sekunden — je weiter du vom Epizentrum entfernt bist, desto mehr Vorwarnung. Vor dem Beben selbst kann sie nie warnen; sie ist schneller als die Erschütterung, nicht als die Zeit.</string>
+
+    <string name="faq_q2">Was bedeuten Magnitude, Tiefe und Radius?</string>
+    <string name="faq_a2">Magnitude ist die Stärke des Bebens (jede Stufe ist deutlich stärker). Tiefe ist, wie weit unter der Erde es begann (flacher = stärker spürbar). Radius ist die Entfernung um dich, innerhalb derer dich ein Beben betrifft.</string>
+
+    <string name="faq_q3">Warum kommt es zu Fehlalarmen — und wie erkennt TDA sie?</string>
+    <string name="faq_a3">Stadtweite, gleichzeitige Erschütterung ohne wandernde Wellenfront ist meist Feuerwerk oder Verkehr, kein Beben. TDA prüft auf eine sich ausbreitende Wellenfront, bevor es Alarm gibt, und kennzeichnet, was es herausfiltert.</string>
+
+    <string name="faq_q4">Was passiert offline / wenn das Netz ausfällt?</string>
+    <string name="faq_a4">Karte und Live-Daten brauchen Internet. Die Kern-Frühwarnlogik läuft lokal. Warnung und SOS von Handy zu Handy bei totem Netz funktionieren vollständig nur in der nativen App, nicht im Browser.</string>
+
+    <string name="faq_q5">Sind meine Standortdaten sicher?</string>
+    <string name="faq_a5">Das Detektionsnetz teilt nur eine grobe Rasterzelle plus Zeitstempel — nie deine genaue Position. Adresssuche und Reverse-Geocoding gehen direkt an OpenStreetMap.</string>
+
+    <string name="faq_q6">Woher kommen die Daten?</string>
+    <string name="faq_a6">Erdbeben von USGS und EMSC (und AFAD, wo verfügbar); andere Gefahren von NASA EONET und GDACS. USGS/EMSC/EONET laden direkt; GDACS/AFAD sind optional und brauchen den lokalen Server.</string>
+</resources>

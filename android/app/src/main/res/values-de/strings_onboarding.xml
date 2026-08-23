@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Deutsche Strings für den Erst-Start-Onboarding-Flow (OnboardingActivity),
+     inhaltlich 1:1 aus der Web-App übernommen (webapp/index.html #onboarding),
+     gekürzt auf die 6 nativen Schritte (kein GPS/Standort-Schritt, kein Ton-Schalter,
+     keine „hätte dich gewarnt"-Retro-Vorschau; siehe Auftrag zu OnboardingActivity). -->
+<resources>
+    <string name="ob_back">Zurück</string>
+    <string name="ob_skip">Überspringen</string>
+    <string name="ob_next">Weiter</string>
+    <string name="ob_finish">Fertig</string>
+    <string name="ob_step_cd">Schritt %1$d von %2$d</string>
+
+    <!-- Schritt 1: Willkommen -->
+    <string name="ob_title_1">Willkommen bei TDA</string>
+    <string name="ob_body_1">TDA warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.</string>
+
+    <!-- Schritt 2: Standort -->
+    <string name="ob_title_2">Wo sollen wir wachen?</string>
+    <string name="ob_body_2">Wähle eine Stadt. Du kannst das jederzeit in den Einstellungen ändern.</string>
+
+    <!-- Schritt 3: Schutzniveau -->
+    <string name="ob_title_3">Schutzniveau wählen</string>
+    <string name="ob_profile_cautious">Vorsichtig</string>
+    <string name="ob_profile_cautious_desc">Radius 500 km · ab M 2.5</string>
+    <string name="ob_profile_balanced">Ausgewogen</string>
+    <string name="ob_profile_balanced_desc">Radius 300 km · ab M 3.5</string>
+    <string name="ob_profile_strong">Nur Starkbeben</string>
+    <string name="ob_profile_strong_desc">Radius 150 km · ab M 5.0</string>
+    <string name="ob_profile_row_format">%1$s — %2$s</string>
+    <string name="ob_note_3">Magnitude = Stärke; Radius = wie weit weg dich ein Beben noch betrifft. Fein-Regler bleiben in den Einstellungen.</string>
+
+    <!-- Schritt 4: Alarme / Benachrichtigungen -->
+    <string name="ob_title_4">Alarme</string>
+    <string name="ob_body_4">Erlaube Benachrichtigungen, damit TDA dich auch erreicht, wenn die App im Hintergrund läuft.</string>
+    <string name="ob_btn_notify">Benachrichtigungen erlauben</string>
+
+    <!-- Schritt 5: Offline-Rettung -->
+    <string name="ob_title_5">Offline-Rettung</string>
+    <string name="ob_body_5">Fällt das Mobilfunknetz aus, kann diese App Warnungen und ein SOS von Handy zu Handy per Bluetooth weitergeben. Das funktioniert nur nativ hier -- ein Teil ist schon aktiv, der Rest folgt bald.</string>
+
+    <!-- Schritt 6: Probealarm -->
+    <string name="ob_title_6">So sieht ein Alarm aus</string>
+    <string name="ob_body_6">Probiere einen Übungsalarm, damit du Ton und Bildschirm im Ernstfall wiedererkennst.</string>
+    <string name="ob_btn_drill">Probe-Alarm zeigen</string>
+</resources>
