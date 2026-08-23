@@ -13,10 +13,16 @@ function bestSubscriptionMatch(device, event) {
     if (typeof sub.notifyMag !== "number" || typeof sub.radiusKm !== "number") {
       continue;
     }
+    if (typeof sub.lat !== "number" || typeof sub.lon !== "number") continue;
+    if (typeof event.mag !== "number") continue;
     const distanceKm = haversineKm(sub.lat, sub.lon, event.lat, event.lon);
     if (distanceKm > sub.radiusKm) continue;
     if (event.mag < sub.notifyMag) continue;
-    const tier = event.mag >= sub.alarmMag ? "alarm" : "notify";
+    // Defensive: a missing/NaN alarmMag must NEVER silently downgrade a strong
+    // quake to a quiet notification. Fall back to notifyMag so it still alarms.
+    const alarmMag =
+      typeof sub.alarmMag === "number" ? sub.alarmMag : sub.notifyMag;
+    const tier = event.mag >= alarmMag ? "alarm" : "notify";
     const candidate = { sub, distanceKm, tier };
     if (!best) {
       best = candidate;

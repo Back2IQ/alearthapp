@@ -76,6 +76,34 @@ object Alarm {
         runCatching { NotificationManagerCompat.from(ctx).notify(4201, n) }
     }
 
+    /** Dedup-Fenster: derselbe Event bleibt so lange „schon behandelt". */
+    private const val DEDUP_WINDOW_MS = 90_000L
+
+    /**
+     * Zentraler, DEDUPLIZIERTER Auslöser des lauten Alarms — von BEIDEN Pfaden genutzt
+     * (Vordergrund [WebBridge.onAlert] und Hintergrund [PushService]). Verhindert doppelte
+     * Vollbild-Alarme/Armierungen, wenn Web-Erkennung UND FCM-Push für dieselbe Event-ID
+     * feuern, während die App vorne ist. Dedup liegt in [Prefs] (geräteweit geteilt).
+     */
+    fun dispatch(ctx: Context, p: Payload, tier: Eew.Tier, mmi: Double, isTest: Boolean, foreground: Boolean) {
+        Prefs.init(ctx)
+        val now = System.currentTimeMillis()
+        val alreadyHandled = Prefs.lastAlarmId == p.id && (now - Prefs.lastAlarmTs) < DEDUP_WINDOW_MS
+        if (alreadyHandled) return
+        Prefs.lastAlarmId = p.id
+        Prefs.lastAlarmTs = now
+        postFullScreen(ctx, p)
+        if (foreground) launchDirect(ctx, p)
+        maybeArm(ctx, mmi, tier, isTest)
+    }
+
+    /** Setzt das Dedup zurück (z. B. nach Entwarnung), damit dieselbe ID erneut alarmieren darf. */
+    fun clearDedup(ctx: Context) {
+        Prefs.init(ctx)
+        Prefs.lastAlarmId = ""
+        Prefs.lastAlarmTs = 0L
+    }
+
     /** Nachbeben-Wache/Beacon nur bei starkem, bestätigtem Beben und wenn aktiviert. */
     fun maybeArm(ctx: Context, mmi: Double, tier: Eew.Tier, isTest: Boolean) {
         if (!isTest && Prefs.beaconEnabled && mmi >= Prefs.beaconMmiThreshold) {

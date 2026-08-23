@@ -22,8 +22,6 @@ import org.json.JSONObject
  */
 class WebBridge(private val activity: Activity) {
 
-    private var lastAlarmId: String? = null
-
     /**
      * json: { id, lat, lon, depthKm, originTs, mag, tier ("P0"|"P1"|"P2"), mmi,
      *         userLat, userLon, cityName, sound (optional bool), test (optional bool) }
@@ -51,13 +49,7 @@ class WebBridge(private val activity: Activity) {
             cityName = o.optString("cityName"), sound = o.optBoolean("sound", true)
         )
         activity.runOnUiThread {
-            val firstForId = lastAlarmId != id
-            lastAlarmId = id
-            if (firstForId) {
-                Alarm.postFullScreen(activity, payload)
-                Alarm.launchDirect(activity, payload)
-            }
-            Alarm.maybeArm(activity, mmi, tier, isTest)
+            Alarm.dispatch(activity, payload, tier, mmi, isTest, foreground = true)
         }
     }
 
@@ -120,7 +112,7 @@ class WebBridge(private val activity: Activity) {
     @JavascriptInterface
     fun onAlertCleared() {
         activity.runOnUiThread {
-            lastAlarmId = null
+            Alarm.clearDedup(activity)
             runCatching { AlarmService.stop(activity) }
         }
     }

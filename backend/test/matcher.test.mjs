@@ -69,6 +69,21 @@ test("tier is alarm once mag >= alarmMag", () => {
   assert.equal(pushes[0].tier, "alarm");
 });
 
+test("missing/NaN alarmMag does not silently downgrade a strong quake to notify (I2 regression)", () => {
+  const events = [
+    { id: "e1", lat: IZMIR.lat, lon: IZMIR.lon, depthKm: 10, mag: 7.0, originTs: 1, place: "x", src: "usgs" },
+  ];
+  const devices = [
+    // corrupt/legacy subscription with no alarmMag at all
+    device("tok1", [
+      { lat: IZMIR.lat, lon: IZMIR.lon, label: "home", notifyMag: 4.0, radiusKm: 100 },
+    ]),
+  ];
+  const pushes = matchEvents(events, devices);
+  assert.equal(pushes.length, 1);
+  assert.equal(pushes[0].tier, "alarm"); // falls back to notifyMag, so M7 still alarms
+});
+
 test("exactly one push per device even with multiple matching subscriptions; strongest wins", () => {
   const events = [
     { id: "e1", lat: IZMIR.lat, lon: IZMIR.lon, depthKm: 10, mag: 6.5, originTs: 1, place: "x", src: "usgs" },

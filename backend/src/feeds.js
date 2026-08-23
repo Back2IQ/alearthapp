@@ -4,25 +4,45 @@
 const USGS_URL =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
 
-/** Normalize a single USGS GeoJSON feature into our internal event shape. */
+/**
+ * Normalize a single USGS GeoJSON feature into our internal event shape.
+ * Returns null for malformed features (missing geometry/coordinates/id) instead
+ * of throwing — USGS occasionally emits features with geometry:null, and one bad
+ * feature must never discard the whole poll batch (would cause missed alarms).
+ */
 export function normalizeUsgsFeature(feature) {
-  const [lon, lat, depthKm] = feature.geometry.coordinates;
+  if (!feature || !feature.id) return null;
+  const coords = feature.geometry && feature.geometry.coordinates;
+  if (!Array.isArray(coords) || coords.length < 2) return null;
+  const [lon, lat, depthKm] = coords;
+  if (typeof lat !== "number" || typeof lon !== "number") return null;
+  const props = feature.properties || {};
   return {
     id: feature.id,
     lat,
     lon,
-    depthKm,
-    mag: feature.properties.mag,
-    originTs: feature.properties.time,
-    place: feature.properties.place,
+    depthKm: typeof depthKm === "number" ? depthKm : 10,
+    mag: props.mag,
+    originTs: props.time,
+    place: props.place,
     src: "usgs",
   };
 }
 
-/** Parse a full USGS GeoJSON FeatureCollection into normalized events. */
+/**
+ * Parse a full USGS GeoJSON FeatureCollection into normalized events.
+ * Each feature is normalized defensively; malformed features are skipped, never
+ * fatal to the batch.
+ */
 export function parseUsgsGeoJson(geojson) {
   if (!geojson || !Array.isArray(geojson.features)) return [];
-  return geojson.features.map(normalizeUsgsFeature);
+  const out = [];
+  for (const f of geojson.features) {
+    let ev = null;
+    try { ev = normalizeUsgsFeature(f); } catch { ev = null; }
+    if (ev) out.push(ev);
+  }
+  return out;
 }
 
 /** Fetch + normalize the USGS feed. Never throws — returns [] on failure. */

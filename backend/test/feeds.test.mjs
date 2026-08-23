@@ -53,6 +53,22 @@ test("parseUsgsGeoJson handles missing/malformed input gracefully", () => {
   assert.deepEqual(parseUsgsGeoJson({}), []);
 });
 
+test("parseUsgsGeoJson skips malformed features but keeps valid ones (C1 regression)", () => {
+  const mixed = {
+    type: "FeatureCollection",
+    features: [
+      { id: "bad1", properties: { mag: 6.8, time: 1 }, geometry: null }, // geometry:null
+      { id: "bad2", geometry: { coordinates: [10] } },                   // too-short coords, no props
+      fixture.features[1],                                               // valid M5.8
+      { properties: { mag: 5 }, geometry: { coordinates: [1, 2, 3] } },  // missing id
+    ],
+  };
+  const events = parseUsgsGeoJson(mixed);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].id, "us7000abce");
+  assert.equal(events[0].mag, 5.8);
+});
+
 test("dedup: same id across sources/polls is only new once, cap evicts oldest", () => {
   const dedup = createDedup(2);
   assert.equal(dedup.isNew("a"), true);

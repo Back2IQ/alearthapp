@@ -38,9 +38,8 @@ class PushService : FirebaseMessagingService() {
                 cityName = (d["matchedLabel"] ?: d["cityName"] ?: ""),
                 sound = d["sound"]?.let { it != "false" } ?: true
             )
-            Alarm.postFullScreen(applicationContext, p)
             val tier = when (tierStr) { "P2" -> Eew.Tier.P2; "P1" -> Eew.Tier.P1; else -> Eew.Tier.P0 }
-            Alarm.maybeArm(applicationContext, mmi, tier, isTest)
+            Alarm.dispatch(applicationContext, p, tier, mmi, isTest, foreground = false)
         } else {
             val mag = d["mag"] ?: "?"
             val place = (d["matchedLabel"]?.takeIf { it.isNotEmpty() } ?: d["cityName"] ?: "")

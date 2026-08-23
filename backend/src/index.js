@@ -50,9 +50,19 @@ async function main() {
     console.log(`[server] listening on :${PORT}`);
   });
 
-  // Run once at startup, then on the interval. Never let a failed poll
-  // crash the process.
-  pollOnce().catch((err) => console.error("[poll] unexpected error:", err));
+  // Prime the dedup with the events already in the feed so a restart/redeploy
+  // does NOT re-alarm every device about the last hour of quakes. Best-effort:
+  // on failure the set stays empty and the next poll behaves normally.
+  try {
+    const initial = await pollAllSources();
+    dedupEvents(initial, dedup); // records ids as seen; no matching, no push
+    lastPollTs = Date.now();
+    console.log(`[poll] primed dedup with ${initial.length} existing event(s)`);
+  } catch (err) {
+    console.error("[poll] prime failed:", err.message);
+  }
+
+  // Then poll on the interval. Never let a failed poll crash the process.
   const timer = setInterval(() => {
     pollOnce().catch((err) => console.error("[poll] unexpected error:", err));
   }, POLL_INTERVAL_MS);

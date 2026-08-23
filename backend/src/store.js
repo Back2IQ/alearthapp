@@ -21,14 +21,21 @@ export function createStore(filePath) {
         }
       }
     } catch (err) {
-      if (err.code !== "ENOENT") throw err;
-      // no file yet — start empty
+      if (err.code === "ENOENT") return; // no file yet — start empty
+      // Corrupt/unreadable store (bad JSON, half-written file): back it up and
+      // start empty rather than crash the whole backend on startup (which would
+      // take down all alarm delivery).
+      console.error("[store] load failed, starting empty:", err.message);
+      try {
+        await fs.rename(filePath, `${filePath}.corrupt.${Date.now()}`);
+      } catch { /* best-effort backup */ }
     }
   }
 
   async function save() {
     await ensureDir();
-    const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+    const rand = Math.random().toString(36).slice(2);
+    const tmpPath = `${filePath}.${process.pid}.${Date.now()}.${rand}.tmp`;
     const data = JSON.stringify(Array.from(devices.values()), null, 2);
     await fs.writeFile(tmpPath, data, "utf8");
     await fs.rename(tmpPath, filePath);

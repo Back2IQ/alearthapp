@@ -37,6 +37,8 @@ object Prefs {
     private const val KEY_FCM_TOKEN = "fcm_token"
     private const val KEY_BACKEND_URL = "backend_url"
     private const val KEY_PUSH_SUBS = "push_subscriptions"
+    private const val KEY_LAST_ALARM_ID = "last_alarm_id"
+    private const val KEY_LAST_ALARM_TS = "last_alarm_ts"
 
     private lateinit var prefs: SharedPreferences
 
@@ -192,4 +194,14 @@ object Prefs {
     var pushSubscriptions: String
         get() = prefs.getString(KEY_PUSH_SUBS, "") ?: ""
         set(v) { prefs.edit().putString(KEY_PUSH_SUBS, v).apply() }
+
+    /** Zuletzt ausgelöste Alarm-Event-ID — geteiltes Dedup zwischen Web- und Push-Pfad. */
+    var lastAlarmId: String
+        get() = prefs.getString(KEY_LAST_ALARM_ID, "") ?: ""
+        set(v) { prefs.edit().putString(KEY_LAST_ALARM_ID, v).apply() }
+
+    /** Zeitstempel (ms) des letzten Alarms — für das Dedup-Zeitfenster. */
+    var lastAlarmTs: Long
+        get() = prefs.getLong(KEY_LAST_ALARM_TS, 0L)
+        set(v) { prefs.edit().putLong(KEY_LAST_ALARM_TS, v).apply() }
 }
