@@ -1348,10 +1348,26 @@ function launchAlert(p) {
   $("escalationBox").classList.remove("show");
   renderAlert(); initAlertMap(State.activeAlert); startCountdown();
   playAlarmSound(p.tier === "P2");
+  notifyNativeAlert(State.activeAlert);
 }
 function updateAlert(p) {
   const a=State.activeAlert; if(!a||p.id!==a.id) return;
-  if (p.tier==="P2" && a.tier!=="P2") { a.tier="P2"; a.mag=p.mag; a.state=p.state; a.src=p.src; $("escalationBox").classList.add("show"); renderAlert(); playAlarmSound(true); }
+  if (p.tier==="P2" && a.tier!=="P2") { a.tier="P2"; a.mag=p.mag; a.state=p.state; a.src=p.src; $("escalationBox").classList.add("show"); renderAlert(); playAlarmSound(true); notifyNativeAlert(a); }
+}
+/* Hybrid-Brücke: löst in der nativen App-Hülle den DND-durchdringenden Vollbild-Alarm
+   + Nachbeben-/Beacon-Kette aus (no-op im reinen Browser). */
+function notifyNativeAlert(a){
+  try{
+    if(a && window.AndroidBridge && AndroidBridge.onAlert){
+      AndroidBridge.onAlert(JSON.stringify({
+        id:a.id, lat:a.lat, lon:a.lon, depthKm:a.depthKm||10,
+        originTs:a.originTs, mag:a.mag, tier:a.tier,
+        mmi:Eew.mmi(a.mag, a.distKm),
+        userLat:State.loc.lat, userLon:State.loc.lon, cityName:State.loc.name||"",
+        test:!!a.test
+      }));
+    }
+  }catch(e){}
 }
 function renderAlert() {
   const a=State.activeAlert; if(!a) return;
@@ -1399,7 +1415,7 @@ function startCountdown() {
   };
   tick(); countdownTimer=setInterval(tick,1000);
 }
-function closeAlert(){ $("alertOverlay").classList.remove("show"); clearInterval(countdownTimer); }
+function closeAlert(){ $("alertOverlay").classList.remove("show"); clearInterval(countdownTimer); try{ if(window.AndroidBridge && AndroidBridge.onAlertCleared) AndroidBridge.onAlertCleared(); }catch(e){} }
 
 /* ==========================================================================
    Report

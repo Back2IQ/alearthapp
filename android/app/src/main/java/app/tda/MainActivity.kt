@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         webView = findViewById(R.id.webView)
+        webView.addJavascriptInterface(WebBridge(this), "AndroidBridge")
         with(webView.settings) {
             javaScriptEnabled = true
             domStorageEnabled = true
