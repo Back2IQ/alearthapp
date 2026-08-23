@@ -55,6 +55,24 @@ class TriggerGate:
         return True
 
 
+def evaluate_trigger(
+    trigger: PhoneTrigger,
+    token: str,
+    *,
+    verifier: AttestationVerifier,
+    limiter: RateLimiter,
+    gate: TriggerGate,
+) -> PhoneTrigger | None:
+    """Shared accept decision for one trigger, used by both the async gateway
+    and the sync HTTP ingest. Returns the trigger with server-authoritative
+    attest_ok set when the clock gate AND rate limit pass; None otherwise.
+    A failing attestation only sets attest_ok=False (weighting), never drops."""
+    if not (gate.accept(trigger) and limiter.allow(trigger.device_hash, trigger.received_ms)):
+        return None
+    ok = verifier.verify(trigger.device_hash, token)
+    return replace(trigger, attest_ok=ok)
+
+
 async def run_trigger_gateway(
     incoming: AsyncIterator[tuple[PhoneTrigger, str]],
     stream: EventStream,
@@ -64,8 +82,7 @@ async def run_trigger_gateway(
     gate: TriggerGate,
 ) -> None:
     async for trigger, token in incoming:
-        ok = verifier.verify(trigger.device_hash, token)
-        if not (gate.accept(trigger) and limiter.allow(trigger.device_hash, trigger.received_ms)):
-            continue
-        # attest_ok is authoritative from the server, not from the client claim
-        await stream.append(serialize_trigger(replace(trigger, attest_ok=ok)))
+        accepted = evaluate_trigger(trigger, token, verifier=verifier,
+                                    limiter=limiter, gate=gate)
+        if accepted is not None:
+            await stream.append(serialize_trigger(accepted))

@@ -1,6 +1,7 @@
 import asyncio
 from tda_server.p0b.gateway import (
     AllowlistVerifier, RateLimiter, TriggerGate, run_trigger_gateway,
+    evaluate_trigger,
 )
 from tda_server.p0b.signals import PhoneTrigger, deserialize_trigger
 from tda_server.stream.base import InMemoryStream
@@ -41,3 +42,31 @@ async def test_gateway_writes_only_accepted():
                 return
     await asyncio.wait_for(drain(), timeout=1)
     assert len(got) == 1 and got[0].device_hash == "good" and got[0].attest_ok is True
+
+
+def test_evaluate_trigger_accepts_and_stamps_attest():
+    verifier = AllowlistVerifier({"good"})
+    limiter = RateLimiter(max_per_window=10, window_ms=1000)
+    gate = TriggerGate()
+    out = evaluate_trigger(trig("good", 1000), "tok",
+                           verifier=verifier, limiter=limiter, gate=gate)
+    assert out is not None and out.attest_ok is True and out.device_hash == "good"
+
+
+def test_evaluate_trigger_rejects_bad_clock():
+    verifier = AllowlistVerifier({"good"})
+    limiter = RateLimiter(max_per_window=10, window_ms=1000)
+    gate = TriggerGate()
+    assert evaluate_trigger(trig("good", 1000, unc=9000), "tok",
+                            verifier=verifier, limiter=limiter, gate=gate) is None
+
+
+def test_evaluate_trigger_unknown_device_is_accepted_but_not_attested():
+    # attestation failing must NOT drop the trigger (spec: never gate on a
+    # binary attest verdict); it only sets attest_ok=False for weighting.
+    verifier = AllowlistVerifier({"good"})
+    limiter = RateLimiter(max_per_window=10, window_ms=1000)
+    gate = TriggerGate()
+    out = evaluate_trigger(trig("stranger", 1000), "tok",
+                           verifier=verifier, limiter=limiter, gate=gate)
+    assert out is not None and out.attest_ok is False
