@@ -1344,6 +1344,9 @@ function loadPrefs() {
   } catch(e) {}
 }
 function savePrefs() {
+  // Invariante: die Alarm-Schwelle darf nie unter der Benachrichtigungs-Schwelle liegen
+  // (sonst wird die leise Stufe unerreichbar und alles alarmiert laut).
+  if (Number.isFinite(Settings.minMag) && Number.isFinite(Settings.alarmMinMag) && Settings.alarmMinMag < Settings.minMag) Settings.alarmMinMag = Settings.minMag;
   try { localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, loc:State.loc, places:State.places, activeTab:State.activeTab })); } catch(e) {}
   schedulePushSync();
 }
@@ -1462,7 +1465,8 @@ function updateAlert(p) {
 function notifyNativeAlert(a){
   try{
     // Lauter Native-Alarm nur ab der eingestellten Alarm-Schwelle (Benachrichtigung darunter).
-    if(a && a.mag >= (Settings.alarmMinMag ?? 6) && window.AndroidBridge && AndroidBridge.onAlert){
+    const alarmTh = Number.isFinite(Settings.alarmMinMag) ? Settings.alarmMinMag : 6;
+    if(a && a.mag >= alarmTh && window.AndroidBridge && AndroidBridge.onAlert){
       AndroidBridge.onAlert(JSON.stringify({
         id:a.id, lat:a.lat, lon:a.lon, depthKm:a.depthKm||10,
         originTs:a.originTs, mag:a.mag, tier:a.tier,
