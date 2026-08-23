@@ -65,5 +65,23 @@
                 android:value="earthquake aftershock watch and local survival beacon" />
         </service>
 
+        <service
+            android:name=".QuakeSensorService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="crowdsourced_earthquake_sensing" />
+        </service>
+
+        <receiver
+            android:name=".PowerConnectionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>

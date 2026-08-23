@@ -140,6 +140,7 @@
 
     <!-- TP-3 service + beacon -->
     <string name="svc_watching">Watching for aftershocks</string>
+    <string name="crowd_svc_running">Listening for shaking while charging</string>
     <string name="svc_grace">Strong quake — you have time to act. Tap when safe.</string>
     <string name="svc_beacon">Emergency beacon active</string>
     <string name="beacon_ask_title">Are you safe?</string>
