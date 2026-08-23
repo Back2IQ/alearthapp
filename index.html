@@ -620,6 +620,7 @@
         <span id="lblSound">Alarm sound</span>
         <label class="switch"><input type="checkbox" id="soundSwitch" checked><span class="slider"></span></label>
       </div>
+      <button class="btn wide" id="btnPickSound" style="margin-top:12px; display:none">🔔 <span id="btnPickSoundText">Choose alarm sound</span></button>
       <div class="toggle-row" style="margin-top:16px">
         <span id="lblNotifyRealtime">Real-time detections</span>
         <label class="switch"><input type="checkbox" id="ntfRealtime" checked><span class="slider"></span></label>
@@ -892,7 +893,7 @@ const STR = {
     recenter:"Recenter", refresh:"Refresh", map_offline:"Map needs an internet connection.", you_label:"You",
     adv_title:"Advanced", lbl_units:"Distance units", lbl_radius:"Alert radius", lbl_minmag:"Minimum magnitude",
     desc_radius:"Only earthquakes within this distance concern you.", desc_minmag:"Weaker quakes are shown on the map but never alarm.",
-    lbl_sound:"Alarm sound", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
+    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
     ago_min:"%1 min ago", ago_hour:"%1 h ago", ago_day:"%1 d ago", just_now:"just now",
     lbl_hazards:"Show other natural disasters", lg_hazards:"other hazards",
     hz_wildfire:"Wildfire", hz_storm:"Severe storm", hz_volcano:"Volcano", hz_flood:"Flood", hz_ice:"Sea/lake ice", hz_drought:"Drought", hz_landslide:"Landslide", hz_temp:"Extreme temperature", hz_other:"Hazard", hz_tsunami:"Tsunami", hz_cyclone:"Cyclone", hz_source:"Source", hz_alert_red:"Red alert", hz_alert_orange:"Orange alert", hz_alert_green:"Advisory",
@@ -1001,7 +1002,7 @@ const STR = {
     recenter:"Zentrieren", refresh:"Aktualisieren", map_offline:"Karte benötigt eine Internetverbindung.", you_label:"Sie",
     adv_title:"Erweitert", lbl_units:"Entfernungseinheit", lbl_radius:"Warnradius", lbl_minmag:"Mindestmagnitude",
     desc_radius:"Nur Erdbeben innerhalb dieser Entfernung betreffen Sie.", desc_minmag:"Schwächere Beben erscheinen auf der Karte, lösen aber nie Alarm aus.",
-    lbl_sound:"Alarmton", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
+    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
     ago_min:"vor %1 Min.", ago_hour:"vor %1 Std.", ago_day:"vor %1 T.", just_now:"gerade eben",
     lbl_hazards:"Andere Naturkatastrophen anzeigen", lg_hazards:"andere Gefahren",
     hz_wildfire:"Waldbrand", hz_storm:"Schwerer Sturm", hz_volcano:"Vulkan", hz_flood:"Überschwemmung", hz_ice:"Meer-/Seeeis", hz_drought:"Dürre", hz_landslide:"Erdrutsch", hz_temp:"Extreme Temperatur", hz_other:"Gefahr", hz_tsunami:"Tsunami", hz_cyclone:"Wirbelsturm", hz_source:"Quelle", hz_alert_red:"Rote Warnung", hz_alert_orange:"Orange Warnung", hz_alert_green:"Hinweis",
@@ -1406,7 +1407,7 @@ function notifyNativeAlert(a){
         originTs:a.originTs, mag:a.mag, tier:a.tier,
         mmi:Eew.mmi(a.mag, a.distKm),
         userLat:State.loc.lat, userLon:State.loc.lon, cityName:State.loc.name||"",
-        lang:lang, test:!!a.test
+        lang:lang, sound:Settings.sound!==false, test:!!a.test
       }));
     }
   }catch(e){}
@@ -2300,7 +2301,7 @@ function applyLanguage() {
   set("mapFallback","map_offline"); set("lgYou","you_label"); renderHazLegend();
   set("advTitle","adv_title"); set("lblUnits","lbl_units"); set("lblRadius","lbl_radius"); set("lblMinMag","lbl_minmag");
   set("descRadius","desc_radius"); set("descMinMag","desc_minmag");
-  set("lblSound","lbl_sound"); set("lblNotifyRealtime","lbl_ntf_realtime"); set("lblNotifyReports","lbl_ntf_reports");
+  set("lblSound","lbl_sound"); set("btnPickSoundText","pick_sound"); set("lblNotifyRealtime","lbl_ntf_realtime"); set("lblNotifyReports","lbl_ntf_reports");
   set("lblHazards","lbl_hazards");
   set("netTitle","net_title"); set("netJoinLabel","net_join"); set("netOnlineLabel","net_online_label");
   set("btnTrigger","net_trigger_btn"); set("netNote","net_note");
@@ -2485,6 +2486,10 @@ function bind() {
   $("rngMinMag").oninput=e=>{ Settings.minMag=parseFloat(e.target.value); $("valMinMag").textContent=`M ${Settings.minMag.toFixed(1)}`; };
   $("rngMinMag").onchange=savePrefs;
   $("soundSwitch").onchange=e=>{ Settings.sound=e.target.checked; savePrefs(); };
+  if (window.AndroidBridge && AndroidBridge.pickAlarmSound) {
+    $("btnPickSound").style.display="";
+    $("btnPickSound").onclick=()=>{ try{ AndroidBridge.pickAlarmSound(); }catch(e){} };
+  }
   $("ntfRealtime").onchange=e=>{ Settings.notifyRealtime=e.target.checked; savePrefs(); };
   $("ntfReports").onchange=e=>{ Settings.notifyReports=e.target.checked; savePrefs(); };
   $("devSwitch").onchange = e => { Settings.devMode = e.target.checked; applyDevMode(); savePrefs(); };
