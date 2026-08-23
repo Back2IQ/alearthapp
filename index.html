@@ -310,6 +310,9 @@
   .ob-slider-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
   .ob-slider-row label { color:var(--muted); font-size:.85rem; min-width:78px; }
   .ob-slider-row input[type=range] { flex:1; min-width:0; }
+  .ob-seg-row { display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .ob-seg-row label { color:var(--muted); font-size:.85rem; min-width:78px; }
+  .ob-seg-row .seg { flex:1; }
   .ob-mark { width:56px; height:56px; border-radius:16px; display:grid; place-items:center; font-size:1.6rem; margin-bottom:16px;
     background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent-2) 45%,transparent)); }
   .ob-profiles { display:flex; flex-direction:column; gap:10px; margin:6px 0 14px; }
@@ -379,8 +382,7 @@
       <input type="text" id="addrInput" autocomplete="off" spellcheck="false" placeholder="Search address or place…">
       <div class="results" id="results"></div>
     </div>
-    <p class="hint" id="searchHint">Optional — needs internet. Or pick a city:</p>
-    <div class="chips" id="cityChips"></div>
+    <p class="hint" id="searchHint">Optional — needs internet.</p>
   </div>
   </section>
 
@@ -745,6 +747,23 @@
         <div class="ob-slider-row"><label id="obAlarmMagLbl">Magnitude</label><input type="range" id="obAlarmMag" min="4" max="8" step="0.5"></div>
       </div>
       <div class="toggle-row" style="margin-top:14px"><span id="obStormFloodLbl">Also warn about storms &amp; floods?</span><label class="switch"><input type="checkbox" id="obStormFlood"><span class="slider"></span></label></div>
+      <div id="obHazSettings" hidden style="margin-top:12px">
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obStormH">Storms</b></div>
+          <div class="ob-seg-row"><label id="obStormNotifLbl">Notify from</label><div class="seg" id="obStormNotify"></div></div>
+          <div class="ob-seg-row"><label id="obStormAlarmLbl">Alarm from</label><div class="seg" id="obStormAlarm"></div></div>
+        </div>
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obFloodH">Floods</b></div>
+          <div class="ob-seg-row"><label id="obFloodNotifLbl">Notify from</label><div class="seg" id="obFloodNotify"></div></div>
+          <div class="ob-seg-row"><label id="obFloodAlarmLbl">Alarm from</label><div class="seg" id="obFloodAlarm"></div></div>
+        </div>
+        <div class="ob-level">
+          <div class="ob-level-head"><b id="obTsunamiH">Tsunami</b></div>
+          <div class="ob-seg-row"><label id="obTsunamiNotifLbl">Notify from</label><div class="seg" id="obTsunamiNotify"></div></div>
+          <div class="ob-seg-row"><label id="obTsunamiAlarmLbl">Alarm from</label><div class="seg" id="obTsunamiAlarm"></div></div>
+        </div>
+      </div>
       <p class="ob-fine" id="ob3fine">Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.</p>
     </div>
     <div class="ob-card" data-ob="5" hidden>
@@ -824,7 +843,7 @@ const STR = {
     hero_confirmed_t:"Earthquake confirmed", hero_confirmed_s:"Follow the on-screen guidance",
     hero_disturbance_t:"False alarm avoided", hero_disturbance_s:"That was not a real earthquake",
     loc_title:"Your location", loc_use_gps:"Use my location",
-    loc_search_ph:"Search address or place…", loc_search_hint:"Optional — needs internet. Or pick a city:",
+    loc_search_ph:"Search address or place…", loc_search_hint:"Optional — needs internet.",
     loc_searching:"Searching…", loc_none:"Nothing found", loc_gps_name:"My location (GPS)",
     loc_gps_denied:"Location access denied", loc_gps_unavail:"Location not available",
     seis_title:"Live seismogram",
@@ -888,7 +907,7 @@ const STR = {
     ob_next:"Next", ob_finish:"Done", ob_back:"Back", ob_skip:"Skip",
     ob1_t:"Welcome to TDA", ob1_b:"TDA warns you seconds before the shaking arrives and shows every natural hazard near you.",
     ob2_t:"Where do you want alerts?", ob2_b:"Choose your location by GPS or search — you can change it any time.", ob_gps:"Use my location",
-    ob3_t:"Set your warning levels", ob_notif_h:"Notification", ob_notif_d:"Quiet heads-up when a quake is relevant to you.", ob_alarm_h:"Alarm", ob_alarm_d:"Loud full-screen alert that cuts through silent mode.", ob_mag:"Magnitude", ob_radius:"Radius", ob_from:"from M", ob_stormflood:"Also warn about storms & floods?", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
+    ob3_t:"Set your warning levels", ob_notif_h:"Notification", ob_notif_d:"Quiet heads-up when a quake is relevant to you.", ob_alarm_h:"Alarm", ob_alarm_d:"Loud full-screen alert that cuts through silent mode.", ob_mag:"Magnitude", ob_radius:"Radius", ob_from:"from M", ob_stormflood:"Also warn about storms, floods & tsunami?", ob_haz_storm:"Storms", ob_haz_flood:"Floods", ob_haz_tsunami:"Tsunami", ob_notify_from:"Notify from", ob_alarm_from:"Alarm from", al_off:"Off", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
     ob_retro:"This level would have warned you at %1 of %2 recent quakes nearby (last 24 h — hindsight, not a forecast).",
     ob3_fine:"Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.",
     ob4_t:"Alerts", ob4_sound:"Alarm sound", ob_notify:"Enable notifications", ob_notify_on:"Notifications on", ob_notify_off:"Notifications off",
@@ -933,7 +952,7 @@ const STR = {
     hero_confirmed_t:"Erdbeben bestätigt", hero_confirmed_s:"Folgen Sie den Hinweisen am Bildschirm",
     hero_disturbance_t:"Fehlalarm vermieden", hero_disturbance_s:"Das war kein echtes Erdbeben",
     loc_title:"Ihr Standort", loc_use_gps:"Meinen Standort verwenden",
-    loc_search_ph:"Adresse oder Ort suchen…", loc_search_hint:"Optional — benötigt Internet. Oder Stadt wählen:",
+    loc_search_ph:"Adresse oder Ort suchen…", loc_search_hint:"Optional — benötigt Internet.",
     loc_searching:"Suche läuft…", loc_none:"Nichts gefunden", loc_gps_name:"Mein Standort (GPS)",
     loc_gps_denied:"Standortzugriff verweigert", loc_gps_unavail:"Standort nicht verfügbar",
     seis_title:"Live-Seismogramm",
@@ -997,7 +1016,7 @@ const STR = {
     ob_next:"Weiter", ob_finish:"Fertig", ob_back:"Zurück", ob_skip:"Überspringen",
     ob1_t:"Willkommen bei TDA", ob1_b:"TDA warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
     ob2_t:"Wo möchtest du gewarnt werden?", ob2_b:"Wähle deinen Ort per Standort oder Suche — jederzeit änderbar.", ob_gps:"Meinen Standort verwenden",
-    ob3_t:"Warnstufen einstellen", ob_notif_h:"Benachrichtigung", ob_notif_d:"Leiser Hinweis, wenn ein Beben für dich relevant ist.", ob_alarm_h:"Alarm", ob_alarm_d:"Lauter Vollbild-Alarm, der auch durch Stumm dringt.", ob_mag:"Magnitude", ob_radius:"Umkreis", ob_from:"ab M", ob_stormflood:"Auch vor Sturm & Flut warnen?", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
+    ob3_t:"Warnstufen einstellen", ob_notif_h:"Benachrichtigung", ob_notif_d:"Leiser Hinweis, wenn ein Beben für dich relevant ist.", ob_alarm_h:"Alarm", ob_alarm_d:"Lauter Vollbild-Alarm, der auch durch Stumm dringt.", ob_mag:"Magnitude", ob_radius:"Umkreis", ob_from:"ab M", ob_stormflood:"Auch vor Sturm, Flut & Tsunami warnen?", ob_haz_storm:"Stürme", ob_haz_flood:"Überschwemmungen", ob_haz_tsunami:"Tsunami", ob_notify_from:"Hinweis ab", ob_alarm_from:"Alarm ab", al_off:"Aus", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
     ob_retro:"Dieses Niveau hätte dich bei %1 von %2 Beben in deiner Nähe gewarnt (letzte 24 Std. — Rückschau, keine Vorhersage).",
     ob3_fine:"Standard: Hinweis ab M4 im Umkreis 150 km · Alarm ab M6. Jederzeit in den Einstellungen änderbar.",
     ob4_t:"Alarme", ob4_sound:"Alarmton", ob_notify:"Benachrichtigungen erlauben", ob_notify_on:"Benachrichtigungen an", ob_notify_off:"Benachrichtigungen aus",
@@ -1042,7 +1061,7 @@ const STR = {
     hero_confirmed_t:"Deprem doğrulandı", hero_confirmed_s:"Ekrandaki yönergeyi izleyin",
     hero_disturbance_t:"Yanlış alarm önlendi", hero_disturbance_s:"Gerçek bir deprem değildi",
     loc_title:"Konumunuz", loc_use_gps:"Konumumu kullan",
-    loc_search_ph:"Adres veya yer ara…", loc_search_hint:"İsteğe bağlı — internet gerekir. Veya bir şehir seçin:",
+    loc_search_ph:"Adres veya yer ara…", loc_search_hint:"İsteğe bağlı — internet gerekir.",
     loc_searching:"Aranıyor…", loc_none:"Bir şey bulunamadı", loc_gps_name:"Konumum (GPS)",
     loc_gps_denied:"Konum erişimi reddedildi", loc_gps_unavail:"Konum kullanılamıyor",
     seis_title:"Canlı sismogram",
@@ -1118,7 +1137,7 @@ const STR = {
     hero_confirmed_t:"Землетрясение подтверждено", hero_confirmed_s:"Следуйте указаниям на экране",
     hero_disturbance_t:"Ложная тревога предотвращена", hero_disturbance_s:"Это не настоящее землетрясение",
     loc_title:"Ваше местоположение", loc_use_gps:"Использовать моё местоположение",
-    loc_search_ph:"Поиск адреса или места…", loc_search_hint:"Необязательно — нужен интернет. Или выберите город:",
+    loc_search_ph:"Поиск адреса или места…", loc_search_hint:"Необязательно — нужен интернет.",
     loc_searching:"Поиск…", loc_none:"Ничего не найдено", loc_gps_name:"Моё местоположение (GPS)",
     loc_gps_denied:"Доступ к местоположению запрещён", loc_gps_unavail:"Местоположение недоступно",
     seis_title:"Живая сейсмограмма",
@@ -1194,7 +1213,7 @@ const STR = {
     hero_confirmed_t:"تم تأكيد الزلزال", hero_confirmed_s:"اتبع الإرشادات على الشاشة",
     hero_disturbance_t:"تم تفادي إنذار كاذب", hero_disturbance_s:"لم يكن زلزالاً حقيقياً",
     loc_title:"موقعك", loc_use_gps:"استخدم موقعي",
-    loc_search_ph:"ابحث عن عنوان أو مكان…", loc_search_hint:"اختياري — يحتاج إنترنت. أو اختر مدينة:",
+    loc_search_ph:"ابحث عن عنوان أو مكان…", loc_search_hint:"اختياري — يحتاج إنترنت.",
     loc_searching:"جارٍ البحث…", loc_none:"لا نتائج", loc_gps_name:"موقعي (GPS)",
     loc_gps_denied:"تم رفض الوصول إلى الموقع", loc_gps_unavail:"الموقع غير متاح",
     seq_title:"سلسلة الزلازل", seq_main:"الهزة الرئيسية", seq_after:"هزة ارتدادية",
@@ -1260,7 +1279,7 @@ const State = {
 };
 
 /* Advanced settings (persisted). */
-const Settings = { units:"km", radiusKm:150, minMag:4.0, alarmMinMag:6.0, stormFlood:false, sound:true, notifyRealtime:true, notifyReports:true, view:"nearby", hazards:true, seisMode:"device", station:"IU ANTO 00 BHZ", network:false, devMode:false, onboarded:false,
+const Settings = { units:"km", radiusKm:150, minMag:4.0, alarmMinMag:6.0, stormFlood:false, stormNotify:"orange", stormAlarm:"red", floodNotify:"orange", floodAlarm:"red", tsunamiNotify:"orange", tsunamiAlarm:"orange", sound:true, notifyRealtime:true, notifyReports:true, view:"nearby", hazards:true, seisMode:"device", station:"IU ANTO 00 BHZ", network:false, devMode:false, onboarded:false,
   seis:{ grid:true, autogain:true, gain:1.0, info:true }
   , disasterFilter:{ typen:[], region:"global", fensterH:24, minMag:0, minAlert:"all", sort:"zeit" } };
 function loadPrefs() {
@@ -1387,7 +1406,7 @@ function notifyNativeAlert(a){
         originTs:a.originTs, mag:a.mag, tier:a.tier,
         mmi:Eew.mmi(a.mag, a.distKm),
         userLat:State.loc.lat, userLon:State.loc.lon, cityName:State.loc.name||"",
-        test:!!a.test
+        lang:lang, test:!!a.test
       }));
     }
   }catch(e){}
@@ -2298,7 +2317,7 @@ function applyLanguage() {
   Signing.ensureKey().then(ok=>{ $("srvHint").textContent = ok ? t("srv_hint_ok") : t("srv_hint_nocrypto"); });
   if ($("alertOverlay").classList.contains("show")) renderAlert();
   set("ob1t","ob1_t"); set("ob1b","ob1_b"); set("ob2t","ob2_t"); set("ob2b","ob2_b"); set("obGpsText","ob_gps");
-  set("ob3t","ob3_t"); set("obNotifH","ob_notif_h"); set("obNotifD","ob_notif_d"); set("obNotifMagLbl","ob_mag"); set("obNotifRadLbl","ob_radius"); set("obAlarmH","ob_alarm_h"); set("obAlarmD","ob_alarm_d"); set("obAlarmMagLbl","ob_mag"); set("obStormFloodLbl","ob_stormflood"); set("ob3fine","ob3_fine"); updateObLevelLabels();
+  set("ob3t","ob3_t"); set("obNotifH","ob_notif_h"); set("obNotifD","ob_notif_d"); set("obNotifMagLbl","ob_mag"); set("obNotifRadLbl","ob_radius"); set("obAlarmH","ob_alarm_h"); set("obAlarmD","ob_alarm_d"); set("obAlarmMagLbl","ob_mag"); set("obStormFloodLbl","ob_stormflood"); set("obStormH","ob_haz_storm"); set("obFloodH","ob_haz_flood"); set("obTsunamiH","ob_haz_tsunami"); set("obStormNotifLbl","ob_notify_from"); set("obFloodNotifLbl","ob_notify_from"); set("obTsunamiNotifLbl","ob_notify_from"); set("obStormAlarmLbl","ob_alarm_from"); set("obFloodAlarmLbl","ob_alarm_from"); set("obTsunamiAlarmLbl","ob_alarm_from"); set("ob3fine","ob3_fine"); updateObLevelLabels(); renderObHaz();
   set("ob4t","ob4_t"); set("ob4sound","ob4_sound"); set("obNotifyText","ob_notify"); set("ob4fine","ob4_fine");
   set("ob5t","ob5_t"); set("ob5b","ob5_b"); set("ob6t","ob6_t"); set("ob6b","ob6_b"); set("obDrillText","ob_drill");
   set("obBack","ob_back"); set("obSkip","ob_skip");
@@ -2311,7 +2330,7 @@ function applyLanguage() {
    Init
    ========================================================================== */
 function initCityChips() {
-  const c=$("cityChips");
+  const c=$("cityChips"); if(!c) return;
   Eew.CITIES.forEach(city=>{
     const b=document.createElement("button"); b.className="chip-btn"; b.dataset.id=city.id; b.textContent=city.name;
     b.setAttribute("aria-pressed", String(city.id===State.loc.id));
@@ -2378,6 +2397,27 @@ function renderObLevels() {
   nm.value = Settings.minMag; $("obNotifRadius").value = Settings.radiusKm; $("obAlarmMag").value = Settings.alarmMinMag;
   $("obStormFlood").checked = !!Settings.stormFlood;
   updateObLevelLabels();
+  renderObHaz();
+}
+const HAZ_LEVELS = [["off","al_off"],["orange","al_orange"],["red","al_red"]];
+function renderHazSeg(containerId, current, onPick) {
+  const c = $(containerId); if (!c) return; c.innerHTML = "";
+  HAZ_LEVELS.forEach(([lvl,key]) => {
+    const b = document.createElement("button"); b.textContent = t(key);
+    b.setAttribute("aria-pressed", String(lvl === current));
+    b.onclick = () => { onPick(lvl); renderHazSeg(containerId, lvl, onPick); };
+    c.appendChild(b);
+  });
+}
+function renderObHaz() {
+  const box = $("obHazSettings"); if (!box) return;
+  box.hidden = !Settings.stormFlood;
+  renderHazSeg("obStormNotify", Settings.stormNotify, v => { Settings.stormNotify = v; savePrefs(); });
+  renderHazSeg("obStormAlarm", Settings.stormAlarm, v => { Settings.stormAlarm = v; savePrefs(); });
+  renderHazSeg("obFloodNotify", Settings.floodNotify, v => { Settings.floodNotify = v; savePrefs(); });
+  renderHazSeg("obFloodAlarm", Settings.floodAlarm, v => { Settings.floodAlarm = v; savePrefs(); });
+  renderHazSeg("obTsunamiNotify", Settings.tsunamiNotify, v => { Settings.tsunamiNotify = v; savePrefs(); });
+  renderHazSeg("obTsunamiAlarm", Settings.tsunamiAlarm, v => { Settings.tsunamiAlarm = v; savePrefs(); });
 }
 function updateObLevelLabels() {
   if (!$("obNotifMag")) return;
@@ -2430,7 +2470,7 @@ function bind() {
   $("obNotifRadius").onchange = savePrefs;
   $("obAlarmMag").oninput = e => { Settings.alarmMinMag = parseFloat(e.target.value); updateObLevelLabels(); };
   $("obAlarmMag").onchange = savePrefs;
-  $("obStormFlood").onchange = e => { Settings.stormFlood = e.target.checked; if (e.target.checked) Settings.hazards = true; savePrefs(); };
+  $("obStormFlood").onchange = e => { Settings.stormFlood = e.target.checked; if (e.target.checked) Settings.hazards = true; savePrefs(); renderObHaz(); };
   $("obSound").onchange = e => { Settings.sound = e.target.checked; savePrefs(); };
   $("obNotify").onclick = async () => { try { if (window.Notification) { const r = await Notification.requestPermission(); $("obNotifyText").textContent = t(r === "granted" ? "ob_notify_on" : "ob_notify_off"); } } catch(e){} };
   $("obDrill").onclick = runEarthquakeDrill;
