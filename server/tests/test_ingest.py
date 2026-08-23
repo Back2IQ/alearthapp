@@ -76,3 +76,33 @@ def test_ingestor_accepts_ping():
     ing.handle_ping({"device_hash": "abc", "cell": "d410_289", "ping_ms": "1000"},
                     received_ms=1100)
     assert len(ping_out) == 1 and ping_out[0]["device_hash"] == "abc"
+
+
+import json
+import time
+import urllib.request
+
+from tda_server.serve.ingest import start_ingest
+from tda_server.stream.base import InMemoryStream
+
+
+def test_start_ingest_end_to_end_localhost():
+    stream_records = []
+    ing = TriggerIngestor(
+        verifier=AllowlistVerifier(set()),
+        limiter=RateLimiter(max_per_window=100, window_ms=1000),
+        gate=TriggerGate(),
+        submit_trigger=stream_records.append,
+        submit_ping=lambda d: None,
+        ping_limiter=RateLimiter(max_per_window=100, window_ms=1000),
+    )
+    server = start_ingest("127.0.0.1", 0, ing, clock=lambda: 1000)
+    port = server.server_address[1]
+    body = json.dumps({"device_hash": "abc", "cell": "d410_289",
+                       "trigger_ms": "1000", "clock_unc_ms": "1000"}).encode()
+    req = urllib.request.Request(f"http://127.0.0.1:{port}/trigger", data=body,
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=2) as resp:
+        assert resp.status == 202
+    server.shutdown()
+    assert len(stream_records) == 1 and stream_records[0]["device_hash"] == "abc"
