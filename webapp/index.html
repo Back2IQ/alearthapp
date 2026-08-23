@@ -632,6 +632,16 @@
     </div>
 
       <div class="set-group">
+        <div class="field-label" id="placesTitle" style="text-transform:uppercase; letter-spacing:.1em; font-weight:600">My locations</div>
+        <p class="set-desc" id="placesDesc" style="margin-top:6px">Also get warned for family &amp; friends — add their city.</p>
+        <div class="search-box" style="margin-top:10px">
+          <input type="text" id="setPlaceInput" autocomplete="off" spellcheck="false" placeholder="Search their city…">
+          <div class="results" id="setPlaceResults"></div>
+        </div>
+        <div id="setPlacesList" class="places-list" style="margin-top:6px"></div>
+      </div>
+
+      <div class="set-group">
         <div class="toggle-row">
           <span id="lblDev">Developer / test mode</span>
           <label class="switch"><input type="checkbox" id="devSwitch"><span class="slider"></span></label>
@@ -735,6 +745,16 @@
       </div>
     </div>
     <div class="ob-card" data-ob="4" hidden>
+      <div class="ob-mark">👪</div>
+      <h2 id="obPlacesT">Add family &amp; friends?</h2>
+      <p id="obPlacesB">Get warned when a quake hits people you care about — add their city. Optional, add as many as you like.</p>
+      <div class="search-box" style="margin-top:12px">
+        <input type="text" id="obPlaceInput" autocomplete="off" spellcheck="false" placeholder="Search their city…">
+        <div class="results" id="obPlaceResults"></div>
+      </div>
+      <div id="obPlacesList" class="places-list" style="margin-top:10px"></div>
+    </div>
+    <div class="ob-card" data-ob="5" hidden>
       <h2 id="ob3t">Set your warning levels</h2>
       <div class="ob-level">
         <div class="ob-level-head"><b id="obNotifH">Notification</b><span class="ob-level-val" id="obNotifVal"></span></div>
@@ -767,17 +787,17 @@
       </div>
       <p class="ob-fine" id="ob3fine">Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.</p>
     </div>
-    <div class="ob-card" data-ob="5" hidden>
+    <div class="ob-card" data-ob="6" hidden>
       <h2 id="ob4t">Alerts</h2>
       <div class="toggle-row"><span id="ob4sound">Alarm sound</span><label class="switch"><input type="checkbox" id="obSound" checked><span class="slider"></span></label></div>
       <button class="btn wide" id="obNotify" style="margin-top:14px">🔔 <span id="obNotifyText">Enable notifications</span></button>
       <p class="ob-fine" id="ob4fine">Notifications work while the page/app is open. Full push delivery comes with the app.</p>
     </div>
-    <div class="ob-card" data-ob="6" hidden>
+    <div class="ob-card" data-ob="7" hidden>
       <h2 id="ob5t">Offline rescue (in the app)</h2>
       <p id="ob5b">If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.</p>
     </div>
-    <div class="ob-card" data-ob="7" hidden>
+    <div class="ob-card" data-ob="8" hidden>
       <h2 id="ob6t">This is what an alert looks like</h2>
       <p id="ob6b">Try a practice alert so you recognise the sound and screen in a real event.</p>
       <button class="btn accent wide" id="obDrill">▶ <span id="obDrillText">Show a practice alert</span></button>
@@ -845,6 +865,9 @@ const STR = {
     hero_disturbance_t:"False alarm avoided", hero_disturbance_s:"That was not a real earthquake",
     loc_title:"Your location", loc_use_gps:"Use my location",
     loc_search_ph:"Search address or place…", loc_search_hint:"Optional — needs internet.",
+    places_title:"My locations", places_desc:"Also get warned for family & friends — add their city.",
+    places_add_ph:"Search their city…", places_label_ph:"Name (e.g. Mum)", places_empty:"No extra locations yet.", places_dup:"That location is already on your list.",
+    ob_places_t:"Add family & friends?", ob_places_b:"Get warned when a quake hits people you care about — add their city. Optional, add as many as you like.",
     loc_searching:"Searching…", loc_none:"Nothing found", loc_gps_name:"My location (GPS)",
     loc_gps_denied:"Location access denied", loc_gps_unavail:"Location not available",
     seis_title:"Live seismogram",
@@ -954,6 +977,9 @@ const STR = {
     hero_disturbance_t:"Fehlalarm vermieden", hero_disturbance_s:"Das war kein echtes Erdbeben",
     loc_title:"Ihr Standort", loc_use_gps:"Meinen Standort verwenden",
     loc_search_ph:"Adresse oder Ort suchen…", loc_search_hint:"Optional — benötigt Internet.",
+    places_title:"Meine Standorte", places_desc:"Werde auch für Familie & Freunde gewarnt — Ort hinzufügen.",
+    places_add_ph:"Ort suchen…", places_label_ph:"Name (z.B. Mama)", places_empty:"Noch keine weiteren Orte.", places_dup:"Dieser Ort ist schon in deiner Liste.",
+    ob_places_t:"Familie & Freunde hinzufügen?", ob_places_b:"Werde gewarnt, wenn ein Beben Menschen trifft, die dir wichtig sind — ihren Ort hinzufügen. Optional, beliebig viele.",
     loc_searching:"Suche läuft…", loc_none:"Nichts gefunden", loc_gps_name:"Mein Standort (GPS)",
     loc_gps_denied:"Standortzugriff verweigert", loc_gps_unavail:"Standort nicht verfügbar",
     seis_title:"Live-Seismogramm",
@@ -1063,6 +1089,9 @@ const STR = {
     hero_disturbance_t:"Yanlış alarm önlendi", hero_disturbance_s:"Gerçek bir deprem değildi",
     loc_title:"Konumunuz", loc_use_gps:"Konumumu kullan",
     loc_search_ph:"Adres veya yer ara…", loc_search_hint:"İsteğe bağlı — internet gerekir.",
+    places_title:"Konumlarım", places_desc:"Aile ve arkadaşların için de uyarı al — şehirlerini ekle.",
+    places_add_ph:"Şehir ara…", places_label_ph:"İsim (örn. Anne)", places_empty:"Henüz ek konum yok.", places_dup:"Bu konum zaten listende.",
+    ob_places_t:"Aile ve arkadaşları ekle?", ob_places_b:"Önem verdiğin kişileri bir deprem vurduğunda uyarı al — şehirlerini ekle. İsteğe bağlı, istediğin kadar ekle.",
     loc_searching:"Aranıyor…", loc_none:"Bir şey bulunamadı", loc_gps_name:"Konumum (GPS)",
     loc_gps_denied:"Konum erişimi reddedildi", loc_gps_unavail:"Konum kullanılamıyor",
     seis_title:"Canlı sismogram",
@@ -1139,6 +1168,9 @@ const STR = {
     hero_disturbance_t:"Ложная тревога предотвращена", hero_disturbance_s:"Это не настоящее землетрясение",
     loc_title:"Ваше местоположение", loc_use_gps:"Использовать моё местоположение",
     loc_search_ph:"Поиск адреса или места…", loc_search_hint:"Необязательно — нужен интернет.",
+    places_title:"Мои местоположения", places_desc:"Получай предупреждения и для близких — добавь их город.",
+    places_add_ph:"Поиск города…", places_label_ph:"Имя (напр. Мама)", places_empty:"Пока нет других мест.", places_dup:"Это место уже в списке.",
+    ob_places_t:"Добавить семью и друзей?", ob_places_b:"Получай предупреждение, когда землетрясение угрожает близким — добавь их город. Необязательно, можно несколько.",
     loc_searching:"Поиск…", loc_none:"Ничего не найдено", loc_gps_name:"Моё местоположение (GPS)",
     loc_gps_denied:"Доступ к местоположению запрещён", loc_gps_unavail:"Местоположение недоступно",
     seis_title:"Живая сейсмограмма",
@@ -1215,6 +1247,9 @@ const STR = {
     hero_disturbance_t:"تم تفادي إنذار كاذب", hero_disturbance_s:"لم يكن زلزالاً حقيقياً",
     loc_title:"موقعك", loc_use_gps:"استخدم موقعي",
     loc_search_ph:"ابحث عن عنوان أو مكان…", loc_search_hint:"اختياري — يحتاج إنترنت.",
+    places_title:"مواقعي", places_desc:"احصل على تحذيرات لعائلتك وأصدقائك أيضًا — أضف مدينتهم.",
+    places_add_ph:"ابحث عن مدينة…", places_label_ph:"الاسم (مثل أمي)", places_empty:"لا مواقع إضافية بعد.", places_dup:"هذا الموقع موجود في قائمتك بالفعل.",
+    ob_places_t:"إضافة العائلة والأصدقاء؟", ob_places_b:"احصل على تحذير عندما يضرب زلزال أشخاصًا تهتم بهم — أضف مدينتهم. اختياري، أضف ما تشاء.",
     loc_searching:"جارٍ البحث…", loc_none:"لا نتائج", loc_gps_name:"موقعي (GPS)",
     loc_gps_denied:"تم رفض الوصول إلى الموقع", loc_gps_unavail:"الموقع غير متاح",
     seq_title:"سلسلة الزلازل", seq_main:"الهزة الرئيسية", seq_after:"هزة ارتدادية",
@@ -1274,6 +1309,7 @@ function intensityWord(level) {
 const State = {
   status:"READY", sequence:[], report:null,
   loc:{ name:"Adana", lat:37.00, lon:35.32, source:"preset", id:"adana" },
+  places:[],   // weitere beobachtete Orte (z.B. Familienmitglieder): {id,label,name,lat,lon,source}
   colorblind:false, theme:"system",
   lastLaunchedAlarmId:null, activeAlert:null, network:null,
   activeTab:"start",
@@ -1293,11 +1329,12 @@ function loadPrefs() {
     if (p.theme) State.theme = p.theme;
     if (typeof p.colorblind === "boolean") State.colorblind = p.colorblind;
     if (p.loc && typeof p.loc.lat === "number") State.loc = p.loc;
+    if (Array.isArray(p.places)) State.places = p.places.filter(x => x && typeof x.lat === "number");
     if (p.activeTab) State.activeTab = p.activeTab;
   } catch(e) {}
 }
 function savePrefs() {
-  try { localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, loc:State.loc, activeTab:State.activeTab })); } catch(e) {}
+  try { localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, loc:State.loc, places:State.places, activeTab:State.activeTab })); } catch(e) {}
 }
 /* unit-aware distance formatting */
 function kmToDisplay(km) { return Settings.units==="mi" ? km*0.621371 : km; }
@@ -1638,9 +1675,36 @@ const ServerLink = {
 function setLocation(name, lat, lon, source, id) {
   State.loc={ name, lat, lon, source, id:id||null };
   renderHero();
-  for (const b of $("cityChips").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.id===State.loc.id));
+  const cc=$("cityChips"); if(cc) for (const b of cc.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.id===State.loc.id));
   updateUserMarker(); recenterMap(); renderFeed(); savePrefs();
 }
+
+/* Weitere beobachtete Orte (z.B. Familienmitglieder). State.loc bleibt der Heimatort;
+   diese Liste sind zusätzliche Orte, für die (mit dem Backend) ebenfalls gewarnt wird. */
+function placeKey(lat,lon){ return Math.round(lat*1000)+"_"+Math.round(lon*1000); }
+function addPlace(name, lat, lon, source){
+  const key=placeKey(lat,lon);
+  if (placeKey(State.loc.lat,State.loc.lon)===key || State.places.some(p=>placeKey(p.lat,p.lon)===key)) { toast(t("places_dup")); return; }
+  State.places.push({ id:"pl"+Date.now(), label:"", name, lat, lon, source:source||"search" });
+  savePrefs(); renderAllPlaces();
+}
+function removePlace(id){ State.places=State.places.filter(p=>p.id!==id); savePrefs(); renderAllPlaces(); }
+function setPlaceLabel(id,label){ const p=State.places.find(x=>x.id===id); if(p){ p.label=label; savePrefs(); } }
+function renderPlacesList(containerId){
+  const c=$(containerId); if(!c) return; c.innerHTML="";
+  if(!State.places.length){ const e=document.createElement("p"); e.className="set-desc"; e.textContent=t("places_empty"); c.appendChild(e); return; }
+  State.places.forEach(p=>{
+    const row=document.createElement("div"); row.style.cssText="display:flex; gap:8px; align-items:center; margin-top:8px";
+    const inp=document.createElement("input"); inp.type="text"; inp.value=p.label||""; inp.placeholder=t("places_label_ph");
+    inp.style.cssText="flex:0 0 42%; min-width:0"; inp.oninput=()=>setPlaceLabel(p.id, inp.value.trim());
+    const nm=document.createElement("span"); nm.textContent=p.name;
+    nm.style.cssText="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); font-size:14px";
+    const rm=document.createElement("button"); rm.type="button"; rm.textContent="✕"; rm.setAttribute("aria-label","remove");
+    rm.style.cssText="flex:none; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px 8px"; rm.onclick=()=>removePlace(p.id);
+    row.appendChild(inp); row.appendChild(nm); row.appendChild(rm); c.appendChild(row);
+  });
+}
+function renderAllPlaces(){ renderPlacesList("obPlacesList"); renderPlacesList("setPlacesList"); }
 function useGps() {
   if (!navigator.geolocation) { toast(t("loc_gps_unavail")); return; }
   const btn=$("btnGpsText"), prev=btn.textContent; btn.innerHTML=`<span class="spin"></span>`;
@@ -1661,13 +1725,13 @@ function useGps() {
   }, { enableHighAccuracy:true, timeout:10000 });
 }
 let searchTimer=null;
-function onAddrInput(e, boxId="results", inputId="addrInput") {
+function onAddrInput(e, boxId="results", inputId="addrInput", onPick=null) {
   const q=e.target.value.trim(); clearTimeout(searchTimer);
   const box=$(boxId);
   if (q.length<3) { box.classList.remove("show"); box.innerHTML=""; return; }
-  searchTimer=setTimeout(()=>doSearch(q, boxId, inputId), 450);
+  searchTimer=setTimeout(()=>doSearch(q, boxId, inputId, onPick), 450);
 }
-async function doSearch(q, boxId="results", inputId="addrInput") {
+async function doSearch(q, boxId="results", inputId="addrInput", onPick=null) {
   const box=$(boxId);
   box.innerHTML=`<button disabled><span class="spin"></span> ${t("loc_searching")}</button>`; box.classList.add("show");
   try {
@@ -1681,7 +1745,7 @@ async function doSearch(q, boxId="results", inputId="addrInput") {
       const label=[a.road||a.pedestrian, a.suburb||a.neighbourhood||a.city_district, a.city||a.town||a.village||a.county||a.state].filter(Boolean).slice(0,3).join(", ") || it.display_name.split(",").slice(0,3).join(",");
       const b=document.createElement("button");
       b.textContent=label;
-      b.onclick=()=>{ setLocation(label, parseFloat(it.lat), parseFloat(it.lon), "search"); box.classList.remove("show"); $(inputId).value=""; };
+      b.onclick=()=>{ if(onPick) onPick(label, parseFloat(it.lat), parseFloat(it.lon)); else setLocation(label, parseFloat(it.lat), parseFloat(it.lon), "search"); box.classList.remove("show"); $(inputId).value=""; };
       box.appendChild(b);
     }
   } catch(e) { box.innerHTML=`<button disabled>${t("loc_none")}</button>`; }
@@ -2302,6 +2366,10 @@ function applyLanguage() {
   set("advTitle","adv_title"); set("lblUnits","lbl_units"); set("lblRadius","lbl_radius"); set("lblMinMag","lbl_minmag");
   set("descRadius","desc_radius"); set("descMinMag","desc_minmag");
   set("lblSound","lbl_sound"); set("btnPickSoundText","pick_sound"); set("lblNotifyRealtime","lbl_ntf_realtime"); set("lblNotifyReports","lbl_ntf_reports");
+  set("placesTitle","places_title"); set("placesDesc","places_desc");
+  set("obPlacesT","ob_places_t"); set("obPlacesB","ob_places_b");
+  { const a=$("obPlaceInput"); if(a) a.placeholder=t("places_add_ph"); const b=$("setPlaceInput"); if(b) b.placeholder=t("places_add_ph"); }
+  renderAllPlaces();
   set("lblHazards","lbl_hazards");
   set("netTitle","net_title"); set("netJoinLabel","net_join"); set("netOnlineLabel","net_online_label");
   set("btnTrigger","net_trigger_btn"); set("netNote","net_note");
@@ -2366,7 +2434,7 @@ function renderStartNearest() {
   box.onclick = () => { switchTab("map"); if (map) { map.setView([best.lat, best.lon], 7); } };
 }
 let obStep = 1;
-const OB_STEPS = 7;
+const OB_STEPS = 8;
 const OB_LANGS = [["tr","Türkçe"],["en","English"],["de","Deutsch"],["ru","Русский"],["ar","العربية"]];
 function renderObLangs() {
   const c = $("obLangs"); if (!c) return; c.innerHTML = "";
@@ -2391,7 +2459,8 @@ function obGoTo(step) {
   for (let i = 1; i <= OB_STEPS; i++) { const d = document.createElement("i"); if (i === obStep) d.className = "on"; dots.appendChild(d); }
   $("obBack").style.visibility = obStep === 1 ? "hidden" : "visible";
   $("obNext").textContent = obStep === OB_STEPS ? t("ob_finish") : t("ob_next");
-  if (obStep === 4) renderObLevels();
+  if (obStep === 4) renderAllPlaces();
+  if (obStep === 5) renderObLevels();
 }
 function renderObLevels() {
   const nm = $("obNotifMag"); if (!nm) return;
@@ -2513,6 +2582,9 @@ function bind() {
   $("btnGps").onclick=useGps;
   $("addrInput").oninput=onAddrInput;
   $("obAddrInput").oninput=e=>onAddrInput(e,"obResults","obAddrInput");
+  { const addPick=(name,lat,lon)=>addPlace(name,lat,lon,"search");
+    const op=$("obPlaceInput"); if(op) op.oninput=e=>onAddrInput(e,"obPlaceResults","obPlaceInput",addPick);
+    const sp=$("setPlaceInput"); if(sp) sp.oninput=e=>onAddrInput(e,"setPlaceResults","setPlaceInput",addPick); }
   $("btnQuake").onclick=runEarthquakeDrill;
   $("btnAfter").onclick=runAftershockSequence;
   $("btnFire").onclick=runFireworksDisturbance;
