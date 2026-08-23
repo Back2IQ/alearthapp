@@ -302,6 +302,14 @@
   .ob-card { flex:1; }
   .ob-card h2 { font-family:var(--font-display); font-size:1.5rem; margin:0 0 12px; }
   .ob-card p { color:var(--muted); line-height:1.55; }
+  .ob-level { border:1px solid rgba(128,128,128,.28); border-radius:14px; padding:12px 14px; margin-bottom:12px; }
+  .ob-level-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .ob-level-head b { font-size:1.05rem; }
+  .ob-level-val { color:#34d399; font-weight:600; font-size:.95rem; white-space:nowrap; }
+  .ob-level .ob-fine { margin:4px 0 0; }
+  .ob-slider-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
+  .ob-slider-row label { color:var(--muted); font-size:.85rem; min-width:78px; }
+  .ob-slider-row input[type=range] { flex:1; min-width:0; }
   .ob-mark { width:56px; height:56px; border-radius:16px; display:grid; place-items:center; font-size:1.6rem; margin-bottom:16px;
     background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent-2) 45%,transparent)); }
   .ob-profiles { display:flex; flex-direction:column; gap:10px; margin:6px 0 14px; }
@@ -724,14 +732,20 @@
       </div>
     </div>
     <div class="ob-card" data-ob="4" hidden>
-      <h2 id="ob3t">Choose a protection level</h2>
-      <div class="ob-profiles" id="obProfiles">
-        <button class="ob-profile" data-profile="vorsichtig"><b id="obPv">Cautious</b><span id="obPvd">radius 500 km · from M 2.5</span></button>
-        <button class="ob-profile" data-profile="ausgewogen" aria-pressed="true"><b id="obPa">Balanced</b><span id="obPad">radius 300 km · from M 3.5</span></button>
-        <button class="ob-profile" data-profile="starkbeben"><b id="obPs">Strong only</b><span id="obPsd">radius 150 km · from M 5.0</span></button>
+      <h2 id="ob3t">Set your warning levels</h2>
+      <div class="ob-level">
+        <div class="ob-level-head"><b id="obNotifH">Notification</b><span class="ob-level-val" id="obNotifVal"></span></div>
+        <p class="ob-fine" id="obNotifD">Quiet heads-up when a quake is relevant to you.</p>
+        <div class="ob-slider-row"><label id="obNotifMagLbl">Magnitude</label><input type="range" id="obNotifMag" min="2.5" max="7" step="0.5"></div>
+        <div class="ob-slider-row"><label id="obNotifRadLbl">Radius</label><input type="range" id="obNotifRadius" min="50" max="1000" step="50"></div>
       </div>
-      <p class="ob-note" id="obRetro"></p>
-      <p class="ob-fine" id="ob3fine">Magnitude = strength; radius = how far away a quake still concerns you. Fine sliders stay in Settings.</p>
+      <div class="ob-level">
+        <div class="ob-level-head"><b id="obAlarmH">Alarm</b><span class="ob-level-val" id="obAlarmVal"></span></div>
+        <p class="ob-fine" id="obAlarmD">Loud full-screen alert that cuts through silent mode.</p>
+        <div class="ob-slider-row"><label id="obAlarmMagLbl">Magnitude</label><input type="range" id="obAlarmMag" min="4" max="8" step="0.5"></div>
+      </div>
+      <div class="toggle-row" style="margin-top:14px"><span id="obStormFloodLbl">Also warn about storms &amp; floods?</span><label class="switch"><input type="checkbox" id="obStormFlood"><span class="slider"></span></label></div>
+      <p class="ob-fine" id="ob3fine">Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.</p>
     </div>
     <div class="ob-card" data-ob="5" hidden>
       <h2 id="ob4t">Alerts</h2>
@@ -874,9 +888,9 @@ const STR = {
     ob_next:"Next", ob_finish:"Done", ob_back:"Back", ob_skip:"Skip",
     ob1_t:"Welcome to TDA", ob1_b:"TDA warns you seconds before the shaking arrives and shows every natural hazard near you.",
     ob2_t:"Where do you want alerts?", ob2_b:"Choose your location by GPS or search — you can change it any time.", ob_gps:"Use my location",
-    ob3_t:"Choose a protection level", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
+    ob3_t:"Set your warning levels", ob_notif_h:"Notification", ob_notif_d:"Quiet heads-up when a quake is relevant to you.", ob_alarm_h:"Alarm", ob_alarm_d:"Loud full-screen alert that cuts through silent mode.", ob_mag:"Magnitude", ob_radius:"Radius", ob_from:"from M", ob_stormflood:"Also warn about storms & floods?", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
     ob_retro:"This level would have warned you at %1 of %2 recent quakes nearby (last 24 h — hindsight, not a forecast).",
-    ob3_fine:"Magnitude = strength; radius = how far away a quake still concerns you. Fine sliders stay in Settings.",
+    ob3_fine:"Defaults: notify from M4 within 150 km · alarm from M6. Change any time in Settings.",
     ob4_t:"Alerts", ob4_sound:"Alarm sound", ob_notify:"Enable notifications", ob_notify_on:"Notifications on", ob_notify_off:"Notifications off",
     ob4_fine:"Notifications work while the page/app is open. Full push delivery comes with the app.",
     ob5_t:"Offline rescue (in the app)", ob5_b:"If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.",
@@ -983,9 +997,9 @@ const STR = {
     ob_next:"Weiter", ob_finish:"Fertig", ob_back:"Zurück", ob_skip:"Überspringen",
     ob1_t:"Willkommen bei TDA", ob1_b:"TDA warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
     ob2_t:"Wo möchtest du gewarnt werden?", ob2_b:"Wähle deinen Ort per Standort oder Suche — jederzeit änderbar.", ob_gps:"Meinen Standort verwenden",
-    ob3_t:"Schutzniveau wählen", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
+    ob3_t:"Warnstufen einstellen", ob_notif_h:"Benachrichtigung", ob_notif_d:"Leiser Hinweis, wenn ein Beben für dich relevant ist.", ob_alarm_h:"Alarm", ob_alarm_d:"Lauter Vollbild-Alarm, der auch durch Stumm dringt.", ob_mag:"Magnitude", ob_radius:"Umkreis", ob_from:"ab M", ob_stormflood:"Auch vor Sturm & Flut warnen?", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
     ob_retro:"Dieses Niveau hätte dich bei %1 von %2 Beben in deiner Nähe gewarnt (letzte 24 Std. — Rückschau, keine Vorhersage).",
-    ob3_fine:"Magnitude = Stärke; Radius = wie weit weg dich ein Beben noch betrifft. Fein-Regler bleiben in den Einstellungen.",
+    ob3_fine:"Standard: Hinweis ab M4 im Umkreis 150 km · Alarm ab M6. Jederzeit in den Einstellungen änderbar.",
     ob4_t:"Alarme", ob4_sound:"Alarmton", ob_notify:"Benachrichtigungen erlauben", ob_notify_on:"Benachrichtigungen an", ob_notify_off:"Benachrichtigungen aus",
     ob4_fine:"Benachrichtigungen funktionieren, solange die Seite/App offen ist. Vollständige Push-Zustellung kommt mit der App.",
     ob5_t:"Offline-Rettung (in der App)", ob5_b:"Wenn das Mobilnetz ausfällt, kann die App Warnungen und einen SOS von Handy zu Handy per Bluetooth tragen. Das funktioniert vollständig nur in der nativen App — nicht im Browser.",
@@ -1246,7 +1260,7 @@ const State = {
 };
 
 /* Advanced settings (persisted). */
-const Settings = { units:"km", radiusKm:300, minMag:3.0, sound:true, notifyRealtime:true, notifyReports:true, view:"nearby", hazards:true, seisMode:"device", station:"IU ANTO 00 BHZ", network:false, devMode:false, onboarded:false,
+const Settings = { units:"km", radiusKm:150, minMag:4.0, alarmMinMag:6.0, stormFlood:false, sound:true, notifyRealtime:true, notifyReports:true, view:"nearby", hazards:true, seisMode:"device", station:"IU ANTO 00 BHZ", network:false, devMode:false, onboarded:false,
   seis:{ grid:true, autogain:true, gain:1.0, info:true }
   , disasterFilter:{ typen:[], region:"global", fensterH:24, minMag:0, minAlert:"all", sort:"zeit" } };
 function loadPrefs() {
@@ -1366,7 +1380,8 @@ function updateAlert(p) {
    + Nachbeben-/Beacon-Kette aus (no-op im reinen Browser). */
 function notifyNativeAlert(a){
   try{
-    if(a && window.AndroidBridge && AndroidBridge.onAlert){
+    // Lauter Native-Alarm nur ab der eingestellten Alarm-Schwelle (Benachrichtigung darunter).
+    if(a && a.mag >= (Settings.alarmMinMag ?? 6) && window.AndroidBridge && AndroidBridge.onAlert){
       AndroidBridge.onAlert(JSON.stringify({
         id:a.id, lat:a.lat, lon:a.lon, depthKm:a.depthKm||10,
         originTs:a.originTs, mag:a.mag, tier:a.tier,
@@ -2283,7 +2298,7 @@ function applyLanguage() {
   Signing.ensureKey().then(ok=>{ $("srvHint").textContent = ok ? t("srv_hint_ok") : t("srv_hint_nocrypto"); });
   if ($("alertOverlay").classList.contains("show")) renderAlert();
   set("ob1t","ob1_t"); set("ob1b","ob1_b"); set("ob2t","ob2_t"); set("ob2b","ob2_b"); set("obGpsText","ob_gps");
-  set("ob3t","ob3_t"); set("obPv","p_cautious"); set("obPvd","p_cautious_d"); set("obPa","p_balanced"); set("obPad","p_balanced_d"); set("obPs","p_strong"); set("obPsd","p_strong_d"); set("ob3fine","ob3_fine");
+  set("ob3t","ob3_t"); set("obNotifH","ob_notif_h"); set("obNotifD","ob_notif_d"); set("obNotifMagLbl","ob_mag"); set("obNotifRadLbl","ob_radius"); set("obAlarmH","ob_alarm_h"); set("obAlarmD","ob_alarm_d"); set("obAlarmMagLbl","ob_mag"); set("obStormFloodLbl","ob_stormflood"); set("ob3fine","ob3_fine"); updateObLevelLabels();
   set("ob4t","ob4_t"); set("ob4sound","ob4_sound"); set("obNotifyText","ob_notify"); set("ob4fine","ob4_fine");
   set("ob5t","ob5_t"); set("ob5b","ob5_b"); set("ob6t","ob6_t"); set("ob6b","ob6_b"); set("obDrillText","ob_drill");
   set("obBack","ob_back"); set("obSkip","ob_skip");
@@ -2356,13 +2371,23 @@ function obGoTo(step) {
   for (let i = 1; i <= OB_STEPS; i++) { const d = document.createElement("i"); if (i === obStep) d.className = "on"; dots.appendChild(d); }
   $("obBack").style.visibility = obStep === 1 ? "hidden" : "visible";
   $("obNext").textContent = obStep === OB_STEPS ? t("ob_finish") : t("ob_next");
-  if (obStep === 4) renderObRetro();
+  if (obStep === 4) renderObLevels();
+}
+function renderObLevels() {
+  const nm = $("obNotifMag"); if (!nm) return;
+  nm.value = Settings.minMag; $("obNotifRadius").value = Settings.radiusKm; $("obAlarmMag").value = Settings.alarmMinMag;
+  $("obStormFlood").checked = !!Settings.stormFlood;
+  updateObLevelLabels();
+}
+function updateObLevelLabels() {
+  if (!$("obNotifMag")) return;
+  $("obNotifVal").textContent = `${t("ob_from")} ${parseFloat($("obNotifMag").value).toFixed(1)} · ${$("obNotifRadius").value} km`;
+  $("obAlarmVal").textContent = `${t("ob_from")} ${parseFloat($("obAlarmMag").value).toFixed(1)}`;
 }
 function startOnboarding() {
   $("onboarding").classList.add("show");
-  // seed language buttons + profile buttons to current state
   renderObLangs();
-  highlightObProfile(profileGuess());
+  renderObLevels();
   obGoTo(1);
 }
 function finishOnboarding() {
@@ -2399,7 +2424,13 @@ function bind() {
   $("obBack").onclick = () => obGoTo(obStep - 1);
   $("obSkip").onclick = finishOnboarding;
   $("obGps").onclick = useGps;
-  $("obProfiles").onclick = e => { const b = e.target.closest("button"); if (b) applyObProfile(b.dataset.profile); };
+  $("obNotifMag").oninput = e => { Settings.minMag = parseFloat(e.target.value); updateObLevelLabels(); };
+  $("obNotifMag").onchange = savePrefs;
+  $("obNotifRadius").oninput = e => { Settings.radiusKm = parseInt(e.target.value, 10); updateObLevelLabels(); };
+  $("obNotifRadius").onchange = savePrefs;
+  $("obAlarmMag").oninput = e => { Settings.alarmMinMag = parseFloat(e.target.value); updateObLevelLabels(); };
+  $("obAlarmMag").onchange = savePrefs;
+  $("obStormFlood").onchange = e => { Settings.stormFlood = e.target.checked; if (e.target.checked) Settings.hazards = true; savePrefs(); };
   $("obSound").onchange = e => { Settings.sound = e.target.checked; savePrefs(); };
   $("obNotify").onclick = async () => { try { if (window.Notification) { const r = await Notification.requestPermission(); $("obNotifyText").textContent = t(r === "granted" ? "ob_notify_on" : "ob_notify_off"); } } catch(e){} };
   $("obDrill").onclick = runEarthquakeDrill;
