@@ -25,7 +25,7 @@
     <string name="protection_strong">انبطح · احتمِ · تمسّك</string>
     <string name="protection_moderate">قد يحدث اهتزاز – كن مستعدًا للاحتماء</string>
     <string name="protection_weak">ضعيف – على الأرجح آمن</string>
-    <string name="magnitude_label">الشدة</string>
+    <string name="magnitude_label">القوة</string>
     <string name="intensity_label">الشدة المقدرة هنا</string>
     <string name="distance_label">المسافة إلى المركز</string>
     <string name="warning_time_label">مدة التحذير</string>
