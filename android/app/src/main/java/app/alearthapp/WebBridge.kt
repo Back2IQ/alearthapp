@@ -97,6 +97,40 @@ class WebBridge(private val activity: Activity) {
         }
     }
 
+    /** Ist der Crowdsourcing-Opt-in aktiv (Web-Anzeige des Einstellungs-Schalters)? */
+    @JavascriptInterface
+    fun crowdsourcingEnabled(): Boolean {
+        Prefs.init(activity)
+        return Prefs.crowdsourcingEnabled
+    }
+
+    /**
+     * Schaltet das Crowdsourcing-Opt-in. Bei Aktivierung wird die grobe Standort-Permission
+     * angefragt (der Sensor-Dienst degradiert ohne Zugriff einfach zu keiner Zellen-Meldung)
+     * und der Dienst gestartet, falls das Gerät gerade lädt; bei Deaktivierung wird er gestoppt.
+     */
+    @JavascriptInterface
+    fun setCrowdsourcing(enable: Boolean) {
+        activity.runOnUiThread {
+            Prefs.init(activity)
+            Prefs.crowdsourcingEnabled = enable
+            if (enable) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    runCatching {
+                        androidx.core.app.ActivityCompat.requestPermissions(
+                            activity, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION), 102
+                        )
+                    }
+                }
+                val bm = activity.getSystemService(android.content.Context.BATTERY_SERVICE) as android.os.BatteryManager
+                if (bm.isCharging) QuakeSensorService.start(activity)
+            } else {
+                QuakeSensorService.stop(activity)
+            }
+        }
+    }
+
     /** Öffnet die System-App-Einstellungen (für Autostart/Akku auf Xiaomi/Huawei/Oppo). */
     @JavascriptInterface
     fun openAppSettings() {
