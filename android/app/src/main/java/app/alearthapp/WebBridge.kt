@@ -1,6 +1,9 @@
 package app.alearthapp
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.webkit.JavascriptInterface
 import org.json.JSONObject
 
@@ -76,6 +79,41 @@ class WebBridge(private val activity: Activity) {
     @JavascriptInterface
     fun pickAlarmSound() {
         activity.runOnUiThread { (activity as? MainActivity)?.pickAlarmSound() }
+    }
+
+    /** Ist der DND-durchdringende Alarm aktiv (Opt-in + System-Policy-Zugriff gewährt)? */
+    @JavascriptInterface
+    fun dndActive(): Boolean {
+        Prefs.init(activity)
+        return Prefs.dndBypassOptIn && DndAccess.isGranted(activity)
+    }
+
+    /**
+     * Schaltet den DND-Bypass. Bei Aktivierung ohne System-Zugriff öffnet sich der
+     * System-Dialog „Zugriff auf Nicht stören"; die Kanäle werden neu gesetzt, damit der
+     * kritische Kanal DND durchbricht.
+     */
+    @JavascriptInterface
+    fun setDndBypass(enable: Boolean) {
+        activity.runOnUiThread {
+            Prefs.init(activity)
+            Prefs.dndBypassOptIn = enable
+            if (enable && !DndAccess.isGranted(activity)) {
+                runCatching { activity.startActivity(DndAccess.requestIntent()) }
+            }
+            NotificationChannels.ensure(activity)
+        }
+    }
+
+    /** Öffnet die System-App-Einstellungen (für Autostart/Akku auf Xiaomi/Huawei/Oppo). */
+    @JavascriptInterface
+    fun openAppSettings() {
+        activity.runOnUiThread {
+            val i = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", activity.packageName, null))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            runCatching { activity.startActivity(i) }
+        }
     }
 
     /** Web-Seite meldet Entwarnung (Alarm geschlossen) → Reste stoppen. */

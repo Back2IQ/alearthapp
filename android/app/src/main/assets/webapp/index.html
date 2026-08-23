@@ -621,6 +621,16 @@
         <label class="switch"><input type="checkbox" id="soundSwitch" checked><span class="slider"></span></label>
       </div>
       <button class="btn wide" id="btnPickSound" style="margin-top:12px; display:none">🔔 <span id="btnPickSoundText">Choose alarm sound</span></button>
+      <div class="toggle-row" id="dndRow" style="margin-top:16px; display:none">
+        <span id="lblDnd">Alarm during Do Not Disturb</span>
+        <label class="switch"><input type="checkbox" id="dndSwitch"><span class="slider"></span></label>
+      </div>
+      <p class="set-desc" id="descDnd" style="display:none">Let the alarm pierce silent / Do Not Disturb mode.</p>
+      <div id="autostartRow" style="margin-top:16px; display:none">
+        <div class="set-row"><span class="name" id="lblAutostart">Reliable background alerts</span></div>
+        <p class="set-desc" id="descAutostart">On Xiaomi/Huawei/Oppo, allow Autostart &amp; background for AlearthApp — otherwise push alerts get blocked.</p>
+        <button class="btn wide" id="btnAppSettings" style="margin-top:8px">⚙ <span id="btnAppSettingsText">Open app settings</span></button>
+      </div>
       <div class="toggle-row" style="margin-top:16px">
         <span id="lblNotifyRealtime">Real-time detections</span>
         <label class="switch"><input type="checkbox" id="ntfRealtime" checked><span class="slider"></span></label>
@@ -916,7 +926,7 @@ const STR = {
     recenter:"Recenter", refresh:"Refresh", map_offline:"Map needs an internet connection.", you_label:"You",
     adv_title:"Advanced", lbl_units:"Distance units", lbl_radius:"Alert radius", lbl_minmag:"Minimum magnitude",
     desc_radius:"Only earthquakes within this distance concern you.", desc_minmag:"Weaker quakes are shown on the map but never alarm.",
-    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
+    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", dnd_title:"Alarm during Do Not Disturb", dnd_desc:"Let the alarm pierce silent / Do Not Disturb mode.", autostart_title:"Reliable background alerts", autostart_desc:"On Xiaomi/Huawei/Oppo, allow Autostart & background for AlearthApp — otherwise push alerts get blocked.", autostart_btn:"Open app settings", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
     ago_min:"%1 min ago", ago_hour:"%1 h ago", ago_day:"%1 d ago", just_now:"just now",
     lbl_hazards:"Show other natural disasters", lg_hazards:"other hazards",
     hz_wildfire:"Wildfire", hz_storm:"Severe storm", hz_volcano:"Volcano", hz_flood:"Flood", hz_ice:"Sea/lake ice", hz_drought:"Drought", hz_landslide:"Landslide", hz_temp:"Extreme temperature", hz_other:"Hazard", hz_tsunami:"Tsunami", hz_cyclone:"Cyclone", hz_source:"Source", hz_alert_red:"Red alert", hz_alert_orange:"Orange alert", hz_alert_green:"Advisory",
@@ -1028,7 +1038,7 @@ const STR = {
     recenter:"Zentrieren", refresh:"Aktualisieren", map_offline:"Karte benötigt eine Internetverbindung.", you_label:"Sie",
     adv_title:"Erweitert", lbl_units:"Entfernungseinheit", lbl_radius:"Warnradius", lbl_minmag:"Mindestmagnitude",
     desc_radius:"Nur Erdbeben innerhalb dieser Entfernung betreffen Sie.", desc_minmag:"Schwächere Beben erscheinen auf der Karte, lösen aber nie Alarm aus.",
-    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
+    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", dnd_title:"Alarm im Nicht-stören-Modus", dnd_desc:"Lässt den Alarm den Stumm-/Nicht-stören-Modus durchbrechen.", autostart_title:"Zuverlässige Hintergrund-Warnungen", autostart_desc:"Auf Xiaomi/Huawei/Oppo: Autostart & Hintergrund für AlearthApp erlauben — sonst werden Push-Warnungen unterdrückt.", autostart_btn:"App-Einstellungen öffnen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
     ago_min:"vor %1 Min.", ago_hour:"vor %1 Std.", ago_day:"vor %1 T.", just_now:"gerade eben",
     lbl_hazards:"Andere Naturkatastrophen anzeigen", lg_hazards:"andere Gefahren",
     hz_wildfire:"Waldbrand", hz_storm:"Schwerer Sturm", hz_volcano:"Vulkan", hz_flood:"Überschwemmung", hz_ice:"Meer-/Seeeis", hz_drought:"Dürre", hz_landslide:"Erdrutsch", hz_temp:"Extreme Temperatur", hz_other:"Gefahr", hz_tsunami:"Tsunami", hz_cyclone:"Wirbelsturm", hz_source:"Quelle", hz_alert_red:"Rote Warnung", hz_alert_orange:"Orange Warnung", hz_alert_green:"Hinweis",
@@ -1140,7 +1150,7 @@ const STR = {
     recenter:"Ortala", refresh:"Yenile", map_offline:"Harita için internet gerekir.", you_label:"Siz",
     adv_title:"Gelişmiş", lbl_units:"Uzaklık birimi", lbl_radius:"Uyarı yarıçapı", lbl_minmag:"En düşük büyüklük",
     desc_radius:"Yalnızca bu mesafedeki depremler sizi ilgilendirir.", desc_minmag:"Zayıf depremler haritada gösterilir ama alarm vermez.",
-    lbl_sound:"Alarm sesi", lbl_ntf_realtime:"Gerçek zamanlı algılamalar", lbl_ntf_reports:"Kullanıcı bildirimli depremler",
+    lbl_sound:"Alarm sesi", pick_sound:"Alarm sesini seç", dnd_title:"Rahatsız Etme'de alarm", dnd_desc:"Alarmın sessiz / Rahatsız Etme modunu delip geçmesine izin ver.", autostart_title:"Güvenilir arka plan uyarıları", autostart_desc:"Xiaomi/Huawei/Oppo'da AlearthApp için Otomatik Başlatma ve arka planı etkinleştir — yoksa push uyarıları engellenir.", autostart_btn:"Uygulama ayarlarını aç", lbl_ntf_realtime:"Gerçek zamanlı algılamalar", lbl_ntf_reports:"Kullanıcı bildirimli depremler",
     ago_min:"%1 dk önce", ago_hour:"%1 sa önce", ago_day:"%1 g önce", just_now:"az önce",
     lbl_hazards:"Diğer doğal afetleri göster", lg_hazards:"diğer afetler",
     hz_wildfire:"Orman yangını", hz_storm:"Şiddetli fırtına", hz_volcano:"Yanardağ", hz_flood:"Sel", hz_ice:"Deniz/göl buzu", hz_drought:"Kuraklık", hz_landslide:"Heyelan", hz_temp:"Aşırı sıcaklık", hz_other:"Tehlike", hz_tsunami:"Tsunami", hz_cyclone:"Siklon", hz_source:"Kaynak", hz_alert_red:"Kırmızı alarm", hz_alert_orange:"Turuncu alarm", hz_alert_green:"Bilgilendirme",
@@ -1219,7 +1229,7 @@ const STR = {
     recenter:"Центр", refresh:"Обновить", map_offline:"Для карты нужен интернет.", you_label:"Вы",
     adv_title:"Дополнительно", lbl_units:"Единицы расстояния", lbl_radius:"Радиус оповещения", lbl_minmag:"Мин. магнитуда",
     desc_radius:"Вас касаются только землетрясения в этом радиусе.", desc_minmag:"Слабые толчки видны на карте, но не вызывают тревогу.",
-    lbl_sound:"Звук тревоги", lbl_ntf_realtime:"Обнаружение в реальном времени", lbl_ntf_reports:"Землетрясения от пользователей",
+    lbl_sound:"Звук тревоги", pick_sound:"Выбрать звук тревоги", dnd_title:"Тревога в режиме «Не беспокоить»", dnd_desc:"Позволяет тревоге пробиваться сквозь беззвучный режим / «Не беспокоить».", autostart_title:"Надёжные фоновые оповещения", autostart_desc:"На Xiaomi/Huawei/Oppo разрешите автозапуск и работу в фоне для AlearthApp — иначе push-оповещения блокируются.", autostart_btn:"Открыть настройки приложения", lbl_ntf_realtime:"Обнаружение в реальном времени", lbl_ntf_reports:"Землетрясения от пользователей",
     ago_min:"%1 мин назад", ago_hour:"%1 ч назад", ago_day:"%1 дн назад", just_now:"только что",
     lbl_hazards:"Показывать другие стихийные бедствия", lg_hazards:"другие бедствия",
     hz_wildfire:"Лесной пожар", hz_storm:"Сильный шторм", hz_volcano:"Вулкан", hz_flood:"Наводнение", hz_ice:"Морской/озёрный лёд", hz_drought:"Засуха", hz_landslide:"Оползень", hz_temp:"Экстремальная температура", hz_other:"Опасность", hz_tsunami:"Цунами", hz_cyclone:"Циклон", hz_source:"Источник", hz_alert_red:"Красный уровень", hz_alert_orange:"Оранжевый уровень", hz_alert_green:"Уведомление",
@@ -1277,7 +1287,7 @@ const STR = {
     vw_nearby:"قريب", vw_felt:"محسوس (M≥4)", vw_global:"الكل",
     recenter:"توسيط", refresh:"تحديث", map_offline:"الخريطة تحتاج إنترنت.", you_label:"أنت",
     adv_title:"متقدم", lbl_units:"وحدة المسافة", lbl_radius:"نطاق التنبيه", lbl_minmag:"أدنى قوة",
-    lbl_sound:"صوت الإنذار",
+    lbl_sound:"صوت الإنذار", pick_sound:"اختر صوت الإنذار", dnd_title:"الإنذار أثناء وضع عدم الإزعاج", dnd_desc:"يسمح للإنذار باختراق الوضع الصامت / عدم الإزعاج.", autostart_title:"تنبيهات خلفية موثوقة", autostart_desc:"على Xiaomi/Huawei/Oppo، فعّل التشغيل التلقائي والخلفية لتطبيق AlearthApp — وإلا تُحظر تنبيهات الدفع.", autostart_btn:"فتح إعدادات التطبيق",
     lbl_hazards:"إظهار الكوارث الطبيعية الأخرى", lg_hazards:"مخاطر أخرى",
     hz_wildfire:"حريق غابات", hz_storm:"عاصفة شديدة", hz_volcano:"بركان", hz_flood:"فيضان", hz_ice:"جليد", hz_drought:"جفاف", hz_landslide:"انزلاق أرضي", hz_temp:"حرارة قصوى", hz_other:"خطر", hz_tsunami:"تسونامي", hz_cyclone:"إعصار", hz_source:"المصدر", hz_alert_red:"إنذار أحمر", hz_alert_orange:"إنذار برتقالي", hz_alert_green:"إرشادي",
     net_title:"شبكة الرصد", net_join:"انضم إلى الشبكة", net_online_label:"جهاز متصل", net_devices:"أجهزة", net_triggers:"إشارات", net_detecting:"عنقود يرصد", net_detecting_banner:"عناقيد ترصد اهتزازاً قريباً: %1", net_trigger_btn:"إرسال إشارة اختبار", net_trigger_sent:"تم إرسال الإشارة", net_joined:"انضممت إلى الشبكة", net_note:"عند اهتزاز جهازك يشارك فقط خلية شبكة تقريبية وطابعاً زمنياً — لا موقعك الدقيق أبداً. كلما زاد المشاركون بكّر التحذير للجميع. يعمل عالمياً.",
@@ -2380,6 +2390,7 @@ function applyLanguage() {
   set("advTitle","adv_title"); set("lblUnits","lbl_units"); set("lblRadius","lbl_radius"); set("lblMinMag","lbl_minmag");
   set("descRadius","desc_radius"); set("descMinMag","desc_minmag");
   set("lblSound","lbl_sound"); set("btnPickSoundText","pick_sound"); set("lblNotifyRealtime","lbl_ntf_realtime"); set("lblNotifyReports","lbl_ntf_reports");
+  set("lblDnd","dnd_title"); set("descDnd","dnd_desc"); set("lblAutostart","autostart_title"); set("descAutostart","autostart_desc"); set("btnAppSettingsText","autostart_btn");
   set("placesTitle","places_title"); set("placesDesc","places_desc");
   set("obPlacesT","ob_places_t"); set("obPlacesB","ob_places_b");
   { const a=$("obPlaceInput"); if(a) a.placeholder=t("places_add_ph"); const b=$("setPlaceInput"); if(b) b.placeholder=t("places_add_ph"); }
@@ -2572,6 +2583,15 @@ function bind() {
   if (window.AndroidBridge && AndroidBridge.pickAlarmSound) {
     $("btnPickSound").style.display="";
     $("btnPickSound").onclick=()=>{ try{ AndroidBridge.pickAlarmSound(); }catch(e){} };
+  }
+  if (window.AndroidBridge && AndroidBridge.setDndBypass) {
+    $("dndRow").style.display=""; $("descDnd").style.display="";
+    try { $("dndSwitch").checked = !!AndroidBridge.dndActive(); } catch(e){}
+    $("dndSwitch").onchange=e=>{ try{ AndroidBridge.setDndBypass(e.target.checked); }catch(err){} };
+  }
+  if (window.AndroidBridge && AndroidBridge.openAppSettings) {
+    $("autostartRow").style.display="";
+    $("btnAppSettings").onclick=()=>{ try{ AndroidBridge.openAppSettings(); }catch(e){} };
   }
   $("ntfRealtime").onchange=e=>{ Settings.notifyRealtime=e.target.checked; savePrefs(); };
   $("ntfReports").onchange=e=>{ Settings.notifyReports=e.target.checked; savePrefs(); };
