@@ -715,10 +715,13 @@
       <p id="ob1b">TDA warns you seconds before the shaking arrives and shows every natural hazard near you.</p>
     </div>
     <div class="ob-card" data-ob="3" hidden>
-      <h2 id="ob2t">Where should we watch?</h2>
-      <p id="ob2b">Use your location, or pick a city. You can change this any time.</p>
+      <h2 id="ob2t">Where do you want alerts?</h2>
+      <p id="ob2b">Choose your location by GPS or search — you can change it any time.</p>
       <button class="btn accent wide" id="obGps">📡 <span id="obGpsText">Use my location</span></button>
-      <div class="chips" id="obCities" style="margin-top:12px"></div>
+      <div class="search-box" style="margin-top:12px">
+        <input type="text" id="obAddrInput" autocomplete="off" spellcheck="false" placeholder="Search address or place…">
+        <div class="results" id="obResults"></div>
+      </div>
     </div>
     <div class="ob-card" data-ob="4" hidden>
       <h2 id="ob3t">Choose a protection level</h2>
@@ -870,7 +873,7 @@ const STR = {
     kat_empty:"No events for this filter.", src_down:"%1 source unavailable — showing the rest.",
     ob_next:"Next", ob_finish:"Done", ob_back:"Back", ob_skip:"Skip",
     ob1_t:"Welcome to TDA", ob1_b:"TDA warns you seconds before the shaking arrives and shows every natural hazard near you.",
-    ob2_t:"Where should we watch?", ob2_b:"Use your location, or pick a city. You can change this any time.", ob_gps:"Use my location",
+    ob2_t:"Where do you want alerts?", ob2_b:"Choose your location by GPS or search — you can change it any time.", ob_gps:"Use my location",
     ob3_t:"Choose a protection level", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
     ob_retro:"This level would have warned you at %1 of %2 recent quakes nearby (last 24 h — hindsight, not a forecast).",
     ob3_fine:"Magnitude = strength; radius = how far away a quake still concerns you. Fine sliders stay in Settings.",
@@ -979,7 +982,7 @@ const STR = {
     kat_empty:"Keine Ereignisse für diesen Filter.", src_down:"Quelle %1 nicht verfügbar — Rest wird angezeigt.",
     ob_next:"Weiter", ob_finish:"Fertig", ob_back:"Zurück", ob_skip:"Überspringen",
     ob1_t:"Willkommen bei TDA", ob1_b:"TDA warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
-    ob2_t:"Wo sollen wir wachen?", ob2_b:"Nutze deinen Standort oder wähle eine Stadt. Du kannst das jederzeit ändern.", ob_gps:"Meinen Standort verwenden",
+    ob2_t:"Wo möchtest du gewarnt werden?", ob2_b:"Wähle deinen Ort per Standort oder Suche — jederzeit änderbar.", ob_gps:"Meinen Standort verwenden",
     ob3_t:"Schutzniveau wählen", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
     ob_retro:"Dieses Niveau hätte dich bei %1 von %2 Beben in deiner Nähe gewarnt (letzte 24 Std. — Rückschau, keine Vorhersage).",
     ob3_fine:"Magnitude = Stärke; Radius = wie weit weg dich ein Beben noch betrifft. Fein-Regler bleiben in den Einstellungen.",
@@ -1623,14 +1626,14 @@ function useGps() {
   }, { enableHighAccuracy:true, timeout:10000 });
 }
 let searchTimer=null;
-function onAddrInput(e) {
+function onAddrInput(e, boxId="results", inputId="addrInput") {
   const q=e.target.value.trim(); clearTimeout(searchTimer);
-  const box=$("results");
+  const box=$(boxId);
   if (q.length<3) { box.classList.remove("show"); box.innerHTML=""; return; }
-  searchTimer=setTimeout(()=>doSearch(q), 450);
+  searchTimer=setTimeout(()=>doSearch(q, boxId, inputId), 450);
 }
-async function doSearch(q) {
-  const box=$("results");
+async function doSearch(q, boxId="results", inputId="addrInput") {
+  const box=$(boxId);
   box.innerHTML=`<button disabled><span class="spin"></span> ${t("loc_searching")}</button>`; box.classList.add("show");
   try {
     const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&addressdetails=1&accept-language=${lang}&q=${encodeURIComponent(q)}`, {headers:{"Accept":"application/json"}});
@@ -1643,7 +1646,7 @@ async function doSearch(q) {
       const label=[a.road||a.pedestrian, a.suburb||a.neighbourhood||a.city_district, a.city||a.town||a.village||a.county||a.state].filter(Boolean).slice(0,3).join(", ") || it.display_name.split(",").slice(0,3).join(",");
       const b=document.createElement("button");
       b.textContent=label;
-      b.onclick=()=>{ setLocation(label, parseFloat(it.lat), parseFloat(it.lon), "search"); box.classList.remove("show"); $("addrInput").value=""; };
+      b.onclick=()=>{ setLocation(label, parseFloat(it.lat), parseFloat(it.lon), "search"); box.classList.remove("show"); $(inputId).value=""; };
       box.appendChild(b);
     }
   } catch(e) { box.innerHTML=`<button disabled>${t("loc_none")}</button>`; }
@@ -2241,6 +2244,7 @@ function applyLanguage() {
   renderStartNearest();
   set("locTitle","loc_title"); set("btnGpsText","loc_use_gps"); set("searchHint","loc_search_hint");
   $("addrInput").placeholder=t("loc_search_ph");
+  { const oa=$("obAddrInput"); if(oa) oa.placeholder=t("loc_search_ph"); }
   set("seisTitle","seis_title"); set("btnMotion","btn_motion");
   set("smDevice","sm_device"); set("smStation","sm_station");
   set("soGrid","so_grid"); set("soGain","so_gain"); set("soInfo","so_info"); set("lblGain","lbl_gain");
@@ -2356,10 +2360,9 @@ function obGoTo(step) {
 }
 function startOnboarding() {
   $("onboarding").classList.add("show");
-  // seed language buttons + profile buttons + city chips to current state
+  // seed language buttons + profile buttons to current state
   renderObLangs();
   highlightObProfile(profileGuess());
-  renderObCities();
   obGoTo(1);
 }
 function finishOnboarding() {
@@ -2433,6 +2436,7 @@ function bind() {
   $("btnRefresh").onclick=()=>{ fetchQuakes(); fetchHazards(); fetchServerHazards(); };
   $("btnGps").onclick=useGps;
   $("addrInput").oninput=onAddrInput;
+  $("obAddrInput").oninput=e=>onAddrInput(e,"obResults","obAddrInput");
   $("btnQuake").onclick=runEarthquakeDrill;
   $("btnAfter").onclick=runAftershockSequence;
   $("btnFire").onclick=runFireworksDisturbance;
