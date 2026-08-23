@@ -39,6 +39,10 @@ object Prefs {
     private const val KEY_PUSH_SUBS = "push_subscriptions"
     private const val KEY_LAST_ALARM_ID = "last_alarm_id"
     private const val KEY_LAST_ALARM_TS = "last_alarm_ts"
+    private const val KEY_CROWD_ENABLED = "crowdsourcing_enabled"
+    private const val KEY_ANON_ID_HASH = "anon_id_hash"
+    private const val KEY_ANON_ID_DAY = "anon_id_day"
+    private const val KEY_LAST_PING_MS = "last_ping_ms"
 
     private lateinit var prefs: SharedPreferences
 
@@ -204,4 +208,23 @@ object Prefs {
     var lastAlarmTs: Long
         get() = prefs.getLong(KEY_LAST_ALARM_TS, 0L)
         set(v) { prefs.edit().putLong(KEY_LAST_ALARM_TS, v).apply() }
+
+    /** Opt-in: Handy horcht am Strom und meldet Erschütterungen. Standard aus. */
+    var crowdsourcingEnabled: Boolean
+        get() = prefs.getBoolean(KEY_CROWD_ENABLED, false)
+        set(v) { prefs.edit().putBoolean(KEY_CROWD_ENABLED, v).apply() }
+
+    /** Rohspeicher der rotierenden anonymen Kennung (siehe [AnonDeviceId]). */
+    var anonIdHash: String
+        get() = prefs.getString(KEY_ANON_ID_HASH, "") ?: ""
+        set(v) { prefs.edit().putString(KEY_ANON_ID_HASH, v).apply() }
+
+    var anonIdDay: Long
+        get() = prefs.getLong(KEY_ANON_ID_DAY, -1L)
+        set(v) { prefs.edit().putLong(KEY_ANON_ID_DAY, v).apply() }
+
+    /** Zeitstempel (ms) des zuletzt gesendeten Aktiv-Pings. */
+    var lastPingMs: Long
+        get() = prefs.getLong(KEY_LAST_PING_MS, 0L)
+        set(v) { prefs.edit().putLong(KEY_LAST_PING_MS, v).apply() }
 }
