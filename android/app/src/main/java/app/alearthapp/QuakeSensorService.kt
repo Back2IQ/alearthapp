@@ -49,7 +49,7 @@ class QuakeSensorService : Service(), SensorEventListener {
     private lateinit var cfg: SensorConfig
     private lateinit var stillness: StillnessDetector
     private lateinit var shake: ShakeDetector
-    private var settled = false
+    private val watchGate = WatchGate()
 
     override fun onCreate() {
         super.onCreate()
@@ -78,8 +78,12 @@ class QuakeSensorService : Service(), SensorEventListener {
              event.values[1] * event.values[1] +
              event.values[2] * event.values[2]).toDouble()
         )
-        settled = stillness.onSample(tMs, mag) == Stillness.SETTLED
-        if (!settled) return
+        val state = stillness.onSample(tMs, mag)
+        // Latch: einmal SETTLED reicht, um dauerhaft auf Rütteln zu horchen. Ein
+        // späteres UNSETTLED (das Beben selbst treibt die Varianz hoch) darf den
+        // ShakeDetector nicht mehr abschneiden — sonst sammelt er nie seine nötigen
+        // aufeinanderfolgenden Samples und /trigger feuert nie.
+        if (!watchGate.update(state)) return
         maybePing(tMs)
         val triggerMs = shake.onSample(tMs, mag) ?: return
         val cell = currentCell() ?: return

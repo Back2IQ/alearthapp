@@ -1,6 +1,7 @@
 package app.alearthapp
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
@@ -91,6 +92,16 @@ class MainActivity : AppCompatActivity() {
             webView.restoreState(savedInstanceState)
         } else {
             webView.loadUrl("https://appassets.androidplatform.net/assets/webapp/index.html")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Fallback für den Fall, dass der Ladekabel-Broadcast im Hintergrund verworfen
+        // wurde (Android-12+ FGS-Start-Restriktion): beim nächsten App-Öffnen nachholen.
+        if (Prefs.crowdsourcingEnabled) {
+            val bm = getSystemService(Context.BATTERY_SERVICE) as android.os.BatteryManager
+            if (bm.isCharging) QuakeSensorService.start(this)
         }
     }
 
