@@ -328,4 +328,9 @@ class MapActivity : AppCompatActivity() {
         super.onPause()
         mapView.onPause()
     }
+
+    override fun onDestroy() {
+        mapView.onDetach()
+        super.onDestroy()
+    }
 }

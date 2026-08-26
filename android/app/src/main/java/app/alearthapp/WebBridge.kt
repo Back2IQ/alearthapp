@@ -46,7 +46,9 @@ class WebBridge(private val activity: Activity) {
             lat = o.optDouble("lat"), lon = o.optDouble("lon"),
             depthKm = o.optDouble("depthKm", 10.0), originTs = o.optLong("originTs", System.currentTimeMillis()),
             userLat = o.optDouble("userLat"), userLon = o.optDouble("userLon"),
-            cityName = o.optString("cityName"), sound = o.optBoolean("sound", true)
+            cityName = o.optString("cityName"), sound = o.optBoolean("sound", true),
+            mag = o.optDouble("mag", 6.0),
+            tier = tier
         )
         activity.runOnUiThread {
             Alarm.dispatch(activity, payload, tier, mmi, isTest, foreground = true)

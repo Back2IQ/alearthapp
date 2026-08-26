@@ -150,4 +150,12 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (this::webView.isInitialized && webView.canGoBack()) webView.goBack() else super.onBackPressed()
     }
+
+    override fun onDestroy() {
+        if (this::webView.isInitialized) {
+            webView.removeJavascriptInterface("AndroidBridge")
+            webView.destroy()
+        }
+        super.onDestroy()
+    }
 }

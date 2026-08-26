@@ -65,6 +65,7 @@ class QuakeSensorService : Service(), SensorEventListener {
         if (!Prefs.crowdsourcingEnabled) { stopSelf(); return START_NOT_STICKY }
         val sm = getSystemService(SENSOR_SERVICE) as SensorManager
         sensorManager = sm
+        sm.unregisterListener(this)
         sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
             sm.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         } ?: run { stopSelf() }   // no accelerometer -> feature inactive
@@ -105,7 +106,8 @@ class QuakeSensorService : Service(), SensorEventListener {
             != PackageManager.PERMISSION_GRANTED) return null
         val lm = getSystemService(LOCATION_SERVICE) as LocationManager
         val loc = runCatching {
-            lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 ?: lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
         }.getOrNull() ?: return null
         return GeoCell.coarsenCell(loc.latitude, loc.longitude)

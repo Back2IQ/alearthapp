@@ -19,7 +19,9 @@ object Alarm {
     data class Payload(
         val id: String, val lat: Double, val lon: Double, val depthKm: Double,
         val originTs: Long, val userLat: Double, val userLon: Double,
-        val cityName: String, val sound: Boolean
+        val cityName: String, val sound: Boolean,
+        val mag: Double = 6.0,
+        val tier: Eew.Tier = Eew.Tier.P0
     )
 
     fun alertIntent(ctx: Context, p: Payload): Intent =
@@ -33,6 +35,8 @@ object Alarm {
             putExtra(AlertActivity.EXTRA_USER_LON, p.userLon)
             putExtra(AlertActivity.EXTRA_USER_CITY_NAME, p.cityName)
             putExtra(AlertActivity.EXTRA_SOUND, p.sound)
+            putExtra(AlertActivity.EXTRA_MAG, p.mag)
+            putExtra(AlertActivity.EXTRA_TIER, p.tier.name)
         }
 
     /** DND-durchdringende Full-Screen-Wecknotification — funktioniert auch aus dem Hintergrund. */

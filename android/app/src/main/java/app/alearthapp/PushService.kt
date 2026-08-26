@@ -25,9 +25,9 @@ class PushService : FirebaseMessagingService() {
         val lat = d["lat"]?.toDoubleOrNull() ?: return
         val lon = d["lon"]?.toDoubleOrNull() ?: return
         val mag = d["mag"]?.toDoubleOrNull() ?: return
-        val depthKm = d["depth_km"]?.toDoubleOrNull() ?: 10.0
-        val originTs = d["origin_ts"]?.toLongOrNull() ?: System.currentTimeMillis()
-        val isTest = d["test"] == "1"
+        val depthKm = d["depth_km"]?.toDoubleOrNull() ?: d["depthKm"]?.toDoubleOrNull() ?: 10.0
+        val originTs = d["origin_ts"]?.toLongOrNull() ?: d["originTs"]?.toLongOrNull() ?: System.currentTimeMillis()
+        val isTest = d["test"] == "1" || d["test"] == "true"
         val tier = when (d["tier"]) {
             "P2" -> Eew.Tier.P2
             "P0" -> Eew.Tier.P0
@@ -58,7 +58,9 @@ class PushService : FirebaseMessagingService() {
                     userLat = dec.userLat,
                     userLon = dec.userLon,
                     cityName = dec.cityName,
-                    sound = d["sound"]?.let { it != "false" } ?: true
+                    sound = d["sound"]?.let { it != "false" } ?: true,
+                    mag = mag,
+                    tier = tier
                 )
                 Alarm.dispatch(
                     applicationContext,

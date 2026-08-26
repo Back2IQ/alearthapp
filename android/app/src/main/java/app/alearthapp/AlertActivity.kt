@@ -43,6 +43,8 @@ class AlertActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         const val EXTRA_USER_LON = "user_lon"
         const val EXTRA_USER_CITY_NAME = "user_city_name"
         const val EXTRA_SOUND = "sound"
+        const val EXTRA_MAG = "mag"
+        const val EXTRA_TIER = "tier"
     }
 
     private var soundEnabled = true
@@ -99,8 +101,10 @@ class AlertActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         cityName = intent.getStringExtra(EXTRA_USER_CITY_NAME) ?: ""
         soundEnabled = intent.getBooleanExtra(EXTRA_SOUND, true)
         distKm = Eew.haversineKm(userLat, userLon, epiLat, epiLon)
-        mag = 6.8
-        currentTier = Eew.Tier.P0
+        mag = intent.getDoubleExtra(EXTRA_MAG, 6.0)
+        currentTier = intent.getStringExtra(EXTRA_TIER)?.let {
+            runCatching { Eew.Tier.valueOf(it) }.getOrNull()
+        } ?: Eew.Tier.P0
 
         findViewById<Button>(R.id.btnCloseAlert).setOnClickListener {
             stopFeedback()
