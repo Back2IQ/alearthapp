@@ -134,4 +134,16 @@
     <string name="disasters_empty">لا توجد أحداث مطابقة للتصفية الحالية</string>
     <string name="disasters_count_format">%1$d حدث في آخر 48 ساعة</string>
     <string name="disasters_fetch_error">حدث خطأ أثناء تحميل البيانات.</string>
+
+    <!-- BLE Emergency Beacon & Rescue Radar -->
+    <string name="ble_beacon_broadcasting">📡 إشارة الطوارئ BLE نشطة</string>
+    <string name="ble_beacon_desc">إرسال إشارة استغاثة دون إنترنت (مدى 30–100 م)</string>
+    <string name="btn_rescue_radar">🔍 رادار الإنقاذ: البحث عن إشارات قريبة</string>
+    <string name="btn_stop_radar">⏹️ إيقاف الرادار</string>
+    <string name="radar_searching">جارٍ البحث عن إشارات استغاثة قريبة…</string>
+    <string name="radar_no_devices">لم يتم العثور على إشارات في النطاق بعد.</string>
+    <string name="radar_found_header">تم العثور على %1$d إشارة طوارئ:</string>
+    <string name="status_trapped">مساعدة / تحت الأنقاض</string>
+    <string name="status_injured">مصاب</string>
+    <string name="status_ok">آمن / بخير</string>
 </resources>

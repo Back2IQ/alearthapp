@@ -158,6 +158,7 @@ class AlarmService : Service() {
     private fun enterWatch() {
         timerJob?.cancel()
         stopWhistle()
+        BleEmergencyBeacon.stop(this)
         updateNotification(getString(R.string.svc_watching))
         androidx.core.app.NotificationManagerCompat.from(this).cancel(BEACON_ASK_NOTIF_ID)
         androidx.core.app.NotificationManagerCompat.from(this).cancel(ALARM_FSI_NOTIF_ID)
@@ -166,6 +167,7 @@ class AlarmService : Service() {
     private fun enterBeacon() {
         updateNotification(getString(R.string.svc_beacon))
         if (Prefs.signalWhistle && !isTestChain) startWhistle()
+        BleEmergencyBeacon.start(this, BleSosStatus.TRAPPED)
         val fsi = PendingIntent.getActivity(
             this, 0,
             Intent(this, BeaconActivity::class.java)
@@ -215,7 +217,7 @@ class AlarmService : Service() {
     }
 
     private fun stopEverything() {
-        timerJob?.cancel(); stopWhistle(); safety.reset()
+        timerJob?.cancel(); stopWhistle(); BleEmergencyBeacon.stop(this); safety.reset()
         androidx.core.app.NotificationManagerCompat.from(this).cancel(BEACON_ASK_NOTIF_ID)
         androidx.core.app.NotificationManagerCompat.from(this).cancel(ALARM_FSI_NOTIF_ID)
         stopForeground(STOP_FOREGROUND_REMOVE); stopSelf()

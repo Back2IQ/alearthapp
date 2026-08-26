@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
@@ -17,11 +18,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 /**
  * Vollbild „Bist du sicher?" (MODE_ASK) bzw. aktives Notsignal (MODE_BEACON) — spec TP-3
- * §"Teil 2/3/4". Politik/Timings kommen aus [SafetyState]/[StrobePattern] (getestet); der
- * Dienst [AlarmService] ist die Wahrheit über den Zustand, diese Activity ist nur die Fläche.
+ * §"Teil 2/3/4". Integriert BLE-Offline-Beaconing und Rescue-Radar zur Suche Verschütteter.
  */
 class BeaconActivity : AppCompatActivity() {
 
@@ -33,6 +34,7 @@ class BeaconActivity : AppCompatActivity() {
 
     private lateinit var scope: CoroutineScope
     private var strobe: Strobe? = null
+    private var isRadarActive = false
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(newBase.withAppLocale())
@@ -68,6 +70,10 @@ class BeaconActivity : AppCompatActivity() {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
 
+        findViewById<Button>(R.id.btnRescueRadar).setOnClickListener {
+            toggleRescueRadar()
+        }
+
         when (intent.getStringExtra(EXTRA_MODE)) {
             MODE_BEACON -> renderBeacon()
             else -> renderAsk()
@@ -85,6 +91,9 @@ class BeaconActivity : AppCompatActivity() {
 
     private fun renderAsk() {
         findViewById<TextView>(R.id.beaconTitle).setText(R.string.beacon_ask_title)
+        findViewById<LinearLayout>(R.id.bleStatusCard).visibility = View.GONE
+        findViewById<Button>(R.id.btnRescueRadar).visibility = View.GONE
+        findViewById<TextView>(R.id.tvRadarResults).visibility = View.GONE
         findViewById<Button>(R.id.btnSafe).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnHelp).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnStop).visibility = View.GONE
@@ -106,6 +115,8 @@ class BeaconActivity : AppCompatActivity() {
     private fun renderBeacon() {
         findViewById<TextView>(R.id.beaconTitle).setText(R.string.beacon_active_title)
         findViewById<TextView>(R.id.beaconCountdown).text = ""
+        findViewById<LinearLayout>(R.id.bleStatusCard).visibility = View.VISIBLE
+        findViewById<Button>(R.id.btnRescueRadar).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnSafe).visibility = View.GONE
         findViewById<Button>(R.id.btnHelp).visibility = View.GONE
         findViewById<Button>(R.id.btnStop).visibility = View.VISIBLE
@@ -118,12 +129,61 @@ class BeaconActivity : AppCompatActivity() {
         }
     }
 
+    private fun toggleRescueRadar() {
+        val tvResults = findViewById<TextView>(R.id.tvRadarResults)
+        val btnRadar = findViewById<Button>(R.id.btnRescueRadar)
+
+        if (isRadarActive) {
+            BleRescueScanner.stopScan()
+            isRadarActive = false
+            btnRadar.setText(R.string.btn_rescue_radar)
+            tvResults.visibility = View.GONE
+        } else {
+            isRadarActive = true
+            btnRadar.setText(R.string.btn_stop_radar)
+            tvResults.visibility = View.VISIBLE
+            tvResults.setText(R.string.radar_searching)
+
+            BleRescueScanner.startScan(this) { list ->
+                runOnUiThread {
+                    if (list.isEmpty()) {
+                        tvResults.setText(R.string.radar_no_devices)
+                    } else {
+                        val sb = StringBuilder()
+                        sb.append(getString(R.string.radar_found_header, list.size)).append("\n\n")
+                        for (item in list) {
+                            val statusText = when (item.message.status) {
+                                BleSosStatus.TRAPPED -> getString(R.string.status_trapped)
+                                BleSosStatus.INJURED -> getString(R.string.status_injured)
+                                BleSosStatus.OK -> getString(R.string.status_ok)
+                            }
+                            val distStr = if (item.estimatedDistanceMeters > 0) {
+                                String.format(Locale.US, " · ~%.1f m", item.estimatedDistanceMeters)
+                            } else ""
+                            sb.append("• ").append(statusText).append(distStr)
+                                .append(" (Akku: ").append(item.message.batteryPercent).append("%)\n")
+                        }
+                        tvResults.text = sb.toString().trimEnd()
+                    }
+                }
+            }
+        }
+    }
+
     private fun onSafe() {
+        if (isRadarActive) {
+            BleRescueScanner.stopScan()
+            isRadarActive = false
+        }
         strobe?.stopAll()
         AlarmService.userSafe(this)
         AlarmService.stop(this)
+        BleEmergencyBeacon.stop(this)
         findViewById<TextView>(R.id.beaconTitle).setText(R.string.beacon_safe_title)
         findViewById<TextView>(R.id.beaconCountdown).text = ""
+        findViewById<LinearLayout>(R.id.bleStatusCard).visibility = View.GONE
+        findViewById<Button>(R.id.btnRescueRadar).visibility = View.GONE
+        findViewById<TextView>(R.id.tvRadarResults).visibility = View.GONE
         findViewById<Button>(R.id.btnSafe).visibility = View.GONE
         findViewById<Button>(R.id.btnHelp).visibility = View.GONE
         findViewById<Button>(R.id.btnStop).visibility = View.GONE
@@ -155,6 +215,9 @@ class BeaconActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        strobe?.stopAll(); scope.cancel(); super.onDestroy()
+        if (isRadarActive) BleRescueScanner.stopScan()
+        strobe?.stopAll()
+        scope.cancel()
+        super.onDestroy()
     }
 }

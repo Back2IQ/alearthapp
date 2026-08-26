@@ -231,4 +231,16 @@
     <string name="disasters_empty">Keine Ereignisse für aktuellen Filter</string>
     <string name="disasters_count_format">%1$d Ereignisse in den letzten 48 Std.</string>
     <string name="disasters_fetch_error">Fehler beim Laden der Feeds. Bitte erneut versuchen.</string>
+
+    <!-- BLE Emergency Beacon & Rescue Radar -->
+    <string name="ble_beacon_broadcasting">📡 BLE-Notfall-Beacon aktiv</string>
+    <string name="ble_beacon_desc">Sendet Offline-SOS-Lebenszeichen (30–100m Reichweite)</string>
+    <string name="btn_rescue_radar">🔍 Rescue-Radar: Nach Notsignalen suchen</string>
+    <string name="btn_stop_radar">⏹️ Radar stoppen</string>
+    <string name="radar_searching">Suche nach Notfall-Beacons in der Umgebung…</string>
+    <string name="radar_no_devices">Bisher keine Notsignale in Reichweite gefunden.</string>
+    <string name="radar_found_header">%1$d Notfall-Signal(e) geortet:</string>
+    <string name="status_trapped">HILFE / VERSCHÜTTET</string>
+    <string name="status_injured">VERLETZT</string>
+    <string name="status_ok">SICHER / OK</string>
 </resources>

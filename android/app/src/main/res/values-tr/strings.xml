@@ -192,4 +192,16 @@
     <string name="disasters_empty">Mevcut filtre için olay bulunamadı</string>
     <string name="disasters_count_format">Son 48 saatte %1$d olay</string>
     <string name="disasters_fetch_error">Akışlar yüklenirken hata oluştu. Lütfen tekrar deneyin.</string>
+
+    <!-- BLE Emergency Beacon & Rescue Radar -->
+    <string name="ble_beacon_broadcasting">📡 BLE Acil Durum Sinyali Aktif</string>
+    <string name="ble_beacon_desc">Çevrimdışı SOS sinyali yayılıyor (30–100m menzil)</string>
+    <string name="btn_rescue_radar">🔍 Kurtarma Radarı: Yakındaki sinyalleri ara</string>
+    <string name="btn_stop_radar">⏹️ Radarı Durdur</string>
+    <string name="radar_searching">Yakındaki acil durum sinyalleri taranıyor…</string>
+    <string name="radar_no_devices">Menzilde henüz sinyal tespit edilemedi.</string>
+    <string name="radar_found_header">%1$d acil durum sinyali bulundu:</string>
+    <string name="status_trapped">YARDIM / ENKAZ ALTINDA</string>
+    <string name="status_injured">YARALI</string>
+    <string name="status_ok">GÜVENDE / İYİ</string>
 </resources>

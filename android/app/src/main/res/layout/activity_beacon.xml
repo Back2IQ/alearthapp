@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/beaconStrobe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,6 +21,7 @@
             <TextView android:id="@+id/beaconTitle"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:textSize="28sp" android:textStyle="bold"
+                android:gravity="center"
                 android:textColor="@android:color/white"
                 android:text="@string/beacon_ask_title" />
 
@@ -27,6 +29,36 @@
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:textSize="48sp" android:textColor="@android:color/white"
                 android:layout_marginTop="12dp" />
+
+            <!-- BLE Beacon Active Status Card -->
+            <LinearLayout
+                android:id="@+id/bleStatusCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:visibility="gone"
+                android:background="@drawable/badge_bg_rounded"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvBleStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#00E676"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:text="@string/ble_beacon_broadcasting" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#B0FFFFFF"
+                    android:textSize="12sp"
+                    android:text="@string/ble_beacon_desc" />
+            </LinearLayout>
 
             <Button android:id="@+id/btnSafe"
                 android:layout_width="match_parent" android:layout_height="72dp"
@@ -40,6 +72,31 @@
                 android:layout_width="match_parent" android:layout_height="72dp"
                 android:layout_marginTop="12dp" android:visibility="gone"
                 android:text="@string/beacon_stop" />
+
+            <!-- Rescue Radar Toggle -->
+            <Button
+                android:id="@+id/btnRescueRadar"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
+                android:textColor="@android:color/white"
+                app:strokeColor="@android:color/white"
+                android:text="@string/btn_rescue_radar" />
+
+            <!-- Radar Results Area -->
+            <TextView
+                android:id="@+id/tvRadarResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:padding="12dp"
+                android:background="#20FFFFFF"
+                android:visibility="gone"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:text="@string/radar_searching" />
 
             <Button android:id="@+id/btnShareSafe"
                 android:layout_width="match_parent" android:layout_height="wrap_content"

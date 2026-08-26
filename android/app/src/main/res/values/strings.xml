@@ -234,4 +234,16 @@
     <string name="disasters_empty">No events found for current filter</string>
     <string name="disasters_count_format">%1$d events in the last 48h</string>
     <string name="disasters_fetch_error">Error loading feeds. Please retry.</string>
+
+    <!-- BLE Emergency Beacon & Rescue Radar -->
+    <string name="ble_beacon_broadcasting">📡 BLE Emergency Beacon Active</string>
+    <string name="ble_beacon_desc">Transmitting offline SOS beacon (30–100m range)</string>
+    <string name="btn_rescue_radar">🔍 Rescue Radar: Scan for nearby beacons</string>
+    <string name="btn_stop_radar">⏹️ Stop Radar</string>
+    <string name="radar_searching">Scanning for nearby emergency beacons…</string>
+    <string name="radar_no_devices">No beacons detected within range yet.</string>
+    <string name="radar_found_header">%1$d emergency beacon(s) located:</string>
+    <string name="status_trapped">HELP / TRAPPED</string>
+    <string name="status_injured">INJURED</string>
+    <string name="status_ok">SAFE / OK</string>
 </resources>

@@ -134,4 +134,16 @@
     <string name="disasters_empty">Ji bo parzûna heyî ti bûyer nehat dîtin</string>
     <string name="disasters_count_format">Di 48 saetên dawî de %1$d bûyer</string>
     <string name="disasters_fetch_error">Di barkirina daneyan de çewtî derket.</string>
+
+    <!-- BLE Emergency Beacon & Rescue Radar -->
+    <string name="ble_beacon_broadcasting">📡 Nîşana Lezgîn a BLE Çalak e</string>
+    <string name="ble_beacon_desc">Nîşana SOS ya negirêdayî tê weşandin (30–100m)</string>
+    <string name="btn_rescue_radar">🔍 Radara Rizgarkirinê: Li nîşanan bigere</string>
+    <string name="btn_stop_radar">⏹️ Radarê bisekinîne</string>
+    <string name="radar_searching">Li nîşanên lezgîn ên nêzîk tê gerîn…</string>
+    <string name="radar_no_devices">Hîna ti nîşan nehat dîtin.</string>
+    <string name="radar_found_header">%1$d nîşan hatin dîtin:</string>
+    <string name="status_trapped">ALÎKARÎ / BIN AVHIYÊ DE</string>
+    <string name="status_injured">BIRÎNDAR</string>
+    <string name="status_ok">ELEQE / BAŞ</string>
 </resources>
