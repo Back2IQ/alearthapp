@@ -178,4 +178,18 @@
     <string name="prep_why_warnvest">Yolda görünür ol.</string>
     <string name="prep_item_towrope">Çekme halatı</string>
     <string name="prep_why_towrope">Arıza sonrası aracı hareket ettir.</string>
+
+    <!-- Disasters & Map -->
+    <string name="nav_disasters_title">Son Afetler</string>
+    <string name="nav_map_title">Canlı Harita</string>
+    <string name="filter_region_tr">Türkiye</string>
+    <string name="filter_region_near">Yakınımda</string>
+    <string name="filter_region_world">Dünya</string>
+    <string name="filter_only_quakes">Yalnızca depremler</string>
+    <string name="btn_view_on_map">Harita</string>
+    <string name="btn_open_source">Detaylar</string>
+    <string name="disasters_loading">Canlı akışlar yükleniyor…</string>
+    <string name="disasters_empty">Mevcut filtre için olay bulunamadı</string>
+    <string name="disasters_count_format">Son 48 saatte %1$d olay</string>
+    <string name="disasters_fetch_error">Akışlar yüklenirken hata oluştu. Lütfen tekrar deneyin.</string>
 </resources>

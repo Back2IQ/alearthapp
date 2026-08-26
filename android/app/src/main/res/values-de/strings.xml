@@ -217,4 +217,18 @@
     <string name="prep_item_towrope">Abschleppseil</string>
     <string name="prep_why_towrope">Das Auto nach einer Panne wieder in Bewegung bringen.</string>
     <string name="btn_prepare_aftershock">Sich auf die Nachbebentage vorbereiten</string>
+
+    <!-- Disasters & Map -->
+    <string name="nav_disasters_title">Aktuelle Katastrophen</string>
+    <string name="nav_map_title">Live-Karte</string>
+    <string name="filter_region_tr">Türkei</string>
+    <string name="filter_region_near">In der Nähe</string>
+    <string name="filter_region_world">Weltweit</string>
+    <string name="filter_only_quakes">Nur Beben</string>
+    <string name="btn_view_on_map">Karte</string>
+    <string name="btn_open_source">Details</string>
+    <string name="disasters_loading">Lade Live-Feeds…</string>
+    <string name="disasters_empty">Keine Ereignisse für aktuellen Filter</string>
+    <string name="disasters_count_format">%1$d Ereignisse in den letzten 48 Std.</string>
+    <string name="disasters_fetch_error">Fehler beim Laden der Feeds. Bitte erneut versuchen.</string>
 </resources>

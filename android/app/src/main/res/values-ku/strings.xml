@@ -120,4 +120,18 @@
     <string name="prep_why_warnvest">Li ser rê xuya bibe.</string>
     <string name="prep_item_towrope">Kabloya kişandinê</string>
     <string name="prep_why_towrope">Piştî xerabûnê erebê bilivîne.</string>
+
+    <!-- Disasters & Map -->
+    <string name="nav_disasters_title">Karesatên Dawî</string>
+    <string name="nav_map_title">Nexşeya Zindî</string>
+    <string name="filter_region_tr">Tirkiye</string>
+    <string name="filter_region_near">Nêzîkî min</string>
+    <string name="filter_region_world">Cîhan</string>
+    <string name="filter_only_quakes">Tenê erdhej</string>
+    <string name="btn_view_on_map">Nexşe</string>
+    <string name="btn_open_source">Hûragahî</string>
+    <string name="disasters_loading">Herikînên zindî têne barkirin…</string>
+    <string name="disasters_empty">Ji bo parzûna heyî ti bûyer nehat dîtin</string>
+    <string name="disasters_count_format">Di 48 saetên dawî de %1$d bûyer</string>
+    <string name="disasters_fetch_error">Di barkirina daneyan de çewtî derket.</string>
 </resources>

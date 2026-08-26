@@ -220,4 +220,18 @@
     <string name="prep_item_towrope">Tow rope</string>
     <string name="prep_why_towrope">Get the car moving after a breakdown.</string>
     <string name="btn_prepare_aftershock">Prepare for the aftershock days</string>
+
+    <!-- Disasters & Map -->
+    <string name="nav_disasters_title">Recent Disasters</string>
+    <string name="nav_map_title">Live Map</string>
+    <string name="filter_region_tr">Türkiye</string>
+    <string name="filter_region_near">Nearby</string>
+    <string name="filter_region_world">Global</string>
+    <string name="filter_only_quakes">Quakes only</string>
+    <string name="btn_view_on_map">Map</string>
+    <string name="btn_open_source">Details</string>
+    <string name="disasters_loading">Loading live feeds…</string>
+    <string name="disasters_empty">No events found for current filter</string>
+    <string name="disasters_count_format">%1$d events in the last 48h</string>
+    <string name="disasters_fetch_error">Error loading feeds. Please retry.</string>
 </resources>

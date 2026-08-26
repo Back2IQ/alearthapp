@@ -200,6 +200,31 @@ class WebBridge(private val activity: Activity) {
         Prefs.emergencySmsPhone = phone
     }
 
+    /** Öffnet die native Katastrophen- & Erdbeben-Übersicht. */
+    @JavascriptInterface
+    fun openNativeDisasters() {
+        activity.runOnUiThread {
+            val intent = Intent(activity, DisastersActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            runCatching { activity.startActivity(intent) }
+        }
+    }
+
+    /** Öffnet die native OSM-Karte, optional zentriert auf gegebene Koordinaten. */
+    @JavascriptInterface
+    fun openNativeMap(lat: Double = 0.0, lon: Double = 0.0) {
+        activity.runOnUiThread {
+            val intent = Intent(activity, MapActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                if (lat != 0.0 && lon != 0.0) {
+                    putExtra(MapActivity.EXTRA_FOCUS_LAT, lat)
+                    putExtra(MapActivity.EXTRA_FOCUS_LON, lon)
+                }
+            }
+            runCatching { activity.startActivity(intent) }
+        }
+    }
+
     /** Web-Seite meldet Entwarnung (Alarm geschlossen) → Reste stoppen. */
     @JavascriptInterface
     fun onAlertCleared() {

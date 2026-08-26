@@ -51,6 +51,16 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.Tda.Alert" />
 
+        <activity
+            android:name=".DisastersActivity"
+            android:exported="false"
+            android:label="@string/nav_disasters_title" />
+
+        <activity
+            android:name=".MapActivity"
+            android:exported="false"
+            android:label="@string/nav_map_title" />
+
         <service
             android:name=".PushService"
             android:exported="false">

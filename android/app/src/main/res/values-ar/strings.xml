@@ -120,4 +120,18 @@
     <string name="prep_why_warnvest">كن مرئيًا على الطريق.</string>
     <string name="prep_item_towrope">حبل قطر</string>
     <string name="prep_why_towrope">حرّك السيارة بعد العطل.</string>
+
+    <!-- Disasters & Map -->
+    <string name="nav_disasters_title">أحدث الكوارث</string>
+    <string name="nav_map_title">خريطة حية</string>
+    <string name="filter_region_tr">تركيا</string>
+    <string name="filter_region_near">بالقرب مني</string>
+    <string name="filter_region_world">عالمي</string>
+    <string name="filter_only_quakes">الزلازل فقط</string>
+    <string name="btn_view_on_map">الخريطة</string>
+    <string name="btn_open_source">التفاصيل</string>
+    <string name="disasters_loading">جارٍ تحميل البيانات الحية…</string>
+    <string name="disasters_empty">لا توجد أحداث مطابقة للتصفية الحالية</string>
+    <string name="disasters_count_format">%1$d حدث في آخر 48 ساعة</string>
+    <string name="disasters_fetch_error">حدث خطأ أثناء تحميل البيانات.</string>
 </resources>
