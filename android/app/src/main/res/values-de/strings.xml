@@ -243,4 +243,5 @@
     <string name="status_trapped">HILFE / VERSCHÜTTET</string>
     <string name="status_injured">VERLETZT</string>
     <string name="status_ok">SICHER / OK</string>
+    <string name="radar_beacon_entry">• %1$s%2$s (Akku: %3$d%%)</string>
 </resources>

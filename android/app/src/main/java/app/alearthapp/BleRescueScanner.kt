@@ -1,7 +1,6 @@
 package app.alearthapp
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
@@ -57,8 +56,9 @@ object BleRescueScanner {
             .setServiceUuid(ParcelUuid(BleEmergencyBeacon.SERVICE_UUID))
             .build()
 
+        // Bug fix: BALANCED statt LOW_LATENCY — Notfallmodus darf Akku nicht in Minuten entleeren
         val settings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
             .build()
 
         callback = object : ScanCallback() {
@@ -77,10 +77,13 @@ object BleRescueScanner {
                     lastSeenMs = System.currentTimeMillis()
                 )
 
+                val snapshot: List<DiscoveredBeacon>
                 synchronized(discoveredMap) {
                     discoveredMap[beacon.deviceAddress] = beacon
-                    onUpdate(discoveredMap.values.sortedBy { it.estimatedDistanceMeters })
+                    snapshot = discoveredMap.values.sortedBy { it.estimatedDistanceMeters }
                 }
+                // Deliver outside the lock — prevents holding the monitor during cross-thread marshaling
+                onUpdate(snapshot)
             }
 
             override fun onScanFailed(errorCode: Int) {

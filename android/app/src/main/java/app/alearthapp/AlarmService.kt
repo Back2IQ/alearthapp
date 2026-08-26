@@ -242,6 +242,9 @@ class AlarmService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
-        stopWhistle(); scope.cancel(); super.onDestroy()
+        stopWhistle()
+        BleEmergencyBeacon.stop(this) // Beacon-Advertising stoppen wenn Service vom OS beendet wird
+        scope.cancel()
+        super.onDestroy()
     }
 }

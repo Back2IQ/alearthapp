@@ -114,6 +114,15 @@ class MainActivity : AppCompatActivity() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             wanted += android.Manifest.permission.ACCESS_FINE_LOCATION
         }
+        // Android 12+ (API 31+): BLUETOOTH_ADVERTISE und BLUETOOTH_SCAN sind Laufzeitberechtigungen
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                wanted += android.Manifest.permission.BLUETOOTH_ADVERTISE
+            }
+            if (checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                wanted += android.Manifest.permission.BLUETOOTH_SCAN
+            }
+        }
         if (wanted.isNotEmpty()) requestPermissions(wanted.toTypedArray(), 101)
     }
 

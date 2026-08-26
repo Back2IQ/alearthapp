@@ -160,8 +160,12 @@ class BeaconActivity : AppCompatActivity() {
                             val distStr = if (item.estimatedDistanceMeters > 0) {
                                 String.format(Locale.US, " · ~%.1f m", item.estimatedDistanceMeters)
                             } else ""
-                            sb.append("• ").append(statusText).append(distStr)
-                                .append(" (Akku: ").append(item.message.batteryPercent).append("%)\n")
+                            sb.append(getString(
+                                R.string.radar_beacon_entry,
+                                statusText,
+                                distStr,
+                                item.message.batteryPercent
+                            )).append("\n")
                         }
                         tvResults.text = sb.toString().trimEnd()
                     }

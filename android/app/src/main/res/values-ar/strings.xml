@@ -146,4 +146,5 @@
     <string name="status_trapped">مساعدة / تحت الأنقاض</string>
     <string name="status_injured">مصاب</string>
     <string name="status_ok">آمن / بخير</string>
+    <string name="radar_beacon_entry">• %1$s%2$s (البطارية: %3$d%%)</string>
 </resources>

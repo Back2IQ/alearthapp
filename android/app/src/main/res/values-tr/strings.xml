@@ -204,4 +204,5 @@
     <string name="status_trapped">YARDIM / ENKAZ ALTINDA</string>
     <string name="status_injured">YARALI</string>
     <string name="status_ok">GÜVENDE / İYİ</string>
+    <string name="radar_beacon_entry">• %1$s%2$s (Batarya: %3$d%%)</string>
 </resources>

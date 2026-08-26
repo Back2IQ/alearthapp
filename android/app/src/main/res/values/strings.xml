@@ -246,4 +246,5 @@
     <string name="status_trapped">HELP / TRAPPED</string>
     <string name="status_injured">INJURED</string>
     <string name="status_ok">SAFE / OK</string>
+    <string name="radar_beacon_entry">• %1$s%2$s (Batt: %3$d%%)</string>
 </resources>

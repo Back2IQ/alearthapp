@@ -1,7 +1,6 @@
 package app.alearthapp
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
@@ -17,7 +16,6 @@ object BleEmergencyBeacon {
 
     private const val TAG = "BleEmergencyBeacon"
     val SERVICE_UUID: UUID = UUID.fromString("0000AE01-0000-1000-8000-00805F9B34FB")
-    const val MANUFACTURER_ID: Int = 0x02E5
 
     private var advertiser: BluetoothLeAdvertiser? = null
     private var callback: AdvertiseCallback? = null

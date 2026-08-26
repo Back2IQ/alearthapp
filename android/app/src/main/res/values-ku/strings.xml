@@ -146,4 +146,5 @@
     <string name="status_trapped">ALÎKARÎ / BIN AVHIYÊ DE</string>
     <string name="status_injured">BIRÎNDAR</string>
     <string name="status_ok">ELEQE / BAŞ</string>
+    <string name="radar_beacon_entry">• %1$s%2$s (Batarî: %3$d%%)</string>
 </resources>
