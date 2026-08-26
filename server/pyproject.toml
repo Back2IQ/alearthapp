@@ -8,6 +8,8 @@ dependencies = [
   "cryptography>=42.0",
   "redis>=5.0",
   "numpy>=1.26",
+  "google-auth>=2.0",
+  "requests>=2.31",
 ]
 
 [project.optional-dependencies]

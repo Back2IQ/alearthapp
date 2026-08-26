@@ -152,6 +152,7 @@
     <string name="beacon_need_help">I need help</string>
     <string name="beacon_stop">Stop beacon</string>
     <string name="beacon_share_safe">Share “I\'m safe”</string>
+    <string name="beacon_share_sms">Send SMS to emergency contact</string>
     <string name="beacon_share_text">I\'m safe. — via Turkey Disaster Alert</string>
     <string name="btn_test_beacon_chain">Test beacon chain (TEST)</string>
     <string name="test_beacon_started">TEST beacon chain armed — this is only a drill.</string>

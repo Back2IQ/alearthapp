@@ -531,7 +531,7 @@
           <h2 style="margin:0" id="srvTitle">Live server</h2>
           <span class="srv-status" id="srvStatus"><span class="srv-dot" id="srvDot"></span><span id="srvStatusText">Offline</span></span>
         </div>
-        <input type="text" id="srvUrl" value="ws://localhost:8000" spellcheck="false" autocapitalize="off">
+        <input type="text" id="srvUrl" value="wss://129.159.13.95.nip.io/ws" spellcheck="false" autocapitalize="off">
         <div class="btn-row" style="margin-top:9px">
           <button class="btn" id="btnConnect">Connect</button>
           <button class="btn ghost" id="btnDisconnect">Disconnect</button>
@@ -1953,7 +1953,7 @@ const OSM = { url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", opt:{ ma
 /* Local tda backend proxy (GDACS hazards + AFAD official quakes, both lack CORS).
    Optional: if the server isn't running these simply return [] and the app still
    works standalone on USGS/EMSC/EONET. */
-const SERVER_HTTP = "http://localhost:8001";
+const SERVER_HTTP = "https://129.159.13.95.nip.io";
 async function fetchAfad() {
   try {
     const r = await fetch(`${SERVER_HTTP}/afad`, { cache:"no-store" });
@@ -2253,7 +2253,7 @@ function renderNetwork() {
 }
 function joinNetwork() {
   Settings.network = true; savePrefs();
-  const url = ($("srvUrl").value.trim()) || "ws://localhost:8000";
+  const url = ($("srvUrl").value.trim()) || "wss://129.159.13.95.nip.io/ws";
   if (srvStateNow === "ONLINE") ServerLink.sendJoin();
   else ServerLink.connect(url);   // onopen re-sends join because Settings.network is set
   toast(t("net_joined"));
@@ -2645,7 +2645,7 @@ function bind() {
   $("gainSlider").onchange=savePrefs;
   $("netSwitch").onchange=e=>{ if(e.target.checked) joinNetwork(); else leaveNetwork(); };
   $("btnTrigger").onclick=()=>{
-    const url=($("srvUrl").value.trim())||"ws://localhost:8000";
+    const url=($("srvUrl").value.trim())||"wss://129.159.13.95.nip.io/ws";
     if(srvStateNow!=="ONLINE"){ ServerLink.connect(url); setTimeout(()=>{ toast(ServerLink.sendTrigger()?t("net_trigger_sent"):t("srv_offline")); }, 900); }
     else toast(ServerLink.sendTrigger()?t("net_trigger_sent"):t("srv_offline"));
   };

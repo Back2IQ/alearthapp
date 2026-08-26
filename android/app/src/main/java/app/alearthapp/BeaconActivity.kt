@@ -2,6 +2,8 @@ package app.alearthapp
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -41,6 +43,12 @@ class BeaconActivity : AppCompatActivity() {
         Prefs.applyNightMode()
         setTheme(Prefs.themeStyleRes(alert = true))
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
+        @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
@@ -54,6 +62,7 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnHelp).setOnClickListener { onHelp() }
         findViewById<Button>(R.id.btnStop).setOnClickListener { onSafe() }
         findViewById<Button>(R.id.btnShareSafe).setOnClickListener { shareSafe() }
+        findViewById<Button>(R.id.btnShareSms).setOnClickListener { shareSms() }
         findViewById<Button>(R.id.btnPrepare).setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
@@ -80,6 +89,7 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnHelp).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnStop).visibility = View.GONE
         findViewById<Button>(R.id.btnShareSafe).visibility = View.GONE
+        findViewById<Button>(R.id.btnShareSms).visibility = View.GONE
         findViewById<Button>(R.id.btnPrepare).visibility = View.GONE
         val total = Prefs.deadmanCountdownSec
         val cd = findViewById<TextView>(R.id.beaconCountdown)
@@ -89,8 +99,6 @@ class BeaconActivity : AppCompatActivity() {
                 delay(1000)
                 if (!isActive) return@launch
             }
-            // Kein Tippen → Totmann. Der Dienst (AlarmService) ist die alleinige Wahrheit über den
-            // Zustand und stößt den Übergang zu MODE_BEACON per neuem Intent an (onNewIntent).
             cd.text = "…"
         }
     }
@@ -102,12 +110,12 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnHelp).visibility = View.GONE
         findViewById<Button>(R.id.btnStop).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnShareSafe).visibility = View.GONE
+        findViewById<Button>(R.id.btnShareSms).visibility = View.GONE
         findViewById<Button>(R.id.btnPrepare).visibility = View.GONE
         strobe = Strobe(this).also {
             if (Prefs.signalScreenStrobe) it.startScreen(StrobePattern.screen)
             if (Prefs.signalTorchStrobe) it.startTorch(StrobePattern.torch)
         }
-        // Ton läuft im AlarmService (überlebt Screen-aus); hier nur Optik + Stopp.
     }
 
     private fun onSafe() {
@@ -120,6 +128,7 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnHelp).visibility = View.GONE
         findViewById<Button>(R.id.btnStop).visibility = View.GONE
         findViewById<Button>(R.id.btnShareSafe).visibility = View.VISIBLE
+        findViewById<Button>(R.id.btnShareSms).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnPrepare).visibility = View.VISIBLE
     }
 
@@ -134,6 +143,15 @@ class BeaconActivity : AppCompatActivity() {
             putExtra(Intent.EXTRA_TEXT, getString(R.string.beacon_share_text))
         }
         startActivity(Intent.createChooser(send, getString(R.string.beacon_share_safe)))
+    }
+
+    private fun shareSms() {
+        val phone = Prefs.emergencySmsPhone
+        val uri = if (phone.isNotEmpty()) Uri.parse("smsto:$phone") else Uri.parse("smsto:")
+        val send = Intent(Intent.ACTION_SENDTO, uri).apply {
+            putExtra("sms_body", getString(R.string.beacon_share_text))
+        }
+        runCatching { startActivity(send) }
     }
 
     override fun onDestroy() {

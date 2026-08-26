@@ -149,6 +149,7 @@
     <string name="beacon_need_help">Ich brauche Hilfe</string>
     <string name="beacon_stop">Signal stoppen</string>
     <string name="beacon_share_safe">„Mir geht es gut“ teilen</string>
+    <string name="beacon_share_sms">SMS an Notfallkontakt senden</string>
     <string name="beacon_share_text">Mir geht es gut. — über Turkey Disaster Alert</string>
     <string name="btn_test_beacon_chain">Signalkette testen (TEST)</string>
     <string name="test_beacon_started">TEST-Signalkette aktiviert — dies ist nur eine Übung.</string>

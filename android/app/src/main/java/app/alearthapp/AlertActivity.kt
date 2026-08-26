@@ -1,13 +1,18 @@
 package app.alearthapp
 
 import android.content.Context
+import android.hardware.camera2.CameraManager
 import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.speech.tts.TextToSpeech
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +23,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 /**
  * Full-screen-capable alert screen (spec §"Alertscreen"). Started once by MainActivity
@@ -25,7 +31,7 @@ import kotlinx.coroutines.launch
  * on it listens to [EventBus.alarm] itself to pick up the P0 -> P2 escalation live,
  * without MainActivity spawning a second activity.
  */
-class AlertActivity : AppCompatActivity() {
+class AlertActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     companion object {
         const val EXTRA_ID = "id"
@@ -48,6 +54,16 @@ class AlertActivity : AppCompatActivity() {
     private var distKm: Double = 0.0
     private lateinit var eventId: String
     private lateinit var cityName: String
+    private var tts: TextToSpeech? = null
+    private var ringtone: Ringtone? = null
+    private var vibrator: Vibrator? = null
+
+    private var audioManager: AudioManager? = null
+    private var originalAlarmVolume: Int? = null
+
+    private var cameraManager: CameraManager? = null
+    private var torchCameraId: String? = null
+    private var isTorchOn = false
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(newBase.withAppLocale())
@@ -59,6 +75,11 @@ class AlertActivity : AppCompatActivity() {
         setTheme(Prefs.themeStyleRes(alert = true))
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
+        @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
@@ -81,15 +102,45 @@ class AlertActivity : AppCompatActivity() {
         mag = 6.8
         currentTier = Eew.Tier.P0
 
-        findViewById<android.widget.Button>(R.id.btnCloseAlert).setOnClickListener { finish() }
-        findViewById<android.widget.Button>(R.id.btnOpenReport).setOnClickListener {
+        findViewById<Button>(R.id.btnCloseAlert).setOnClickListener {
+            stopFeedback()
+            finish()
+        }
+        findViewById<Button>(R.id.btnOpenReport).setOnClickListener {
+            stopFeedback()
             startActivity(android.content.Intent(this, ReportActivity::class.java))
+        }
+
+        maximizeAlarmVolume()
+        startTorchIfEnabled()
+
+        if (soundEnabled) {
+            try {
+                tts = TextToSpeech(this, this)
+            } catch (_: Exception) { }
         }
 
         renderTier(currentTier)
         triggerAlertFeedback(currentTier)
         startCountdownTicker()
         observeEscalation()
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val locale = when (Prefs.languageTag) {
+                "de" -> Locale.GERMAN
+                "tr" -> Locale.forLanguageTag("tr")
+                else -> Locale.ENGLISH
+            }
+            tts?.language = locale
+            val speechText = when (Prefs.languageTag) {
+                "de" -> "Achtung! Erdbebenwarnung. Bitte sofort Schutz suchen!"
+                "tr" -> "Dikkat! Deprem uyarısı. Lütfen hemen korunma pozisyonu alın!"
+                else -> "Warning! Earthquake alert. Please take cover immediately!"
+            }
+            tts?.speak(speechText, TextToSpeech.QUEUE_FLUSH, null, "ALERT_TTS")
+        }
     }
 
     private fun observeEscalation() {
@@ -178,6 +229,28 @@ class AlertActivity : AppCompatActivity() {
                 }
                 findViewById<TextView>(R.id.pWaveNoteText).text =
                     if (pWaveRemaining > 0.0) getString(R.string.countdown_p_wave_note, pWaveRemaining.toInt()) else ""
+
+                // Haptischer Countdown-Puls
+                if (Prefs.hapticCountdown && vibrator != null) {
+                    try {
+                        if (remaining in 1.0..5.0) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 70, 50, 70), -1))
+                            } else {
+                                @Suppress("DEPRECATION")
+                                vibrator?.vibrate(70)
+                            }
+                        } else if (remaining > 5.0) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator?.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE))
+                            } else {
+                                @Suppress("DEPRECATION")
+                                vibrator?.vibrate(80)
+                            }
+                        }
+                    } catch (_: Exception) { }
+                }
+
                 delay(1000)
             }
         }
@@ -187,8 +260,6 @@ class AlertActivity : AppCompatActivity() {
      * Best-effort alarm sound + vibration. P2 (confirmed, life-saving) uses the alarm
      * audio stream, which on most devices sounds even in some silent/DND profiles; P0
      * is intentionally more muted (vibration only) since it is not yet confirmed.
-     * TODO(Stufe 2): true DND-bypass needs the full permission gauntlet (spec §5),
-     * not wired here.
      */
     private fun triggerAlertFeedback(tier: Eew.Tier) {
         val plan = CriticalAlarmPolicy.plan(
@@ -198,17 +269,20 @@ class AlertActivity : AppCompatActivity() {
             dndOptIn = Prefs.dndBypassOptIn,
             dndAccessGranted = dndAccessGranted()
         )
-        val vibrator = getSystemService(VIBRATOR_SERVICE) as? Vibrator
-        // In der Hybrid-Huelle feuert der native Alarm nur oberhalb der Alarm-Schwelle,
-        // ist also immer alarmwuerdig -> Ton spielen, sobald der Nutzer ihn erlaubt
-        // (soundEnabled), unabhaengig von der P0/P2-Daempfungspolitik.
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getSystemService(Vibrator::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
         if (soundEnabled || plan.playAlarmSound) {
             try {
                 val custom = Prefs.alarmSoundUri
                 val uri = if (custom.isNotEmpty()) android.net.Uri.parse(custom)
                     else RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
                         ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                val ringtone = RingtoneManager.getRingtone(this, uri)
+                ringtone?.stop()
+                ringtone = RingtoneManager.getRingtone(this, uri)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     ringtone?.audioAttributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_ALARM)
@@ -224,13 +298,83 @@ class AlertActivity : AppCompatActivity() {
         }
     }
 
+    private fun maximizeAlarmVolume() {
+        if (!Prefs.maxVolumeOnAlarm) return
+        try {
+            audioManager = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            audioManager?.let { am ->
+                originalAlarmVolume = am.getStreamVolume(AudioManager.STREAM_ALARM)
+                val maxVol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM)
+                am.setStreamVolume(AudioManager.STREAM_ALARM, maxVol, 0)
+            }
+        } catch (_: Exception) { }
+    }
+
+    private fun restoreAlarmVolume() {
+        originalAlarmVolume?.let { orig ->
+            try {
+                audioManager?.setStreamVolume(AudioManager.STREAM_ALARM, orig, 0)
+            } catch (_: Exception) { }
+            originalAlarmVolume = null
+        }
+    }
+
+    private fun startTorchIfEnabled() {
+        if (!Prefs.torchOnAlarm) return
+        try {
+            cameraManager = getSystemService(Context.CAMERA_SERVICE) as? CameraManager
+            torchCameraId = cameraManager?.cameraIdList?.firstOrNull()
+            torchCameraId?.let { id ->
+                cameraManager?.setTorchMode(id, true)
+                isTorchOn = true
+            }
+        } catch (_: Exception) { }
+    }
+
+    private fun stopTorch() {
+        if (isTorchOn) {
+            try {
+                torchCameraId?.let { id -> cameraManager?.setTorchMode(id, false) }
+            } catch (_: Exception) { }
+            isTorchOn = false
+        }
+    }
+
+    private fun stopFeedback() {
+        try {
+            if (ringtone?.isPlaying == true) {
+                ringtone?.stop()
+            }
+            ringtone = null
+        } catch (_: Exception) { }
+        try {
+            vibrator?.cancel()
+            vibrator = null
+        } catch (_: Exception) { }
+        try {
+            tts?.stop()
+        } catch (_: Exception) { }
+        stopTorch()
+        restoreAlarmVolume()
+    }
+
     private fun dndAccessGranted(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
         val nm = getSystemService(android.app.NotificationManager::class.java)
         return nm?.isNotificationPolicyAccessGranted == true
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (isFinishing) {
+            stopFeedback()
+        }
+    }
+
     override fun onDestroy() {
+        stopFeedback()
+        tts?.shutdown()
+        tts = null
         scope.cancel()
         super.onDestroy()
     }

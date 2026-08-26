@@ -5,3 +5,6 @@
 /.idea/
 *.apk
 /.kotlin/
+*.jks
+*.keystore
+key.properties

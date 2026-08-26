@@ -64,7 +64,7 @@ class WebBridge(private val activity: Activity) {
         Prefs.pushSubscriptions = json
         runCatching { JSONObject(json).optString("lang") }.getOrNull()
             ?.takeIf { it.isNotEmpty() }?.let { Prefs.languageTag = it }
-        PushRegistrar.register(activity.applicationContext)
+        PushTopics.sync(activity.applicationContext, json)
     }
 
     /** Web-Seite bittet um Auswahl eines eigenen Alarmtons → nativer Ringtone-Picker. */
@@ -140,6 +140,64 @@ class WebBridge(private val activity: Activity) {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             runCatching { activity.startActivity(i) }
         }
+    }
+
+    /** Öffnet die Akku-Optimierungs-Einstellungen (Schutz vor Doze Mode). */
+    @JavascriptInterface
+    fun openBatterySettings() {
+        activity.runOnUiThread {
+            val i = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            runCatching { activity.startActivity(i) }
+        }
+    }
+
+    @JavascriptInterface
+    fun isMaxVolumeOnAlarm(): Boolean {
+        Prefs.init(activity)
+        return Prefs.maxVolumeOnAlarm
+    }
+
+    @JavascriptInterface
+    fun setMaxVolumeOnAlarm(enable: Boolean) {
+        Prefs.init(activity)
+        Prefs.maxVolumeOnAlarm = enable
+    }
+
+    @JavascriptInterface
+    fun isHapticCountdown(): Boolean {
+        Prefs.init(activity)
+        return Prefs.hapticCountdown
+    }
+
+    @JavascriptInterface
+    fun setHapticCountdown(enable: Boolean) {
+        Prefs.init(activity)
+        Prefs.hapticCountdown = enable
+    }
+
+    @JavascriptInterface
+    fun isTorchOnAlarm(): Boolean {
+        Prefs.init(activity)
+        return Prefs.torchOnAlarm
+    }
+
+    @JavascriptInterface
+    fun setTorchOnAlarm(enable: Boolean) {
+        Prefs.init(activity)
+        Prefs.torchOnAlarm = enable
+    }
+
+    @JavascriptInterface
+    fun getEmergencySmsPhone(): String {
+        Prefs.init(activity)
+        return Prefs.emergencySmsPhone
+    }
+
+    @JavascriptInterface
+    fun setEmergencySmsPhone(phone: String) {
+        Prefs.init(activity)
+        Prefs.emergencySmsPhone = phone
     }
 
     /** Web-Seite meldet Entwarnung (Alarm geschlossen) → Reste stoppen. */

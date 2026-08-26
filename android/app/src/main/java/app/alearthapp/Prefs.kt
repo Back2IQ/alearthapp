@@ -37,12 +37,17 @@ object Prefs {
     private const val KEY_FCM_TOKEN = "fcm_token"
     private const val KEY_BACKEND_URL = "backend_url"
     private const val KEY_PUSH_SUBS = "push_subscriptions"
+    private const val KEY_SUBSCRIBED_TOPICS = "subscribed_topics"
     private const val KEY_LAST_ALARM_ID = "last_alarm_id"
     private const val KEY_LAST_ALARM_TS = "last_alarm_ts"
     private const val KEY_CROWD_ENABLED = "crowdsourcing_enabled"
     private const val KEY_ANON_ID_HASH = "anon_id_hash"
     private const val KEY_ANON_ID_DAY = "anon_id_day"
     private const val KEY_LAST_PING_MS = "last_ping_ms"
+    private const val KEY_MAX_VOL_ALARM = "max_volume_on_alarm"
+    private const val KEY_HAPTIC_COUNTDOWN = "haptic_countdown"
+    private const val KEY_TORCH_ON_ALARM = "torch_on_alarm"
+    private const val KEY_EMERGENCY_SMS = "emergency_sms_phone"
 
     private lateinit var prefs: SharedPreferences
 
@@ -128,6 +133,22 @@ object Prefs {
         get() = prefs.getBoolean(KEY_DND_OPTIN, false)
         set(v) { prefs.edit().putBoolean(KEY_DND_OPTIN, v).apply() }
 
+    var maxVolumeOnAlarm: Boolean
+        get() = prefs.getBoolean(KEY_MAX_VOL_ALARM, true)
+        set(v) { prefs.edit().putBoolean(KEY_MAX_VOL_ALARM, v).apply() }
+
+    var hapticCountdown: Boolean
+        get() = prefs.getBoolean(KEY_HAPTIC_COUNTDOWN, true)
+        set(v) { prefs.edit().putBoolean(KEY_HAPTIC_COUNTDOWN, v).apply() }
+
+    var torchOnAlarm: Boolean
+        get() = prefs.getBoolean(KEY_TORCH_ON_ALARM, false)
+        set(v) { prefs.edit().putBoolean(KEY_TORCH_ON_ALARM, v).apply() }
+
+    var emergencySmsPhone: String
+        get() = prefs.getString(KEY_EMERGENCY_SMS, "") ?: ""
+        set(v) { prefs.edit().putString(KEY_EMERGENCY_SMS, v).apply() }
+
     /** Baut die reine [SafetyConfig] aus den persistierten Parametern. */
     fun safetyConfig(): SafetyConfig = SafetyConfig(
         beaconEnabled = beaconEnabled,
@@ -191,13 +212,18 @@ object Prefs {
 
     /** Basis-URL des Push-Backends (z.B. https://alearthapp.duckdns.org); leer = keine Registrierung. */
     var backendUrl: String
-        get() = prefs.getString(KEY_BACKEND_URL, "") ?: ""
+        get() = prefs.getString(KEY_BACKEND_URL, "https://129.159.13.95.nip.io") ?: ""
         set(v) { prefs.edit().putString(KEY_BACKEND_URL, v).apply() }
 
     /** Zuletzt von der Web-Oberfläche gemeldete Abo-Liste (JSON: {lang, subscriptions:[...]}). */
     var pushSubscriptions: String
         get() = prefs.getString(KEY_PUSH_SUBS, "") ?: ""
         set(v) { prefs.edit().putString(KEY_PUSH_SUBS, v).apply() }
+
+    /** Aktuell bei FCM abonnierte `cell_…`-Topics — Diff-Basis für [PushTopics]. */
+    var subscribedTopics: Set<String>
+        get() = prefs.getStringSet(KEY_SUBSCRIBED_TOPICS, emptySet()) ?: emptySet()
+        set(v) { prefs.edit().putStringSet(KEY_SUBSCRIBED_TOPICS, HashSet(v)).apply() }
 
     /** Zuletzt ausgelöste Alarm-Event-ID — geteiltes Dedup zwischen Web- und Push-Pfad. */
     var lastAlarmId: String

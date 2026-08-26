@@ -65,6 +65,7 @@
     <string name="beacon_need_help">Alîkariya min divê</string>
     <string name="beacon_stop">Sînyalê rawestîne</string>
     <string name="beacon_share_safe">“Ez ewle me” parve bike</string>
+    <string name="beacon_share_sms">SMS bişîne bo têkiliya awarte</string>
     <string name="beacon_share_text">Ez ewle me. — bi Turkey Disaster Alert</string>
     <string name="btn_test_beacon_chain">Zincîra sînyalê biceribîne (TEST)</string>
     <string name="test_beacon_started">Zincîra sînyalê ya TEST hate amadekirin — ev tenê şêwirandin e.</string>
