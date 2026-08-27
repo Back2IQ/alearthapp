@@ -2470,7 +2470,14 @@ function renderObLangs() {
   OB_LANGS.forEach(([code,label]) => {
     const b = document.createElement("button"); b.className = "chip-btn"; b.textContent = label;
     b.setAttribute("aria-pressed", String(code === lang));
-    b.onclick = () => { lang = code; applyLanguage(); savePrefs(); renderObLangs(); };
+    b.onclick = () => {
+      lang = code;
+      applyLanguage();
+      savePrefs();
+      renderObLangs();
+      // Sprache sofort an native Android-Schicht melden → Activity-Neustart mit korrekter Locale
+      try { if (window.AndroidBridge && AndroidBridge.setLanguage) AndroidBridge.setLanguage(code); } catch(e) {}
+    };
     c.appendChild(b);
   });
 }
@@ -2574,7 +2581,7 @@ function bind() {
   $("obNotify").onclick = async () => { try { if (window.Notification) { const r = await Notification.requestPermission(); $("obNotifyText").textContent = t(r === "granted" ? "ob_notify_on" : "ob_notify_off"); } } catch(e){} };
   $("obDrill").onclick = runEarthquakeDrill;
   $("faqRestart").onclick = () => startOnboarding();
-  $("langSelect").onchange=e=>{ lang=e.target.value; applyLanguage(); savePrefs(); };
+  $("langSelect").onchange=e=>{ lang=e.target.value; applyLanguage(); savePrefs(); try { if (window.AndroidBridge && AndroidBridge.setLanguage) AndroidBridge.setLanguage(lang); } catch(err) {} };
   $("themeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; State.theme=b.dataset.theme; applyTheme(); savePrefs(); };
   $("cbSwitch").onchange=e=>{ State.colorblind=e.target.checked; applyTheme(); savePrefs(); };
   // advanced settings

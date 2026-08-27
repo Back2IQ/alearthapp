@@ -56,7 +56,25 @@ class WebBridge(private val activity: Activity) {
     }
 
     /**
-     * Web-Seite meldet die aktuell beobachteten Orte + Schwellen, damit der Server (FCM-Push)
+     * Web-Onboarding meldet die gewählte Sprache sofort (beim Chip-Klick) an die native Schicht.
+     * Speichert den Language-Tag in Prefs und startet die Activity neu, damit attachBaseContext
+     * die neue Locale aufgreift — ohne das gesamte Onboarding zu verlieren.
+     */
+    @JavascriptInterface
+    fun setLanguage(languageTag: String) {
+        if (languageTag.isBlank()) return
+        Prefs.init(activity)
+        val current = Prefs.languageTag
+        if (current == languageTag) return   // Keine Änderung → kein Neustart nötig
+        Prefs.languageTag = languageTag
+        Prefs.applyLocale()                  // AppCompatDelegate informieren
+        // recreate() startet die Activity neu damit attachBaseContext die neue Locale
+        // aufgreift. Die WebApp liest die Sprache aus localStorage (savePrefs() wurde
+        // kurz vorher aufgerufen) und zeigt das Onboarding weiterhin an (Settings.onboarded=false).
+        activity.runOnUiThread { activity.recreate() }
+    }
+
+    /** Web-Seite meldet die aktuell beobachteten Orte + Schwellen, damit der Server (FCM-Push)
      * das Gerät auch bei geschlossener App warnen kann.
      * json: { lang, subscriptions:[{ lat, lon, label, notifyMag, alarmMag, radiusKm }] }
      */

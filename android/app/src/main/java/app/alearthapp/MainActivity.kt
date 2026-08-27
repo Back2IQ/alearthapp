@@ -35,10 +35,24 @@ class MainActivity : AppCompatActivity() {
 
     companion object { private const val REQ_PICK_SOUND = 301 }
 
+    override fun attachBaseContext(newBase: Context) {
+        // Locale der gewählten App-Sprache anwenden, bevor Ressourcen inflated werden.
+        // Prefs.init() kann hier nicht aufgerufen werden (kein Application-Context vorhanden),
+        // daher direkt auf SharedPreferences zugreifen.
+        val prefs = newBase.applicationContext.getSharedPreferences("tda_prefs", Context.MODE_PRIVATE)
+        val tag = prefs.getString("language", "en") ?: "en"
+        val locale = java.util.Locale.forLanguageTag(tag)
+        java.util.Locale.setDefault(locale)
+        val config = android.content.res.Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         Prefs.init(this)
         Prefs.applyNightMode()
+        Prefs.applyLocale()   // AppCompatDelegate → alle zukünftigen Activities bekommen die Locale
         setTheme(Prefs.themeStyleRes(alert = false))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
