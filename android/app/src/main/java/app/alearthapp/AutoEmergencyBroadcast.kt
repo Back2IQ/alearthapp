@@ -5,15 +5,18 @@ import android.telephony.SmsManager
 import android.util.Log
 
 /**
- * Automatischer Notfall-Broadcast mit Schutz gegen Akku-Entleerung & Empfänger-Überlastung:
- * - Strenger 5-Minuten-Drosselschutz (Throttle): Keine SMS-Stürme bei Nachbeben.
- * - Ruhiger, strukturierter Infotext mit Standort & Akkustand (keine Panikmache).
+ * Automatischer Notfall-Broadcast mit präzisem Akku- & Entlastungs-Timing:
+ * - Erste SMS: Nach 30 Minuten (wenn nicht manuell als SICHER markiert).
+ * - Folge-SMS: Alle 5 Stunden (solange das Notsignal aktiv bleibt).
+ * - Ruhiger, strukturierter Infotext mit Standort & Akkustand.
  */
 object AutoEmergencyBroadcast {
 
     private const val TAG = "AutoEmergencyBroadcast"
-    const val MIN_BROADCAST_INTERVAL_MS = 5 * 60 * 1000L // 5 Minuten Drosselung
+    const val INITIAL_DELAY_MS = 30 * 60 * 1000L // Erste SMS nach 30 Minuten
+    const val REPEAT_INTERVAL_MS = 5 * 60 * 60 * 1000L // Danach alle 5 Stunden
 
+    private var firstBroadcastTsMs: Long = 0L
     private var lastBroadcastTsMs: Long = 0L
 
     fun canSendAutoBroadcast(context: Context): Boolean {
@@ -21,8 +24,12 @@ object AutoEmergencyBroadcast {
         return tier.hasAutoSms
     }
 
-    fun triggerAutoSms(
+    /**
+     * Prüft das Zeitfenster (erste SMS nach 30 Min, danach alle 5 Std) und sendet bei Fälligkeit.
+     */
+    fun checkAndTriggerAutoSms(
         context: Context,
+        eventStartTsMs: Long,
         latitude: Double,
         longitude: Double,
         intensityText: String,
@@ -35,8 +42,17 @@ object AutoEmergencyBroadcast {
         }
 
         val now = System.currentTimeMillis()
-        if (now - lastBroadcastTsMs < MIN_BROADCAST_INTERVAL_MS) {
-            Log.i(TAG, "Auto SMS throttled (5 min protection against battery drain & recipient stress)")
+        val elapsedSinceEvent = now - eventStartTsMs
+
+        // 1. Frühestens nach 30 Minuten erste SMS senden
+        if (elapsedSinceEvent < INITIAL_DELAY_MS) {
+            Log.i(TAG, "Auto SMS waiting for 30-min grace window (elapsed: ${elapsedSinceEvent / 1000}s)")
+            return false
+        }
+
+        // 2. Wenn bereits gesendet: Mindestabstand 5 Stunden einhalten
+        if (lastBroadcastTsMs > 0L && (now - lastBroadcastTsMs) < REPEAT_INTERVAL_MS) {
+            Log.i(TAG, "Auto SMS throttled (5h repeat interval active)")
             return false
         }
 
@@ -47,8 +63,7 @@ object AutoEmergencyBroadcast {
         }
 
         val namePrefix = if (userName.isNotBlank()) "$userName: " else ""
-        // Ruhiger, strukturierter Notfalltext: Sachlich, koordinatenbasiert, kein Panik-Dauerfeuer
-        val msg = "${namePrefix}Alert2IQ Notfallmeldung: Starkes Beben ($intensityText). Letzter Standort: https://maps.google.com/?q=$latitude,$longitude (Akku: $batteryPercent%). Offline-BLE-Signal aktiv. Bitte Ruhe bewahren."
+        val msg = "${namePrefix}Alert2IQ Notfallstatus: Starkes Beben ($intensityText). Standort: https://maps.google.com/?q=$latitude,$longitude (Akku: $batteryPercent%). BLE-Notsignal aktiv. Bitte Ruhe bewahren."
 
         return try {
             val smsManager = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -59,7 +74,8 @@ object AutoEmergencyBroadcast {
             }
             smsManager.sendTextMessage(phone, null, msg, null, null)
             lastBroadcastTsMs = now
-            Log.i(TAG, "Auto emergency SMS sent successfully (throttled 5 min) to $phone")
+            if (firstBroadcastTsMs == 0L) firstBroadcastTsMs = now
+            Log.i(TAG, "Auto emergency SMS sent successfully (30m initial / 5h interval) to $phone")
             true
         } catch (e: Exception) {
             Log.e(TAG, "Failed to send auto emergency SMS", e)
@@ -67,7 +83,8 @@ object AutoEmergencyBroadcast {
         }
     }
 
-    fun resetThrottleForTesting() {
+    fun reset() {
+        firstBroadcastTsMs = 0L
         lastBroadcastTsMs = 0L
     }
 }

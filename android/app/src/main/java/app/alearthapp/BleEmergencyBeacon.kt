@@ -1,4 +1,4 @@
-package app.alearthapp
+﻿package app.alearthapp
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
@@ -8,17 +8,32 @@ import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
 import android.os.BatteryManager
+import android.os.Handler
+import android.os.Looper
 import android.os.ParcelUuid
 import android.util.Log
 import java.util.UUID
 
+/**
+ * BLE Notfall-Beacon mit asymmetrischem Duty-Cycling zur Maximierung der Überlebenszeit:
+ * - Erste Übertragung nach 30 Minuten Ruhephase (Verhinderung von Fehlalarmen).
+ * - Danach zyklische Bursts alle 30 Minuten (Burst-Dauer: 60s Dauerfeuer), um den Akku über Tage zu schonen.
+ * - Direkter Start bei manuellem Notsignal ("Hilfe/Verschüttet").
+ */
 object BleEmergencyBeacon {
 
     private const val TAG = "BleEmergencyBeacon"
     val SERVICE_UUID: UUID = UUID.fromString("0000AE01-0000-1000-8000-00805F9B34FB")
 
+    const val INITIAL_DELAY_MS = 30 * 60 * 1000L // 30 Min bis zur ersten Übertragung
+    const val CYCLE_INTERVAL_MS = 30 * 60 * 1000L // Alle 30 Min Burst
+    const val BURST_DURATION_MS = 60 * 1000L // 60s aktiver Sende-Burst
+
     private var advertiser: BluetoothLeAdvertiser? = null
     private var callback: AdvertiseCallback? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private var cycleRunnable: Runnable? = null
+
     var isBroadcasting: Boolean = false
         private set
 
@@ -28,27 +43,41 @@ object BleEmergencyBeacon {
         status: BleSosStatus = BleSosStatus.TRAPPED,
         lat: Double = 0.0,
         lon: Double = 0.0,
-        isUserResponsive: Boolean = false
+        isUserResponsive: Boolean = false,
+        immediateBurst: Boolean = false // true wenn Nutzer aktiv tippt, false bei Deadman/Auto
     ) {
-        if (isBroadcasting) return
+        stop(context)
 
+        val startDelay = if (immediateBurst) 0L else INITIAL_DELAY_MS
+        Log.i(TAG, "BLE Emergency Beacon scheduled (first burst in ${startDelay / 1000}s, cycle 30m)")
+
+        cycleRunnable = object : Runnable {
+            override fun run() {
+                executeBurst(context, status, lat, lon, isUserResponsive)
+                handler.postDelayed(this, CYCLE_INTERVAL_MS)
+            }
+        }
+
+        cycleRunnable?.let { handler.postDelayed(it, startDelay) }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun executeBurst(
+        context: Context,
+        status: BleSosStatus,
+        lat: Double,
+        lon: Double,
+        isUserResponsive: Boolean
+    ) {
         val bm = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager ?: return
         val adapter = bm.adapter
-        if (adapter == null || !adapter.isEnabled) {
-            Log.w(TAG, "Bluetooth not available or disabled")
-            return
-        }
+        if (adapter == null || !adapter.isEnabled) return
 
-        advertiser = adapter.bluetoothLeAdvertiser
-        if (advertiser == null) {
-            Log.w(TAG, "BLE Advertising not supported on this device")
-            return
-        }
+        advertiser = adapter.bluetoothLeAdvertiser ?: return
 
         val batteryMgr = context.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
         val batteryPct = batteryMgr?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: 50
 
-        // Profil-Daten optional aus dem Notfalltresor laden
         val profile = EmergencyVaultManager.loadProfile(context)
         val triage = if (profile.broadcastMedicalData) {
             val initials = if (profile.fullName.isNotBlank()) {
@@ -81,10 +110,10 @@ object BleEmergencyBeacon {
         val payload = BleSosMessage.encode(msg)
 
         val settings = AdvertiseSettings.Builder()
-            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER) // Invariante 3: 72h Überlebenszeit (<1% Akku/24h)
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
             .setConnectable(false)
-            .setTimeout(0) // kontinuierlich bis stop()
+            .setTimeout(0)
             .build()
 
         val data = AdvertiseData.Builder()
@@ -97,34 +126,39 @@ object BleEmergencyBeacon {
         callback = object : AdvertiseCallback() {
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
                 isBroadcasting = true
-                Log.i(TAG, "BLE Emergency Beacon broadcasting started successfully")
+                Log.i(TAG, "BLE Emergency Beacon active burst started (60s)")
+                // Nach 60 Sekunden Burst stoppen, um Akku bis zum nächsten 30-Minuten-Intervall zu schonen
+                handler.postDelayed({ stopAdvertisingOnly() }, BURST_DURATION_MS)
             }
 
             override fun onStartFailure(errorCode: Int) {
                 isBroadcasting = false
-                Log.e(TAG, "BLE Emergency Beacon failed to start: $errorCode")
+                Log.e(TAG, "BLE Emergency Beacon failed to start burst: $errorCode")
             }
         }
 
         try {
             advertiser?.startAdvertising(settings, data, callback)
         } catch (e: Exception) {
-            Log.e(TAG, "Error starting BLE advertising", e)
+            Log.e(TAG, "Error starting BLE burst", e)
             isBroadcasting = false
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun stop(context: Context) {
-        if (!isBroadcasting && advertiser == null) return
+    private fun stopAdvertisingOnly() {
         try {
             callback?.let { advertiser?.stopAdvertising(it) }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error stopping BLE advertising", e)
-        } finally {
-            isBroadcasting = false
-            advertiser = null
-            callback = null
-        }
+        } catch (_: Exception) {}
+        isBroadcasting = false
+        advertiser = null
+        callback = null
+    }
+
+    @SuppressLint("MissingPermission")
+    fun stop(context: Context) {
+        cycleRunnable?.let { handler.removeCallbacks(it) }
+        cycleRunnable = null
+        stopAdvertisingOnly()
     }
 }

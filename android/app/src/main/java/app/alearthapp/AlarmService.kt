@@ -170,7 +170,12 @@ class AlarmService : Service() {
     private fun enterBeacon(isUserResponsive: Boolean = false) {
         updateNotification(getString(R.string.svc_beacon))
         if (Prefs.signalWhistle && !isTestChain) startWhistle()
-        BleEmergencyBeacon.start(this, BleSosStatus.TRAPPED, isUserResponsive = isUserResponsive)
+        BleEmergencyBeacon.start(
+            this,
+            BleSosStatus.TRAPPED,
+            isUserResponsive = isUserResponsive,
+            immediateBurst = isUserResponsive // Sofort senden wenn aktiv gedrückt, sonst 30 Min warten
+        )
         val fsi = PendingIntent.getActivity(
             this, 0,
             Intent(this, BeaconActivity::class.java)
