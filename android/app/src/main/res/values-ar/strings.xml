@@ -4,7 +4,7 @@
      other strings fall back to the English default. NEEDS NATIVE-SPEAKER REVIEW
      before production; these are machine-assisted translations. -->
 <resources>
-    <string name="app_name">AlearthApp</string>
+    <string name="app_name">Alert2IQ</string>
 
     <string name="status_ready">النظام جاهز</string>
     <string name="status_attention">انتباه</string>

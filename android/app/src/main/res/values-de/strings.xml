@@ -2,7 +2,7 @@
 <!-- German. Machine-assisted translation; needs native-speaker review before
      production use, per spec i18n note. -->
 <resources>
-    <string name="app_name">AlearthApp</string>
+    <string name="app_name">Alert2IQ</string>
 
     <!-- Status chip -->
     <string name="status_ready">System bereit</string>

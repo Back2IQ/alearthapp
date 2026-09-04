@@ -70,4 +70,13 @@ data class BleSosMessage(
             }
         }
     }
+
+    /**
+     * Anti-Spoofing & Replay-Schutz: Prüft, ob der Zeitstempel innerhalb des Toleranzfensters liegt.
+     * Pakete älter als maxDeltaSec oder aus der Zukunft werden verworfen.
+     */
+    fun isValidTimestamp(nowSec: Long = System.currentTimeMillis() / 1000L, maxDeltaSec: Long = 120L): Boolean {
+        val diff = kotlin.math.abs(nowSec - timestampSec)
+        return diff <= maxDeltaSec
+    }
 }

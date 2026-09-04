@@ -35,7 +35,7 @@ class BeaconActivity : AppCompatActivity() {
     private lateinit var scope: CoroutineScope
     private var strobe: Strobe? = null
     private var isRadarActive = false
-    private val proximityAudio = RescueProximityAudio()
+    private lateinit var proximityAudio: RescueProximityAudio
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(newBase.withAppLocale())
@@ -60,6 +60,7 @@ class BeaconActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_beacon)
         scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+        proximityAudio = RescueProximityAudio(this)
 
         findViewById<Button>(R.id.btnSafe).setOnClickListener { onSafe() }
         findViewById<Button>(R.id.btnHelp).setOnClickListener { onHelp() }

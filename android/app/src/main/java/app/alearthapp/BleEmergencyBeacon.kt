@@ -57,7 +57,7 @@ object BleEmergencyBeacon {
         val payload = BleSosMessage.encode(msg)
 
         val settings = AdvertiseSettings.Builder()
-            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER) // Invariante 3: 72h Überlebenszeit (<1% Akku/24h)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
             .setConnectable(false)
             .setTimeout(0) // kontinuierlich bis stop()

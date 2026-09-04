@@ -14,18 +14,36 @@ import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.sin
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+
 /**
- * Akustisches Nahbereichs-Peilsignal für Ersthelfer und Verschütteten-Ortung.
- * Moduliert Ping-Frequenz (Intervall) und Tonhöhe je nach Distanz und Triage-Status
- * des am nächsten gelegenen Notfall-Beacons (Geiger-Müller-Peilprinzip).
+ * Akustisches & haptisches Nahbereichs-Peilsignal für Ersthelfer und Verschütteten-Ortung.
+ * Invariante 1 (L = const): Blinde Ortung durch synchrone 25ms-Haptikpulse + Geiger-Müller-Audiotakt.
  */
-class RescueProximityAudio {
+class RescueProximityAudio(context: Context? = null) {
+
+    private val vibrator: Vibrator? = context?.let { ctx ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vm = ctx.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+            vm?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
+    }
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var pingJob: Job? = null
 
     @Volatile
     var isMuted: Boolean = false
+
+    @Volatile
+    var isHapticsEnabled: Boolean = true
 
     @Volatile
     private var currentBeacons: List<DiscoveredBeacon> = emptyList()
@@ -147,10 +165,15 @@ class RescueProximityAudio {
 
                 while (isActive) {
                     val target = selectPriorityBeacon(currentBeacons)
-                    if (target != null && !isMuted) {
-                        val freq = getFrequencyHz(target.message.status)
-                        val pcm = generatePingPcm(freq)
-                        audioTrack.write(pcm, 0, pcm.size)
+                    if (target != null) {
+                        if (isHapticsEnabled) {
+                            triggerHapticPing()
+                        }
+                        if (!isMuted) {
+                            val freq = getFrequencyHz(target.message.status)
+                            val pcm = generatePingPcm(freq)
+                            audioTrack.write(pcm, 0, pcm.size)
+                        }
 
                         val interval = calculatePingIntervalMs(target.estimatedDistanceMeters)
                         val sleepTime = (interval - PING_DURATION_MS).coerceAtLeast(20L)
@@ -168,6 +191,18 @@ class RescueProximityAudio {
                 } catch (_: Exception) {}
             }
         }
+    }
+
+    private fun triggerHapticPing() {
+        val vib = vibrator ?: return
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vib.vibrate(VibrationEffect.createOneShot(25L, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vib.vibrate(25L)
+            }
+        } catch (_: Exception) {}
     }
 
     fun stop() {

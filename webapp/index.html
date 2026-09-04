@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AlearthApp</title>
+<title>Alert2IQ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;650;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 <script src="lib/disasters.js"></script>
 <script src="lib/prep.js"></script>
 <!--
-  AlearthApp — local web client (futuristic redesign).
+  Alert2IQ — local web client (futuristic redesign).
   Single self-contained file, runs from file://. Plain-language UI (no P0/P2 jargon),
   GPS or street-level address location, languages TR/EN/RU/AR.
   Core earthquake logic + Ed25519 verification are byte-identical to the Android client
@@ -352,7 +352,7 @@
   <div class="brand">
     <div class="mark">◎</div>
     <div>
-      <h1 id="appName">AlearthApp</h1>
+      <h1 id="appName">Alert2IQ</h1>
       <div class="sub" id="tagline">Earthquake early warning</div>
     </div>
     <button class="btn icon-btn ghost settings-btn" id="btnSettings" aria-label="Settings">⚙</button>
@@ -558,9 +558,9 @@
     <div class="panel">
       <h2 id="faqTitle">FAQ</h2>
       <button class="btn accent wide" id="faqRestart" style="margin-bottom:14px">↻ <span id="faqRestartText">Restart onboarding</span></button>
-      <details class="faq-item"><summary id="faqQ1">How early does AlearthApp warn?</summary><p id="faqA1"></p></details>
+      <details class="faq-item"><summary id="faqQ1">How early does Alert2IQ warn?</summary><p id="faqA1"></p></details>
       <details class="faq-item"><summary id="faqQ2">What do magnitude, depth and radius mean?</summary><p id="faqA2"></p></details>
-      <details class="faq-item"><summary id="faqQ3">Why do false alarms happen — and how does AlearthApp catch them?</summary><p id="faqA3"></p></details>
+      <details class="faq-item"><summary id="faqQ3">Why do false alarms happen — and how does Alert2IQ catch them?</summary><p id="faqA3"></p></details>
       <details class="faq-item"><summary id="faqQ4">What happens offline / if the network fails?</summary><p id="faqA4"></p></details>
       <details class="faq-item"><summary id="faqQ5">Is my location data safe?</summary><p id="faqA5"></p></details>
       <details class="faq-item"><summary id="faqQ6">Where does the data come from?</summary><p id="faqA6"></p></details>
@@ -628,7 +628,7 @@
       <p class="set-desc" id="descDnd" style="display:none">Let the alarm pierce silent / Do Not Disturb mode.</p>
       <div id="autostartRow" style="margin-top:16px; display:none">
         <div class="set-row"><span class="name" id="lblAutostart">Reliable background alerts</span></div>
-        <p class="set-desc" id="descAutostart">On Xiaomi/Huawei/Oppo, allow Autostart &amp; background for AlearthApp — otherwise push alerts get blocked.</p>
+        <p class="set-desc" id="descAutostart">On Xiaomi/Huawei/Oppo, allow Autostart &amp; background for Alert2IQ — otherwise push alerts get blocked.</p>
         <button class="btn wide" id="btnAppSettings" style="margin-top:8px">⚙ <span id="btnAppSettingsText">Open app settings</span></button>
       </div>
       <div class="toggle-row" style="margin-top:16px">
@@ -742,8 +742,8 @@
     </div>
     <div class="ob-card" data-ob="2" hidden>
       <div class="ob-mark">◎</div>
-      <h2 id="ob1t">Welcome to AlearthApp</h2>
-      <p id="ob1b">AlearthApp warns you seconds before the shaking arrives and shows every natural hazard near you.</p>
+      <h2 id="ob1t">Welcome to Alert2IQ</h2>
+      <p id="ob1b">Alert2IQ warns you seconds before the shaking arrives and shows every natural hazard near you.</p>
     </div>
     <div class="ob-card" data-ob="3" hidden>
       <h2 id="ob2t">Where do you want alerts?</h2>
@@ -866,7 +866,7 @@ const Eew = {
    ========================================================================== */
 const STR = {
   en: {
-    app_name:"AlearthApp", tagline:"Earthquake early warning",
+    app_name:"Alert2IQ", tagline:"Earthquake early warning",
     tab_start:"Start", tab_map:"Map", tab_disasters:"Disasters", tab_network:"Network", tab_vorsorge:"Prepare", tab_faq:"FAQ", tab_settings:"Settings", start_recent:"Most recent nearby",
     hero_ready_t:"All clear", hero_ready_s:"System active — watching for earthquakes",
     hero_attention_t:"Possible tremor", hero_attention_s:"Checking the signal…",
@@ -926,7 +926,7 @@ const STR = {
     recenter:"Recenter", refresh:"Refresh", map_offline:"Map needs an internet connection.", you_label:"You",
     adv_title:"Advanced", lbl_units:"Distance units", lbl_radius:"Alert radius", lbl_minmag:"Minimum magnitude",
     desc_radius:"Only earthquakes within this distance concern you.", desc_minmag:"Weaker quakes are shown on the map but never alarm.",
-    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", dnd_title:"Alarm during Do Not Disturb", dnd_desc:"Let the alarm pierce silent / Do Not Disturb mode.", autostart_title:"Reliable background alerts", autostart_desc:"On Xiaomi/Huawei/Oppo, allow Autostart & background for AlearthApp — otherwise push alerts get blocked.", autostart_btn:"Open app settings", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
+    lbl_sound:"Alarm sound", pick_sound:"Choose alarm sound", dnd_title:"Alarm during Do Not Disturb", dnd_desc:"Let the alarm pierce silent / Do Not Disturb mode.", autostart_title:"Reliable background alerts", autostart_desc:"On Xiaomi/Huawei/Oppo, allow Autostart & background for Alert2IQ — otherwise push alerts get blocked.", autostart_btn:"Open app settings", lbl_ntf_realtime:"Real-time detections", lbl_ntf_reports:"User-reported quakes",
     ago_min:"%1 min ago", ago_hour:"%1 h ago", ago_day:"%1 d ago", just_now:"just now",
     lbl_hazards:"Show other natural disasters", lg_hazards:"other hazards",
     hz_wildfire:"Wildfire", hz_storm:"Severe storm", hz_volcano:"Volcano", hz_flood:"Flood", hz_ice:"Sea/lake ice", hz_drought:"Drought", hz_landslide:"Landslide", hz_temp:"Extreme temperature", hz_other:"Hazard", hz_tsunami:"Tsunami", hz_cyclone:"Cyclone", hz_source:"Source", hz_alert_red:"Red alert", hz_alert_orange:"Orange alert", hz_alert_green:"Advisory",
@@ -939,7 +939,7 @@ const STR = {
     desc_minmag2:"Earthquakes only (Richter).", desc_minalert:"Storms, floods, tsunami… (GDACS level).",
     kat_empty:"No events for this filter.", src_down:"%1 source unavailable — showing the rest.",
     ob_next:"Next", ob_finish:"Done", ob_back:"Back", ob_skip:"Skip",
-    ob1_t:"Welcome to AlearthApp", ob1_b:"AlearthApp warns you seconds before the shaking arrives and shows every natural hazard near you.",
+    ob1_t:"Welcome to Alert2IQ", ob1_b:"Alert2IQ warns you seconds before the shaking arrives and shows every natural hazard near you.",
     ob2_t:"Where do you want alerts?", ob2_b:"Choose your location by GPS or search — you can change it any time.", ob_gps:"Use my location",
     ob3_t:"Set your warning levels", ob_notif_h:"Notification", ob_notif_d:"Quiet heads-up when a quake is relevant to you.", ob_alarm_h:"Alarm", ob_alarm_d:"Loud full-screen alert that cuts through silent mode.", ob_mag:"Magnitude", ob_radius:"Radius", ob_from:"from M", ob_stormflood:"Also warn about storms, floods & tsunami?", ob_haz_storm:"Storms", ob_haz_flood:"Floods", ob_haz_tsunami:"Tsunami", ob_notify_from:"Notify from", ob_alarm_from:"Alarm from", al_off:"Off", p_cautious:"Cautious", p_cautious_d:"radius 500 km · from M 2.5", p_balanced:"Balanced", p_balanced_d:"radius 300 km · from M 3.5", p_strong:"Strong only", p_strong_d:"radius 150 km · from M 5.0",
     ob_retro:"This level would have warned you at %1 of %2 recent quakes nearby (last 24 h — hindsight, not a forecast).",
@@ -949,14 +949,14 @@ const STR = {
     ob5_t:"Offline rescue (in the app)", ob5_b:"If the mobile network dies, the app can carry warnings and an SOS phone-to-phone over Bluetooth. This works fully only in the native app — not in the browser.",
     ob6_t:"This is what an alert looks like", ob6_b:"Try a practice alert so you recognise the sound and screen in a real event.", ob_drill:"Show a practice alert",
     faq_title:"FAQ", faq_restart:"Restart onboarding",
-    faq_q1:"How early does AlearthApp warn?", faq_a1:"From a few seconds up to tens of seconds, depending on how far you are from the epicentre — the further away, the more warning. It can never warn before the quake itself begins; it races the shaking, not time.",
+    faq_q1:"How early does Alert2IQ warn?", faq_a1:"From a few seconds up to tens of seconds, depending on how far you are from the epicentre — the further away, the more warning. It can never warn before the quake itself begins; it races the shaking, not time.",
     faq_q2:"What do magnitude, depth and radius mean?", faq_a2:"Magnitude is the quake's strength (each step up is much stronger). Depth is how far below ground it started (shallower is felt more). Radius is the distance around you within which a quake concerns you.",
-    faq_q3:"Why do false alarms happen — and how does AlearthApp catch them?", faq_a3:"City-wide simultaneous shaking with no travelling wavefront is usually fireworks or traffic, not a quake. AlearthApp checks for a spreading wavefront before alarming, and marks anything it filters out.",
+    faq_q3:"Why do false alarms happen — and how does Alert2IQ catch them?", faq_a3:"City-wide simultaneous shaking with no travelling wavefront is usually fireworks or traffic, not a quake. Alert2IQ checks for a spreading wavefront before alarming, and marks anything it filters out.",
     faq_q4:"What happens offline / if the network fails?", faq_a4:"The map and live feeds need internet. The core early-warning logic runs locally. Phone-to-phone warning and SOS when the network is down work fully only in the native app, not in the browser.",
     faq_q5:"Is my location data safe?", faq_a5:"The detection network only ever shares a coarse grid cell plus a timestamp — never your exact position. Address search and reverse-geocoding go directly to OpenStreetMap.",
     faq_q6:"Where does the data come from?", faq_a6:"Earthquakes from USGS and EMSC (and AFAD where available); other hazards from NASA EONET and GDACS. USGS/EMSC/EONET load directly; GDACS/AFAD are optional and need the local server.",
     prep_title:"Prepare", prep_amazon:"Search on Amazon", prep_local:"Local retailer",
-    prep_disclosure:"Recommendation links — if you buy, AlearthApp may earn a small commission at no extra cost to you. Shown only here, never during an alert.",
+    prep_disclosure:"Recommendation links — if you buy, Alert2IQ may earn a small commission at no extra cost to you. Shown only here, never during an alert.",
     prep_sec_all:"For every disaster", prep_sec_quake:"Earthquake", prep_sec_flood:"Flood", prep_sec_storm:"Storm", prep_sec_wildfire:"Wildfire",
     prep_item_water:"Drinking water", prep_why_water:"A stored supply for several days.",
     prep_item_firstaid:"First-aid kit", prep_why_firstaid:"Treat injuries when help is delayed.",
@@ -978,7 +978,7 @@ const STR = {
     prep_item_goggles:"Safety goggles", prep_why_goggles:"Protect eyes from smoke and ash.",
   },
   de: {
-    app_name:"AlearthApp", tagline:"Erdbeben-Frühwarnung",
+    app_name:"Alert2IQ", tagline:"Erdbeben-Frühwarnung",
     tab_start:"Start", tab_map:"Karte", tab_disasters:"Katastrophen", tab_network:"Netzwerk", tab_vorsorge:"Vorsorge", tab_faq:"FAQ", tab_settings:"Einstellungen", start_recent:"Zuletzt in der Nähe",
     hero_ready_t:"Alles ruhig", hero_ready_s:"System aktiv — Erdbeben werden überwacht",
     hero_attention_t:"Mögliche Erschütterung", hero_attention_s:"Signal wird geprüft…",
@@ -1038,7 +1038,7 @@ const STR = {
     recenter:"Zentrieren", refresh:"Aktualisieren", map_offline:"Karte benötigt eine Internetverbindung.", you_label:"Sie",
     adv_title:"Erweitert", lbl_units:"Entfernungseinheit", lbl_radius:"Warnradius", lbl_minmag:"Mindestmagnitude",
     desc_radius:"Nur Erdbeben innerhalb dieser Entfernung betreffen Sie.", desc_minmag:"Schwächere Beben erscheinen auf der Karte, lösen aber nie Alarm aus.",
-    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", dnd_title:"Alarm im Nicht-stören-Modus", dnd_desc:"Lässt den Alarm den Stumm-/Nicht-stören-Modus durchbrechen.", autostart_title:"Zuverlässige Hintergrund-Warnungen", autostart_desc:"Auf Xiaomi/Huawei/Oppo: Autostart & Hintergrund für AlearthApp erlauben — sonst werden Push-Warnungen unterdrückt.", autostart_btn:"App-Einstellungen öffnen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
+    lbl_sound:"Alarmton", pick_sound:"Alarmton wählen", dnd_title:"Alarm im Nicht-stören-Modus", dnd_desc:"Lässt den Alarm den Stumm-/Nicht-stören-Modus durchbrechen.", autostart_title:"Zuverlässige Hintergrund-Warnungen", autostart_desc:"Auf Xiaomi/Huawei/Oppo: Autostart & Hintergrund für Alert2IQ erlauben — sonst werden Push-Warnungen unterdrückt.", autostart_btn:"App-Einstellungen öffnen", lbl_ntf_realtime:"Echtzeit-Erkennungen", lbl_ntf_reports:"Von Nutzern gemeldete Beben",
     ago_min:"vor %1 Min.", ago_hour:"vor %1 Std.", ago_day:"vor %1 T.", just_now:"gerade eben",
     lbl_hazards:"Andere Naturkatastrophen anzeigen", lg_hazards:"andere Gefahren",
     hz_wildfire:"Waldbrand", hz_storm:"Schwerer Sturm", hz_volcano:"Vulkan", hz_flood:"Überschwemmung", hz_ice:"Meer-/Seeeis", hz_drought:"Dürre", hz_landslide:"Erdrutsch", hz_temp:"Extreme Temperatur", hz_other:"Gefahr", hz_tsunami:"Tsunami", hz_cyclone:"Wirbelsturm", hz_source:"Quelle", hz_alert_red:"Rote Warnung", hz_alert_orange:"Orange Warnung", hz_alert_green:"Hinweis",
@@ -1051,7 +1051,7 @@ const STR = {
     desc_minmag2:"Nur Erdbeben (Richter).", desc_minalert:"Stürme, Überschwemmungen, Tsunami… (GDACS-Stufe).",
     kat_empty:"Keine Ereignisse für diesen Filter.", src_down:"Quelle %1 nicht verfügbar — Rest wird angezeigt.",
     ob_next:"Weiter", ob_finish:"Fertig", ob_back:"Zurück", ob_skip:"Überspringen",
-    ob1_t:"Willkommen bei AlearthApp", ob1_b:"AlearthApp warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
+    ob1_t:"Willkommen bei Alert2IQ", ob1_b:"Alert2IQ warnt dich Sekunden vor der Erschütterung und zeigt jede Naturgefahr in deiner Nähe.",
     ob2_t:"Wo möchtest du gewarnt werden?", ob2_b:"Wähle deinen Ort per Standort oder Suche — jederzeit änderbar.", ob_gps:"Meinen Standort verwenden",
     ob3_t:"Warnstufen einstellen", ob_notif_h:"Benachrichtigung", ob_notif_d:"Leiser Hinweis, wenn ein Beben für dich relevant ist.", ob_alarm_h:"Alarm", ob_alarm_d:"Lauter Vollbild-Alarm, der auch durch Stumm dringt.", ob_mag:"Magnitude", ob_radius:"Umkreis", ob_from:"ab M", ob_stormflood:"Auch vor Sturm, Überschwemmung & Tsunami warnen?", ob_haz_storm:"Stürme", ob_haz_flood:"Überschwemmungen", ob_haz_tsunami:"Tsunami", ob_notify_from:"Hinweis ab", ob_alarm_from:"Alarm ab", al_off:"Aus", p_cautious:"Vorsichtig", p_cautious_d:"Radius 500 km · ab M 2.5", p_balanced:"Ausgewogen", p_balanced_d:"Radius 300 km · ab M 3.5", p_strong:"Nur Starkbeben", p_strong_d:"Radius 150 km · ab M 5.0",
     ob_retro:"Dieses Niveau hätte dich bei %1 von %2 Beben in deiner Nähe gewarnt (letzte 24 Std. — Rückschau, keine Vorhersage).",
@@ -1061,14 +1061,14 @@ const STR = {
     ob5_t:"Offline-Rettung (in der App)", ob5_b:"Wenn das Mobilnetz ausfällt, kann die App Warnungen und einen SOS von Handy zu Handy per Bluetooth tragen. Das funktioniert vollständig nur in der nativen App — nicht im Browser.",
     ob6_t:"So sieht ein Alarm aus", ob6_b:"Probiere einen Übungsalarm, damit du Ton und Bildschirm im Ernstfall wiedererkennst.", ob_drill:"Probe-Alarm zeigen",
     faq_title:"FAQ", faq_restart:"Onboarding erneut starten",
-    faq_q1:"Wie früh warnt AlearthApp?", faq_a1:"Von wenigen bis zu einigen zehn Sekunden — je weiter du vom Epizentrum entfernt bist, desto mehr Vorwarnung. Vor dem Beben selbst kann sie nie warnen; sie ist schneller als die Erschütterung, nicht als die Zeit.",
+    faq_q1:"Wie früh warnt Alert2IQ?", faq_a1:"Von wenigen bis zu einigen zehn Sekunden — je weiter du vom Epizentrum entfernt bist, desto mehr Vorwarnung. Vor dem Beben selbst kann sie nie warnen; sie ist schneller als die Erschütterung, nicht als die Zeit.",
     faq_q2:"Was bedeuten Magnitude, Tiefe und Radius?", faq_a2:"Magnitude ist die Stärke des Bebens (jede Stufe ist deutlich stärker). Tiefe ist, wie weit unter der Erde es begann (flacher = stärker spürbar). Radius ist die Entfernung um dich, innerhalb derer dich ein Beben betrifft.",
-    faq_q3:"Warum kommt es zu Fehlalarmen — und wie erkennt AlearthApp sie?", faq_a3:"Stadtweite, gleichzeitige Erschütterung ohne wandernde Wellenfront ist meist Feuerwerk oder Verkehr, kein Beben. AlearthApp prüft auf eine sich ausbreitende Wellenfront, bevor es Alarm gibt, und kennzeichnet, was es herausfiltert.",
+    faq_q3:"Warum kommt es zu Fehlalarmen — und wie erkennt Alert2IQ sie?", faq_a3:"Stadtweite, gleichzeitige Erschütterung ohne wandernde Wellenfront ist meist Feuerwerk oder Verkehr, kein Beben. Alert2IQ prüft auf eine sich ausbreitende Wellenfront, bevor es Alarm gibt, und kennzeichnet, was es herausfiltert.",
     faq_q4:"Was passiert offline / wenn das Netz ausfällt?", faq_a4:"Karte und Live-Daten brauchen Internet. Die Kern-Frühwarnlogik läuft lokal. Warnung und SOS von Handy zu Handy bei totem Netz funktionieren vollständig nur in der nativen App, nicht im Browser.",
     faq_q5:"Sind meine Standortdaten sicher?", faq_a5:"Das Detektionsnetz teilt nur eine grobe Rasterzelle plus Zeitstempel — nie deine genaue Position. Adresssuche und Reverse-Geocoding gehen direkt an OpenStreetMap.",
     faq_q6:"Woher kommen die Daten?", faq_a6:"Erdbeben von USGS und EMSC (und AFAD, wo verfügbar); andere Gefahren von NASA EONET und GDACS. USGS/EMSC/EONET laden direkt; GDACS/AFAD sind optional und brauchen den lokalen Server.",
     prep_title:"Vorsorge", prep_amazon:"Bei Amazon suchen", prep_local:"Lokaler Händler",
-    prep_disclosure:"Empfehlungs-Links — bei einem Kauf kann AlearthApp eine kleine Provision erhalten, ohne Mehrkosten für dich. Nur hier zu sehen, nie während eines Alarms.",
+    prep_disclosure:"Empfehlungs-Links — bei einem Kauf kann Alert2IQ eine kleine Provision erhalten, ohne Mehrkosten für dich. Nur hier zu sehen, nie während eines Alarms.",
     prep_sec_all:"Für jede Katastrophe", prep_sec_quake:"Erdbeben", prep_sec_flood:"Überschwemmung", prep_sec_storm:"Sturm", prep_sec_wildfire:"Waldbrand",
     prep_item_water:"Trinkwasser", prep_why_water:"Ein Vorrat für mehrere Tage.",
     prep_item_firstaid:"Erste-Hilfe-Set", prep_why_firstaid:"Verletzungen versorgen, wenn Hilfe sich verzögert.",
@@ -1090,7 +1090,7 @@ const STR = {
     prep_item_goggles:"Schutzbrille", prep_why_goggles:"Schützt die Augen vor Rauch und Asche.",
   },
   tr: {
-    app_name:"AlearthApp", tagline:"Deprem erken uyarısı",
+    app_name:"Alert2IQ", tagline:"Deprem erken uyarısı",
     tab_start:"Başlangıç", tab_map:"Harita", tab_disasters:"Afetler", tab_network:"Ağ", tab_vorsorge:"Hazırlık", tab_faq:"SSS", tab_settings:"Ayarlar", start_recent:"En yakın son olay",
     hero_ready_t:"Her şey sakin", hero_ready_s:"Sistem etkin — depremler izleniyor",
     hero_attention_t:"Olası sarsıntı", hero_attention_s:"Sinyal kontrol ediliyor…",
@@ -1150,7 +1150,7 @@ const STR = {
     recenter:"Ortala", refresh:"Yenile", map_offline:"Harita için internet gerekir.", you_label:"Siz",
     adv_title:"Gelişmiş", lbl_units:"Uzaklık birimi", lbl_radius:"Uyarı yarıçapı", lbl_minmag:"En düşük büyüklük",
     desc_radius:"Yalnızca bu mesafedeki depremler sizi ilgilendirir.", desc_minmag:"Zayıf depremler haritada gösterilir ama alarm vermez.",
-    lbl_sound:"Alarm sesi", pick_sound:"Alarm sesini seç", dnd_title:"Rahatsız Etme'de alarm", dnd_desc:"Alarmın sessiz / Rahatsız Etme modunu delip geçmesine izin ver.", autostart_title:"Güvenilir arka plan uyarıları", autostart_desc:"Xiaomi/Huawei/Oppo'da AlearthApp için Otomatik Başlatma ve arka planı etkinleştir — yoksa push uyarıları engellenir.", autostart_btn:"Uygulama ayarlarını aç", lbl_ntf_realtime:"Gerçek zamanlı algılamalar", lbl_ntf_reports:"Kullanıcı bildirimli depremler",
+    lbl_sound:"Alarm sesi", pick_sound:"Alarm sesini seç", dnd_title:"Rahatsız Etme'de alarm", dnd_desc:"Alarmın sessiz / Rahatsız Etme modunu delip geçmesine izin ver.", autostart_title:"Güvenilir arka plan uyarıları", autostart_desc:"Xiaomi/Huawei/Oppo'da Alert2IQ için Otomatik Başlatma ve arka planı etkinleştir — yoksa push uyarıları engellenir.", autostart_btn:"Uygulama ayarlarını aç", lbl_ntf_realtime:"Gerçek zamanlı algılamalar", lbl_ntf_reports:"Kullanıcı bildirimli depremler",
     ago_min:"%1 dk önce", ago_hour:"%1 sa önce", ago_day:"%1 g önce", just_now:"az önce",
     lbl_hazards:"Diğer doğal afetleri göster", lg_hazards:"diğer afetler",
     hz_wildfire:"Orman yangını", hz_storm:"Şiddetli fırtına", hz_volcano:"Yanardağ", hz_flood:"Sel", hz_ice:"Deniz/göl buzu", hz_drought:"Kuraklık", hz_landslide:"Heyelan", hz_temp:"Aşırı sıcaklık", hz_other:"Tehlike", hz_tsunami:"Tsunami", hz_cyclone:"Siklon", hz_source:"Kaynak", hz_alert_red:"Kırmızı alarm", hz_alert_orange:"Turuncu alarm", hz_alert_green:"Bilgilendirme",
@@ -1163,7 +1163,7 @@ const STR = {
     desc_minmag2:"Yalnızca depremler (Richter).", desc_minalert:"Fırtına, sel, tsunami… (GDACS düzeyi).",
     kat_empty:"Bu filtre için olay yok.", src_down:"%1 kaynağı erişilemiyor — diğerleri gösteriliyor.",
     ob_next:"İleri", ob_finish:"Bitti", ob_back:"Geri", ob_skip:"Atla",
-    ob1_t:"AlearthApp'e Hoş Geldiniz", ob1_b:"AlearthApp, sarsıntı ulaşmadan saniyeler önce sizi uyarır ve yakınınızdaki tüm doğal afetleri gösterir.",
+    ob1_t:"Alert2IQ'e Hoş Geldiniz", ob1_b:"Alert2IQ, sarsıntı ulaşmadan saniyeler önce sizi uyarır ve yakınınızdaki tüm doğal afetleri gösterir.",
     ob2_t:"Nerede uyarı almak istiyorsunuz?", ob2_b:"Konumunuzu GPS ile veya arayarak seçin — istediğiniz zaman değiştirebilirsiniz.", ob_gps:"Konumumu kullan",
     ob3_t:"Uyarı seviyelerinizi belirleyin", ob_notif_h:"Bildirim", ob_notif_d:"Bir deprem sizi ilgilendirdiğinde sessiz bilgilendirme.", ob_alarm_h:"Alarm", ob_alarm_d:"Sessiz modu delen yüksek sesli tam ekran alarmı.", ob_mag:"Büyüklük", ob_radius:"Yarıçap", ob_from:"itibaren M", ob_stormflood:"Fırtına, sel ve tsunami için de uyarılsın mı?", ob_haz_storm:"Fırtınalar", ob_haz_flood:"Seller", ob_haz_tsunami:"Tsunami", ob_notify_from:"Bilgilendirme:", ob_alarm_from:"Alarm:", al_off:"Kapalı", p_cautious:"Dikkatli", p_cautious_d:"yarıçap 500 km · M 2.5'ten itibaren", p_balanced:"Dengeli", p_balanced_d:"yarıçap 300 km · M 3.5'ten itibaren", p_strong:"Sadece güçlü", p_strong_d:"yarıçap 150 km · M 5.0'dan itibaren",
     ob_retro:"Bu seviye son 24 saatte yakınınızdaki %2 depremin %1 tanesinde sizi uyarırdı (geçmişe bakış, tahmin değil).",
@@ -1173,14 +1173,14 @@ const STR = {
     ob5_t:"Çevrimdışı kurtarma (uygulamada)", ob5_b:"Mobil şebeke çökerse uygulama uyarıları ve SOS sinyalini Bluetooth üzerinden telefondan telefona iletebilir. Bu özellik tamamen yerel uygulamada çalışır.",
     ob6_t:"Bir alarm böyle görünür", ob6_b:"Gerçek bir durumda sesi ve ekranı tanımak için bir prova alarmı deneyin.", ob_drill:"Prova alarmı göster",
     faq_title:"SSS", faq_restart:"Tanıtımı yeniden başlat",
-    faq_q1:"AlearthApp ne kadar erken uyarır?", faq_a1:"Merkez üssüne uzaklığınıza bağlı olarak birkaç saniyeden onlarca saniyeye kadar — ne kadar uzaktaysanız o kadar erken uyarı alırsınız. Deprem başlamadan önce uyaramaz; zamanla değil, sarsıntıyla yarışır.",
+    faq_q1:"Alert2IQ ne kadar erken uyarır?", faq_a1:"Merkez üssüne uzaklığınıza bağlı olarak birkaç saniyeden onlarca saniyeye kadar — ne kadar uzaktaysanız o kadar erken uyarı alırsınız. Deprem başlamadan önce uyaramaz; zamanla değil, sarsıntıyla yarışır.",
     faq_q2:"Büyüklük, derinlik ve yarıçap ne anlama gelir?", faq_a2:"Büyüklük depremin gücüdür (her basamak çok daha güçlüdür). Derinlik yerin ne kadar altında başladığıdır (daha sığ olanlar daha çok hissedilir). Yarıçap ise sizi ilgilendiren depremlerin çevrenizdeki mesafesidir.",
-    faq_q3:"Yanlış alarmlar neden olur ve AlearthApp bunları nasıl engeller?", faq_a3:"İlerleyen bir dalga cephesi olmayan şehir genelindeki eşzamanlı sarsıntılar genellikle havai fişek veya trafiktir. AlearthApp alarm vermeden önce yayılan bir dalga cephesini kontrol eder ve filtrelediklerini işaretler.",
+    faq_q3:"Yanlış alarmlar neden olur ve Alert2IQ bunları nasıl engeller?", faq_a3:"İlerleyen bir dalga cephesi olmayan şehir genelindeki eşzamanlı sarsıntılar genellikle havai fişek veya trafiktir. Alert2IQ alarm vermeden önce yayılan bir dalga cephesini kontrol eder ve filtrelediklerini işaretler.",
     faq_q4:"İnternet kesildiğinde veya çevrimdışıyken ne olur?", faq_a4:"Harita ve canlı akışlar internet gerektirir. Temel erken uyarı mantığı yerel çalışır. Şebeke yokken telefondan telefona uyarı ve SOS özellikleri uygulamada yerel olarak çalışır.",
     faq_q5:"Konum verilerim güvende mi?", faq_a5:"Algılama ağı yalnızca kaba bir ızgara hücresi ve zaman damgası paylaşır — asla tam konumunuzu paylaşmaz. Adres arama doğrudan OpenStreetMap'e gider.",
     faq_q6:"Veriler nereden geliyor?", faq_a6:"Depremler USGS, EMSC (ve uygun olduğunda AFAD); diğer afetler NASA EONET ve GDACS kaynaklıdır.",
     prep_title:"Hazırlık", prep_amazon:"Amazon'da ara", prep_local:"Yerel satıcı",
-    prep_disclosure:"Öneri bağlantıları — satın alırsan AlearthApp küçük bir komisyon kazanabilir, sana ek ücret olmadan. Yalnızca burada, asla alarm sırasında.",
+    prep_disclosure:"Öneri bağlantıları — satın alırsan Alert2IQ küçük bir komisyon kazanabilir, sana ek ücret olmadan. Yalnızca burada, asla alarm sırasında.",
     prep_sec_all:"Her afet için", prep_sec_quake:"Deprem", prep_sec_flood:"Sel", prep_sec_storm:"Fırtına", prep_sec_wildfire:"Orman yangını",
     prep_item_water:"İçme suyu", prep_why_water:"Birkaç günlük depolanmış su kaynağı.",
     prep_item_firstaid:"İlk yardım seti", prep_why_firstaid:"Yardım geciktiğinde yaralanmaları tedavi etmek için.",
@@ -1202,7 +1202,7 @@ const STR = {
     prep_item_goggles:"Koruyucu gözlük", prep_why_goggles:"Gözleri duman ve külden korumak için.",
   },
   ru: {
-    app_name:"AlearthApp", tagline:"Раннее предупреждение о землетрясениях",
+    app_name:"Alert2IQ", tagline:"Раннее предупреждение о землетрясениях",
     tab_start:"Начало", tab_map:"Карта", tab_disasters:"Бедствия", tab_network:"Сеть", tab_vorsorge:"Подготовка", tab_faq:"Вопросы", tab_settings:"Настройки", start_recent:"Ближайшее событие",
     hero_ready_t:"Всё спокойно", hero_ready_s:"Система активна — следит за землетрясениями",
     hero_attention_t:"Возможны толчки", hero_attention_s:"Проверка сигнала…",
@@ -1262,7 +1262,7 @@ const STR = {
     recenter:"Центр", refresh:"Обновить", map_offline:"Для карты нужен интернет.", you_label:"Вы",
     adv_title:"Дополнительно", lbl_units:"Единицы расстояния", lbl_radius:"Радиус оповещения", lbl_minmag:"Мин. магнитуда",
     desc_radius:"Вас касаются только землетрясения в этом радиусе.", desc_minmag:"Слабые толчки видны на карте, но не вызывают тревогу.",
-    lbl_sound:"Звук тревоги", pick_sound:"Выбрать звук тревоги", dnd_title:"Тревога в режиме «Не беспокоить»", dnd_desc:"Позволяет тревоге пробиваться сквозь беззвучный режим / «Не беспокоить».", autostart_title:"Надёжные фоновые оповещения", autostart_desc:"На Xiaomi/Huawei/Oppo разрешите автозапуск и работу в фоне для AlearthApp — иначе push-оповещения блокируются.", autostart_btn:"Открыть настройки приложения", lbl_ntf_realtime:"Обнаружение в реальном времени", lbl_ntf_reports:"Землетрясения от пользователей",
+    lbl_sound:"Звук тревоги", pick_sound:"Выбрать звук тревоги", dnd_title:"Тревога в режиме «Не беспокоить»", dnd_desc:"Позволяет тревоге пробиваться сквозь беззвучный режим / «Не беспокоить».", autostart_title:"Надёжные фоновые оповещения", autostart_desc:"На Xiaomi/Huawei/Oppo разрешите автозапуск и работу в фоне для Alert2IQ — иначе push-оповещения блокируются.", autostart_btn:"Открыть настройки приложения", lbl_ntf_realtime:"Обнаружение в реальном времени", lbl_ntf_reports:"Землетрясения от пользователей",
     ago_min:"%1 мин назад", ago_hour:"%1 ч назад", ago_day:"%1 дн назад", just_now:"только что",
     lbl_hazards:"Показывать другие стихийные бедствия", lg_hazards:"другие бедствия",
     hz_wildfire:"Лесной пожар", hz_storm:"Сильный шторм", hz_volcano:"Вулкан", hz_flood:"Наводнение", hz_ice:"Морской/озёрный лёд", hz_drought:"Засуха", hz_landslide:"Оползень", hz_temp:"Экстремальная температура", hz_other:"Опасность", hz_tsunami:"Цунами", hz_cyclone:"Циклон", hz_source:"Источник", hz_alert_red:"Красный уровень", hz_alert_orange:"Оранжевый уровень", hz_alert_green:"Уведомление",
@@ -1275,7 +1275,7 @@ const STR = {
     desc_minmag2:"Только землетрясения (Рихтер).", desc_minalert:"Штормы, наводнения, цунами… (уровень GDACS).",
     kat_empty:"Нет событий для этого фильтра.", src_down:"Источник %1 недоступен — показаны остальные.",
     ob_next:"Далее", ob_finish:"Готово", ob_back:"Назад", ob_skip:"Пропустить",
-    ob1_t:"Добро пожаловать в AlearthApp", ob1_b:"AlearthApp предупреждает вас за секунды до прихода тряски и показывает все природные угрозы рядом с вами.",
+    ob1_t:"Добро пожаловать в Alert2IQ", ob1_b:"Alert2IQ предупреждает вас за секунды до прихода тряски и показывает все природные угрозы рядом с вами.",
     ob2_t:"Где вы хотите получать оповещения?", ob2_b:"Выберите местоположение по GPS или поиском — можно изменить в любой момент.", ob_gps:"Использовать моё местоположение",
     ob3_t:"Настройте уровни предупреждений", ob_notif_h:"Уведомление", ob_notif_d:"Тихое оповещение, когда землетрясение касается вас.", ob_alarm_h:"Тревога", ob_alarm_d:"Громкая полноэкранная тревога, пробивающая беззвучный режим.", ob_mag:"Магнитуда", ob_radius:"Радиус", ob_from:"от M", ob_stormflood:"Предупреждать также о штормах, наводнениях и цунами?", ob_haz_storm:"Штормы", ob_haz_flood:"Наводнения", ob_haz_tsunami:"Цунами", ob_notify_from:"Уведомлять от", ob_alarm_from:"Тревога от", al_off:"Выкл", p_cautious:"Осторожный", p_cautious_d:"радиус 500 км · от M 2.5", p_balanced:"Сбалансированный", p_balanced_d:"радиус 300 км · от M 3.5", p_strong:"Только сильные", p_strong_d:"радиус 150 км · от M 5.0",
     ob_retro:"Этот уровень предупредил бы вас при %1 из %2 недавних землетрясений поблизости (за 24 ч — ретроспектива, не прогноз).",
@@ -1285,14 +1285,14 @@ const STR = {
     ob5_t:"Офлайн-спасение (в приложении)", ob5_b:"При падении мобильной сети приложение передаёт предупреждения и сигнал SOS от телефона к телефону по Bluetooth. Полностью работает в приложении.",
     ob6_t:"Так выглядит тревога", ob6_b:"Попробуйте учебную тревогу, чтобы узнать звук и экран при реальной опасности.", ob_drill:"Показать учебную тревогу",
     faq_title:"Вопросы", faq_restart:"Заново пройти введение",
-    faq_q1:"Как рано предупреждает AlearthApp?", faq_a1:"От нескольких секунд до десятков секунд, в зависимости от расстояния до эпицентра. До начала самого землетрясения предупредить невозможно.",
+    faq_q1:"Как рано предупреждает Alert2IQ?", faq_a1:"От нескольких секунд до десятков секунд, в зависимости от расстояния до эпицентра. До начала самого землетрясения предупредить невозможно.",
     faq_q2:"Что значат магнитуда, глубина и радиус?", faq_a2:"Магнитуда — сила толчка. Глубина — где начался очаг (мелкие ощущаются сильнее). Радиус — зона вокруг вас, где землетрясения для вас актуальны.",
-    faq_q3:"Почему бывают ложные тревоги и как их фильтруют?", faq_a3:"Одновременная тряска по всему городу без фронта волны — это фейерверки или транспорт. AlearthApp проверяет распространение фронта волны.",
+    faq_q3:"Почему бывают ложные тревоги и как их фильтруют?", faq_a3:"Одновременная тряска по всему городу без фронта волны — это фейерверки или транспорт. Alert2IQ проверяет распространение фронта волны.",
     faq_q4:"Что происходит без интернета?", faq_a4:"Карте нужен интернет. Алгоритм раннего предупреждения и спасательный Bluetooth-маяк работают автономно в приложении.",
     faq_q5:"Безопасны ли данные о местоположении?", faq_a5:"Сеть обнаружения передаёт только номер грубой ячейки сетки и время — никогда ваше точное положение.",
     faq_q6:"Откуда берутся данные?", faq_a6:"Землетрясения от USGS и EMSC; другие угрозы от NASA EONET и GDACS.",
     prep_title:"Подготовка", prep_amazon:"Искать на Amazon", prep_local:"Местный магазин",
-    prep_disclosure:"Рекомендательные ссылки — при покупке AlearthApp может получить небольшую комиссию без доплаты для вас. Только здесь, никогда во время тревоги.",
+    prep_disclosure:"Рекомендательные ссылки — при покупке Alert2IQ может получить небольшую комиссию без доплаты для вас. Только здесь, никогда во время тревоги.",
     prep_sec_all:"Для любой катастрофы", prep_sec_quake:"Землетрясение", prep_sec_flood:"Наводнение", prep_sec_storm:"Шторм", prep_sec_wildfire:"Пожар",
     prep_item_water:"Питьевая вода", prep_why_water:"Запас на несколько дней.",
     prep_item_firstaid:"Аптечка", prep_why_firstaid:"Оказание помощи при задержке спасателей.",
@@ -1314,7 +1314,7 @@ const STR = {
     prep_item_goggles:"Защитные очки", prep_why_goggles:"Защита глаз от дыма и пепла.",
   },
   ar: {
-    app_name:"AlearthApp", tagline:"إنذار مبكر بالزلازل",
+    app_name:"Alert2IQ", tagline:"إنذار مبكر بالزلازل",
     tab_start:"البداية", tab_map:"الخريطة", tab_disasters:"الكوارث", tab_network:"الشبكة", tab_vorsorge:"الاستعداد", tab_faq:"الأسئلة", tab_settings:"الإعدادات", start_recent:"الأقرب حديثًا",
     hero_ready_t:"كل شيء هادئ", hero_ready_s:"النظام نشط — يراقب الزلازل",
     hero_attention_t:"اهتزاز محتمل", hero_attention_s:"جارٍ فحص الإشارة…",
@@ -1353,7 +1353,7 @@ const STR = {
     vw_nearby:"قريب", vw_felt:"محسوس (M≥4)", vw_global:"الكل",
     recenter:"توسيط", refresh:"تحديث", map_offline:"الخريطة تحتاج إنترنت.", you_label:"أنت",
     adv_title:"متقدم", lbl_units:"وحدة المسافة", lbl_radius:"نطاق التنبيه", lbl_minmag:"أدنى قوة",
-    lbl_sound:"صوت الإنذار", pick_sound:"اختر صوت الإنذار", dnd_title:"الإنذار أثناء وضع عدم الإزعاج", dnd_desc:"يسمح للإنذار باختراق الوضع الصامت / عدم الإزعاج.", autostart_title:"تنبيهات خلفية موثوقة", autostart_desc:"على Xiaomi/Huawei/Oppo، فعّل التشغيل التلقائي والخلفية لتطبيق AlearthApp — وإلا تُحظر تنبيهات الدفع.", autostart_btn:"فتح إعدادات التطبيق",
+    lbl_sound:"صوت الإنذار", pick_sound:"اختر صوت الإنذار", dnd_title:"الإنذار أثناء وضع عدم الإزعاج", dnd_desc:"يسمح للإنذار باختراق الوضع الصامت / عدم الإزعاج.", autostart_title:"تنبيهات خلفية موثوقة", autostart_desc:"على Xiaomi/Huawei/Oppo، فعّل التشغيل التلقائي والخلفية لتطبيق Alert2IQ — وإلا تُحظر تنبيهات الدفع.", autostart_btn:"فتح إعدادات التطبيق",
     lbl_hazards:"إظهار الكوارث الطبيعية الأخرى", lg_hazards:"مخاطر أخرى",
     hz_wildfire:"حريق غابات", hz_storm:"عاصفة شديدة", hz_volcano:"بركان", hz_flood:"فيضان", hz_ice:"جليد", hz_drought:"جفاف", hz_landslide:"انزلاق أرضي", hz_temp:"حرارة قصوى", hz_other:"خطر", hz_tsunami:"تسونامي", hz_cyclone:"إعصار", hz_source:"المصدر", hz_alert_red:"إنذار أحمر", hz_alert_orange:"إنذار برتقالي", hz_alert_green:"إرشادي",
     net_title:"شبكة الرصد", net_join:"انضم إلى الشبكة", net_online_label:"جهاز متصل", net_devices:"أجهزة", net_triggers:"إشارات", net_detecting:"عنقود يرصد", net_detecting_banner:"عناقيد ترصد اهتزازاً قريباً: %1", net_trigger_btn:"إرسال إشارة اختبار", net_trigger_sent:"تم إرسال الإشارة", net_joined:"انضممت إلى الشبكة", net_note:"عند اهتزاز جهازك يشارك فقط خلية شبكة تقريبية وطابعاً زمنياً — لا موقعك الدقيق أبداً. كلما زاد المشاركون بكّر التحذير للجميع. يعمل عالمياً.",
@@ -1364,7 +1364,7 @@ const STR = {
     kat_empty:"لا أحداث لهذا المرشح.", src_down:"المصدر %1 غير متاح — عرض الباقي.",
     lbl_dev:"وضع المطور / الاختبار", desc_dev:"يعرض لوحة اختبار الخادم في تبويب الشبكة.", dev_panel_note:"أداة اختبار — تطلق تنبيهات تجريبية فقط.",
     ob_next:"التالي", ob_finish:"تم", ob_back:"رجوع", ob_skip:"تخطٍّ",
-    ob1_t:"مرحباً بك في AlearthApp", ob1_b:"يحذرك AlearthApp قبل ثوانٍ من وصول الاهتزاز ويعرض كل المخاطر الطبيعية القريبة منك.",
+    ob1_t:"مرحباً بك في Alert2IQ", ob1_b:"يحذرك Alert2IQ قبل ثوانٍ من وصول الاهتزاز ويعرض كل المخاطر الطبيعية القريبة منك.",
     ob2_t:"أين تريد تلقي التحذيرات؟", ob2_b:"اختر موقعك عبر GPS أو بالبحث — يمكنك تغييره في أي وقت.", ob_gps:"استخدم موقعي",
     ob3_t:"حدد مستويات التحذير", ob_notif_h:"إشعار", ob_notif_d:"تنبيه هادئ عندما يكون الزلزال مهماً بالنسبة لك.", ob_alarm_h:"إنذار", ob_alarm_d:"إنذار صوتي ملء الشاشة يخترق الوضع الصامت.", ob_mag:"القوة", ob_radius:"النطاق", ob_from:"من قوة M", ob_stormflood:"التحذير أيضاً من العواصف والفيضانات وتسونامي؟", ob_haz_storm:"عواصف", ob_haz_flood:"فيضانات", ob_haz_tsunami:"تسونامي", ob_notify_from:"إشعار من", ob_alarm_from:"إنذار من", al_off:"إيقاف", p_cautious:"حذر", p_cautious_d:"نطاق 500 كم · من M 2.5", p_balanced:"متوازن", p_balanced_d:"نطاق 300 كم · من M 3.5", p_strong:"القوية فقط", p_strong_d:"نطاق 150 كم · من M 5.0",
     ob_retro:"كان هذا المستوى سيحذرك عند %1 من %2 زلزال قريب مؤخراً (خلال 24 ساعة الماضية).",
@@ -1374,14 +1374,14 @@ const STR = {
     ob5_t:"الإنقاذ دون إنترنت (في التطبيق)", ob5_b:"إذا انقطعت شبكة الجوال، يمكن للتطبيق نقل التحذيرات ونداء الاستغاثة SOS عبر البلوتوث.",
     ob6_t:"هكذا يبدو الإنذار", ob6_b:"جرّب إنذاراً تجريبياً لتتعرف على الصوت والشاشة عند حدوث طارئ حقيقي.", ob_drill:"عرض إنذار تجريبي",
     faq_title:"الأسئلة الشائعة", faq_restart:"إعادة التعريف",
-    faq_q1:"كم يسبق إنذار AlearthApp الزلزال؟", faq_a1:"من بضع ثوانٍ إلى عشرات الثواني بحسب بعدك عن مركز الزلزال.",
+    faq_q1:"كم يسبق إنذار Alert2IQ الزلزال؟", faq_a1:"من بضع ثوانٍ إلى عشرات الثواني بحسب بعدك عن مركز الزلزال.",
     faq_q2:"ماذا تعني القوة والعمق والنطاق؟", faq_a2:"القوة شدة الزلزال، والعمق نقطة بدايته تحت الأرض، والنطاق المسافة حولك.",
     faq_q3:"لماذا تحدث إنذارات خاطئة وكيف يتم كشفها؟", faq_a3:"الاهتزازات المتزامنة بلا جبهة موجية غالباً ما تكون ألعاباً نارية، يتحقق التطبيق من جبهة الموجة.",
     faq_q4:"ماذا يحدث عند انقطاع الإنترنت؟", faq_a4:"الخريطة تحتاج إنترنت. خوارزمية الإنذار المبكر والبلوتوث تعمل بدون إنترنت في التطبيق.",
     faq_q5:"هل بيانات موقعي آمنة؟", faq_a5:"تشارك الشبكة خلية تقريبية فقط ولا تشارك موقعك الدقيق أبداً.",
     faq_q6:"من أين تأتي البيانات؟", faq_a6:"الزلازل من USGS وEMSC؛ والمخاطر الأخرى من NASA EONET وGDACS.",
     prep_title:"الاستعداد", prep_amazon:"ابحث في أمازون", prep_local:"متجر محلي",
-    prep_disclosure:"روابط توصية — عند الشراء قد يحصل AlearthApp على عمولة صغيرة دون تكلفة إضافية عليك. تظهر هنا فقط، وليس أثناء التنبيه.",
+    prep_disclosure:"روابط توصية — عند الشراء قد يحصل Alert2IQ على عمولة صغيرة دون تكلفة إضافية عليك. تظهر هنا فقط، وليس أثناء التنبيه.",
     prep_sec_all:"لكل كارثة", prep_sec_quake:"زلزال", prep_sec_flood:"فيضان", prep_sec_storm:"عاصفة", prep_sec_wildfire:"حريق",
     prep_item_water:"مياه شرب", prep_why_water:"مخزون لعدة أيام.",
     prep_item_firstaid:"حقيبة إسعافات", prep_why_firstaid:"علاج الإصابات عند تأخر المساعدة.",
