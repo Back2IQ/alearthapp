@@ -210,4 +210,17 @@
     <string name="btn_audio_mute">🔊 Sesli Yön Bulma: AÇIK</string>
     <string name="btn_audio_unmute">🔇 Sesli Yön Bulma: KAPALI</string>
     <string name="radar_nearest_target">En Yakın SOS: %1$s (~%2$.1f m)</string>
+
+    <!-- Alert2IQ Tiers & Premium Features -->
+    <string name="tier_free">Alert2IQ Free</string>
+    <string name="tier_pro">Alert2IQ Pro</string>
+    <string name="tier_guardian">Alert2IQ Guardian</string>
+    <string name="premium_multi_location_title">Çoklu Konum Takibi</string>
+    <string name="premium_multi_location_desc">5 adede kadar konumu aynı anda izleyin (aile, okul, iş yeri).</string>
+    <string name="premium_vault_title">Şifreli Acil Durum Kasası</string>
+    <string name="premium_vault_desc">Kimlik, tıbbi veriler ve acil kişiler için AES-256 şifreli yerel kasa.</string>
+    <string name="premium_readiness_title">Akıllı Stok ve Son Kullanma Takibi</string>
+    <string name="premium_readiness_desc">Su, ilaç ve acil çanta stoklarının süresi dolmadan önce zamanında uyarılar.</string>
+    <string name="premium_auto_sms_title">Otomatik Acil Durum Yayını</string>
+    <string name="premium_auto_sms_desc">Şiddetli depremlerde acil durum kişilerine canlı GPS ile otomatik bildirim gönderir.</string>
 </resources>

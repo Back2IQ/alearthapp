@@ -152,4 +152,17 @@
     <string name="btn_audio_mute">🔊 إشارة التوجيه الصوتية: مفعّلة</string>
     <string name="btn_audio_unmute">🔇 إشارة التوجيه الصوتية: مكتومة</string>
     <string name="radar_nearest_target">أقرب نداء استغاثة: %1$s (~%2$.1f م)</string>
+
+    <!-- Alert2IQ Tiers & Premium Features -->
+    <string name="tier_free">Alert2IQ Free</string>
+    <string name="tier_pro">Alert2IQ Pro</string>
+    <string name="tier_guardian">Alert2IQ Guardian</string>
+    <string name="premium_multi_location_title">مراقبة مواقع متعددة</string>
+    <string name="premium_multi_location_desc">مراقبة ما يصل إلى 5 مواقع في وقت واحد (العائلة، المدرسة، العمل).</string>
+    <string name="premium_vault_title">خزنة الطوارئ المشفرة</string>
+    <string name="premium_vault_desc">تخزين محلي مشفر بـ AES-256 للهويات والبيانات الطبية وجهات اتصال الطوارئ.</string>
+    <string name="premium_readiness_title">إدارة الإمدادات وتواريخ الصلاحية</string>
+    <string name="premium_readiness_desc">تنبيهات في الوقت المناسب قبل انتهاء صلاحية المياه والأدوية وحقيبة الطوارئ.</string>
+    <string name="premium_auto_sms_title">بث الطوارئ التلقائي</string>
+    <string name="premium_auto_sms_desc">إشعار تلقائي لجهات الاتصال بموقع GPS المباشر أثناء الزلازل القوية.</string>
 </resources>

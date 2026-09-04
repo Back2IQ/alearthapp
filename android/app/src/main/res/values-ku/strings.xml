@@ -152,4 +152,17 @@
     <string name="btn_audio_mute">🔊 Dengê Peilandinê: VEKIRÎ</string>
     <string name="btn_audio_unmute">🔇 Dengê Peilandinê: GIRTÎ</string>
     <string name="radar_nearest_target">SOS-a herî nêzîk: %1$s (~%2$.1f m)</string>
+
+    <!-- Alert2IQ Tiers & Premium Features -->
+    <string name="tier_free">Alert2IQ Free</string>
+    <string name="tier_pro">Alert2IQ Pro</string>
+    <string name="tier_guardian">Alert2IQ Guardian</string>
+    <string name="premium_multi_location_title">Şopandina Pir-Cihan</string>
+    <string name="premium_multi_location_desc">Şopandina heta 5 cihan bi hev re (malbat, dibistan, kargeh).</string>
+    <string name="premium_vault_title">Kaseya Lezgîn a Şîfrekirî</string>
+    <string name="premium_vault_desc">Ji bo nasname, agahiyên tibbî kaseya herêmî ya bi AES-256 şîfrekirî.</string>
+    <string name="premium_readiness_title">Birêvebirina jîr a embar û demê</string>
+    <string name="premium_readiness_desc">Hişyariya berî qedandina dema av, derman û çenteyê acîl.</string>
+    <string name="premium_auto_sms_title">Weşana Lezgîn a Xweber</string>
+    <string name="premium_auto_sms_desc">Di erdhejên giran de bi GPS-a zindî peyamên xweber dişîne.</string>
 </resources>

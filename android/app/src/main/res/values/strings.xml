@@ -252,4 +252,17 @@
     <string name="btn_audio_mute">🔊 Acoustic Ping: ON</string>
     <string name="btn_audio_unmute">🔇 Acoustic Ping: MUTED</string>
     <string name="radar_nearest_target">Nearest SOS: %1$s (~%2$.1f m)</string>
+
+    <!-- Alert2IQ Tiers & Premium Features -->
+    <string name="tier_free">Alert2IQ Free</string>
+    <string name="tier_pro">Alert2IQ Pro</string>
+    <string name="tier_guardian">Alert2IQ Guardian</string>
+    <string name="premium_multi_location_title">Multi-Location Watch</string>
+    <string name="premium_multi_location_desc">Simultaneously monitor up to 5 locations (family, school, office).</string>
+    <string name="premium_vault_title">Encrypted Emergency Vault</string>
+    <string name="premium_vault_desc">AES-256 encrypted local storage for passports, medical data &amp; emergency contacts.</string>
+    <string name="premium_readiness_title">Smart Supply &amp; Expiry Manager</string>
+    <string name="premium_readiness_desc">Timely alerts before water, medicine and Go-Bag supplies expire.</string>
+    <string name="premium_auto_sms_title">Automatic Emergency Broadcast</string>
+    <string name="premium_auto_sms_desc">Automatically notifies emergency contacts with live GPS in severe quakes.</string>
 </resources>

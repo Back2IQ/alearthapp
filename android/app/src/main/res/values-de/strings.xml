@@ -249,4 +249,17 @@
     <string name="btn_audio_mute">🔊 Peilton: AN</string>
     <string name="btn_audio_unmute">🔇 Peilton: STUMM</string>
     <string name="radar_nearest_target">Nächster Notruf: %1$s (~%2$.1f m)</string>
+
+    <!-- Alert2IQ Tiers & Premium Features -->
+    <string name="tier_free">Alert2IQ Free</string>
+    <string name="tier_pro">Alert2IQ Pro</string>
+    <string name="tier_guardian">Alert2IQ Guardian</string>
+    <string name="premium_multi_location_title">Multi-Standort-Wache</string>
+    <string name="premium_multi_location_desc">Gleichzeitige Überwachung von bis zu 5 Orten (Familie, Schule, Büro).</string>
+    <string name="premium_vault_title">Verschlüsselter Notfall-Tresor</string>
+    <string name="premium_vault_desc">AES-256 verschlüsselter lokaler Tresor für Pässe, Medikationsdaten &amp; Notfallkontakte.</string>
+    <string name="premium_readiness_title">Intelligenter Vorrats- &amp; Ablaufmanager</string>
+    <string name="premium_readiness_desc">Rechtzeitige Warnung, bevor Wasser, Medikamente und Notfallvorräte ablaufen.</string>
+    <string name="premium_auto_sms_title">Automatischer Notfall-Broadcast</string>
+    <string name="premium_auto_sms_desc">Benachrichtigt Notfallkontakte bei schweren Beben automatisch mit Live-GPS.</string>
 </resources>
