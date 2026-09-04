@@ -262,4 +262,42 @@
     <string name="premium_readiness_desc">Rechtzeitige Warnung, bevor Wasser, Medikamente und Notfallvorräte ablaufen.</string>
     <string name="premium_auto_sms_title">Automatischer Notfall-Broadcast</string>
     <string name="premium_auto_sms_desc">Benachrichtigt Notfallkontakte bei schweren Beben automatisch mit Live-GPS.</string>
+
+    <!-- Survival Academy & Quiz -->
+    <string name="nav_survival_guide">Survival-Akademie &amp; Quiz</string>
+    <string name="quiz_title">Survival IQ Drill (60s)</string>
+    <string name="quiz_score_format">Ergebnis: %1$d / %2$d · %3$s</string>
+    <string name="btn_start_quiz">Notfall-Drill starten</string>
+    <string name="btn_next_question">Nächstes Szenario</string>
+    <string name="btn_restart_quiz">Drill wiederholen</string>
+
+    <string name="quiz_q1_scenario">Ein Erdbeben überrascht dich um 3:00 Uhr nachts im Bett. Was tust du sofort?</string>
+    <string name="quiz_q1_opt_a">Sofort aus dem Bett springen und ins Treppenhaus rennen.</string>
+    <string name="quiz_q1_opt_b">Ans Fenster laufen und um Hilfe rufen.</string>
+    <string name="quiz_q1_opt_c">Im Bett bleiben, auf den Bauch drehen und Kopf/Nacken mit Kissen schützen.</string>
+    <string name="quiz_q1_expl">Richtig! Im Dunkeln zu rennen führt zu schweren Stürzen, und Treppenhäuser stürzen oft zuerst ein. Bleib im Bett und schütze Kopf und Nacken.</string>
+
+    <string name="quiz_q2_scenario">Das Beben ist vorbei. Es riecht stechend nach Gas in der Wohnung. Was tust du?</string>
+    <string name="quiz_q2_opt_a">Lichtschalter betätigen, um das Leck zu suchen.</string>
+    <string name="quiz_q2_opt_b">Mit dem Festnetztelefon die Feuerwehr anrufen.</string>
+    <string name="quiz_q2_opt_c">Keine Schalter berühren, Gashahn schließen, Fenster öffnen und über die Treppe flüchten.</string>
+    <string name="quiz_q2_expl">Richtig! Jeder elektrische Funke kann austretendes Gas entzünden. Keine Schalter betätigen, Gashahn zudrehen und sofort evakuieren.</string>
+
+    <string name="quiz_q3_scenario">Du bist nach einem Einsturz im Hohlraum verschüttet. Wie machst du auf dich aufmerksam?</string>
+    <string name="quiz_q3_opt_a">Ununterbrochen mit maximaler Lautstärke schreien.</string>
+    <string name="quiz_q3_opt_b">Versuchen, schwere Betonplatten selbst wegzudrücken.</string>
+    <string name="quiz_q3_opt_c">Mund mit Stoff bedecken, Kräfte schonen, rhythmisch gegen Rohre klopfen und BLE-Beacon aktiv lassen.</string>
+    <string name="quiz_q3_expl">Richtig! Schreien führt zu Staubvergiftung und schneller Erschöpfung. Klopfen an Rohren/Metallen überträgt Schall extrem weit durch Beton.</string>
+
+    <string name="quiz_q4_scenario">Du bist im 8. Stock eines Bürohochhauses während starker Erschütterungen. Was tust du?</string>
+    <string name="quiz_q4_opt_a">Zum Aufzug rennen, um schnell ins Erdgeschoss zu kommen.</string>
+    <string name="quiz_q4_opt_b">Drop, Cover &amp; Hold On unter einem stabilen Schreibtisch fernab von Fenstern.</string>
+    <string name="quiz_q4_opt_c">Dich in einen Türrahmen stellen.</string>
+    <string name="quiz_q4_expl">Richtig! Aufzüge bleiben stecken, und Türrahmen in modernen Bauten bieten keinen Zusatzschutz. Unter stabilem Tisch Schutz suchen.</string>
+
+    <string name="quiz_q5_scenario">Du spürst starke Erschütterungen in Küstennähe am Meer. Was ist die Faustregel?</string>
+    <string name="quiz_q5_opt_a">Sofort ins Landesinnere oder auf Anhöhen (30m+) flüchten, ohne auf Sirenen zu warten.</string>
+    <string name="quiz_q5_opt_b">Am Strand warten, bis offizielle Lautsprecherdurchsagen kommen.</string>
+    <string name="quiz_q5_opt_c">Fotos vom sich zurückziehenden Wasser machen.</string>
+    <string name="quiz_q5_expl">Richtig! Starkes Beben an der Küste ist deine natürliche Tsunami-Warnung. Nicht warten — sofort hochgelegenes Gelände aufsuchen.</string>
 </resources>

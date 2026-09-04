@@ -165,4 +165,42 @@
     <string name="premium_readiness_desc">Hişyariya berî qedandina dema av, derman û çenteyê acîl.</string>
     <string name="premium_auto_sms_title">Weşana Lezgîn a Xweber</string>
     <string name="premium_auto_sms_desc">Di erdhejên giran de bi GPS-a zindî peyamên xweber dişîne.</string>
+
+    <!-- Survival Academy & Quiz -->
+    <string name="nav_survival_guide">Akademiya Rizgariyê &amp; Ezmûn</string>
+    <string name="quiz_title">Ezmûna IQ ya Rizgariyê (60 çirke)</string>
+    <string name="quiz_score_format">Puan: %1$d / %2$d · %3$s</string>
+    <string name="btn_start_quiz">Ezmûnê Dest Pê Bike</string>
+    <string name="btn_next_question">Senaryoya Din</string>
+    <string name="btn_restart_quiz">Ezmûnê Dûbare Bike</string>
+
+    <string name="quiz_q1_scenario">Di saet 03:00 de dema di nav nivînan de bûyî erdhej çêbû. Tu çi dikî?</string>
+    <string name="quiz_q1_opt_a">Zû ji nav nivînan radibî û direvî ber pêlikan.</string>
+    <string name="quiz_q1_opt_b">Direvî ber pencereyê û gazî alîkariyê dikî.</string>
+    <string name="quiz_q1_opt_c">Di nav nivînan de dimînî, rûyê xwe dadigirî û serê xwe bi balîfê diparêzî.</string>
+    <string name="quiz_q1_expl">Rast e! Di tarîtiyê de bezîn dibe sedema ketinê; pêlik zû hildiweşin. Di nav nivînan de bimîne û serê xwe biparêze.</string>
+
+    <string name="quiz_q2_scenario">Lerz sekinî. Di malê de bêhna gazê ya giran heye. Tu çi dikî?</string>
+    <string name="quiz_q2_opt_a">Bişkoja ronahiyê vedikî da ku ciyê gazê bibînî.</string>
+    <string name="quiz_q2_opt_b">Bi telefona malê agahiyê didî tîmên agirvemirandinê.</string>
+    <string name="quiz_q2_opt_c">Dest nadî ti bişkojan, şîra gazê digirî, pencereyan vedikî û bi pêlikan derdikevî.</string>
+    <string name="quiz_q2_expl">Rast e! Çirûskek dikare bibe sedema teqînê. Dest nede bişkojan, gazê bigire û bilez derkeve.</string>
+
+    <string name="quiz_q3_scenario">Avahî hilweşiya û tu di bin xîzê de di valahiyekê de ma yî. Çawa nîşan didî?</string>
+    <string name="quiz_q3_opt_a">Bê rawestan bi dengekî bilind diqîrî.</string>
+    <string name="quiz_q3_opt_b">Hewl didî ku kevirên giran bi xwe bilivînî.</string>
+    <string name="quiz_q3_opt_c">Devê xwe digirî, oksîjenê diparêzî, li boriyan dixî û sînyala BLE vekirî dihêlî.</string>
+    <string name="quiz_q3_expl">Rast e! Qîrîn dibe sedema hilmijîna tozê. Li boriyan xistin deng ji kûrahiya betonê derbas dike.</string>
+
+    <string name="quiz_q4_scenario">Di qata 8-an a avahiyekê de yî û erdhej çêdibe. Divê tu çi bikî?</string>
+    <string name="quiz_q4_opt_a">Bilez ber bi asansorê ve diçî da ku dakevî xwarê.</string>
+    <string name="quiz_q4_opt_b">Di bin maseyekî saxlem de Çemîn-Xwe biparêze-Bigire dikî.</string>
+    <string name="quiz_q4_opt_c">Di ber derî de disekinî.</string>
+    <string name="quiz_q4_expl">Rast e! Asansor xera dibin, ber derî parastinê nade. Di bin maseyekî saxlem de xwe biparêze.</string>
+
+    <string name="quiz_q5_scenario">Li peravê behrê erdhejeke bihêz hîs kirî. Qaydeya sereke çi ye?</string>
+    <string name="quiz_q5_opt_a">Bêyî benda sîrenan bimînî, bilez ber bi ciyên bilind ve (30m+) bireve.</string>
+    <string name="quiz_q5_opt_b">Li peravê benda agahiya fermî bimîne.</string>
+    <string name="quiz_q5_opt_c">Wêneyên vekişîna avê bikişîne.</string>
+    <string name="quiz_q5_expl">Rast e! Lerza li peravê hişyariya xwezayî ya tsûnamiyê ye. Zû ber bi ciyên bilind ve here.</string>
 </resources>

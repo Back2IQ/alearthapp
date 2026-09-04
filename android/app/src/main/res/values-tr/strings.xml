@@ -223,4 +223,42 @@
     <string name="premium_readiness_desc">Su, ilaç ve acil çanta stoklarının süresi dolmadan önce zamanında uyarılar.</string>
     <string name="premium_auto_sms_title">Otomatik Acil Durum Yayını</string>
     <string name="premium_auto_sms_desc">Şiddetli depremlerde acil durum kişilerine canlı GPS ile otomatik bildirim gönderir.</string>
+
+    <!-- Survival Academy & Quiz -->
+    <string name="nav_survival_guide">Hayatta Kalma Akademisi ve Testi</string>
+    <string name="quiz_title">Hayatta Kalma IQ Testi (60 sn)</string>
+    <string name="quiz_score_format">Puan: %1$d / %2$d · %3$s</string>
+    <string name="btn_start_quiz">Tatbikatı Başlat</string>
+    <string name="btn_next_question">Sonraki Senaryo</string>
+    <string name="btn_restart_quiz">Tatbikatı Yeniden Başlat</string>
+
+    <string name="quiz_q1_scenario">Gece saat 03:00\'te yatakta depreme yakalandınız. İlk yapacağınız şey nedir?</string>
+    <string name="quiz_q1_opt_a">Hemen yataktan fırlayıp merdiven boşluğuna koşmak.</string>
+    <string name="quiz_q1_opt_b">Pencereye koşup yardım çağırmak.</string>
+    <string name="quiz_q1_opt_c">Yatakta kalmak, yüzüstü dönmek ve başı/boynu yastıkla korumak.</string>
+    <string name="quiz_q1_expl">Doğru! Karanlıkta koşmak düşme ve yaralanmaya yol açar; merdivenler ilk çöken yerlerdir. Yatakta kalın ve başınızı koruyun.</string>
+
+    <string name="quiz_q2_scenario">Sarsıntı durdu. Evde keskin bir gaz kokusu fark ettiniz. Ne yaparsınız?</string>
+    <string name="quiz_q2_opt_a">Kaçağı bulmak için ışık anahtarına basmak.</string>
+    <string name="quiz_q2_opt_b">Sabit hattan itfaiyeyi aramak.</string>
+    <string name="quiz_q2_opt_c">Hiçbir anahtara dokunmamak, ana gaz vanasını kapatmak, pencereleri açıp merdivenden tahliye olmak.</string>
+    <string name="quiz_q2_expl">Doğru! Elektrik kıvılcımı gaz patlamasına neden olabilir. Düğmelere dokunmayın, vanayı kapatın ve hemen tahliye olun.</string>
+
+    <string name="quiz_q3_scenario">Bina çökmesi sonucu enkaz altında bir yaşam üçgeninde mahsur kaldınız. Kurtarıcılara nasıl işaret verirsiniz?</string>
+    <string name="quiz_q3_opt_a">Sürekli var gücünüzle bağırmak.</string>
+    <string name="quiz_q3_opt_b">Ağır beton blokları kendiniz itmeye çalışmak.</string>
+    <string name="quiz_q3_opt_c">Ağzı bezle kapatmak, oksijeni korumak, borulara ritmik vurmak ve BLE sinyalini açık tutmak.</string>
+    <string name="quiz_q3_expl">Doğru! Bağırmak toz yutmaya ve hızlı tükenmeye neden olur. Borulara vurmak sesi betondan çok uzağa iletir.</string>
+
+    <string name="quiz_q4_scenario">Şiddetli sarsıntı sırasında bir plazanın 8. katındasınız. Ne yapmalısınız?</string>
+    <string name="quiz_q4_opt_a">Zemin kata inmek için hemen asansöre koşmak.</string>
+    <string name="quiz_q4_opt_b">Pencerelerden uzakta sağlam bir masanın altında Çök-Kapan-Tutun yapmak.</string>
+    <string name="quiz_q4_opt_c">Kapı eşiğinde durmak.</string>
+    <string name="quiz_q4_expl">Doğru! Asansörler arızalanır, modern kapı eşikleri ekstra koruma sağlamaz. Sağlam bir masa altına çöküp tutunun.</string>
+
+    <string name="quiz_q5_scenario">Deniz kıyısındayken çok şiddetli bir deprem hissettiniz. Temel kural nedir?</string>
+    <string name="quiz_q5_opt_a">Resmi sirenleri beklemeden derhal iç kısımlara veya yüksek tepelere (30m+) kaçmak.</string>
+    <string name="quiz_q5_opt_b">Plajda hoparlör anonsunu beklemek.</string>
+    <string name="quiz_q5_opt_c">Çekilen denizin fotoğraflarını çekmek.</string>
+    <string name="quiz_q5_expl">Doğru! Kıyıdaki şiddetli sarsıntı doğal tsunami uyarınızdır. Siren beklemeden hemen yüksek yerlere çıkın.</string>
 </resources>

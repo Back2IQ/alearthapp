@@ -265,4 +265,42 @@
     <string name="premium_readiness_desc">Timely alerts before water, medicine and Go-Bag supplies expire.</string>
     <string name="premium_auto_sms_title">Automatic Emergency Broadcast</string>
     <string name="premium_auto_sms_desc">Automatically notifies emergency contacts with live GPS in severe quakes.</string>
+
+    <!-- Survival Academy & Quiz -->
+    <string name="nav_survival_guide">Survival Academy &amp; Quiz</string>
+    <string name="quiz_title">Survival IQ Drill (60s)</string>
+    <string name="quiz_score_format">Score: %1$d / %2$d · %3$s</string>
+    <string name="btn_start_quiz">Start Survival Drill</string>
+    <string name="btn_next_question">Next Scenario</string>
+    <string name="btn_restart_quiz">Restart Drill</string>
+
+    <string name="quiz_q1_scenario">An earthquake strikes at 3:00 AM while you are in bed. What is your immediate action?</string>
+    <string name="quiz_q1_opt_a">Jump out of bed immediately and rush into the stairwell.</string>
+    <string name="quiz_q1_opt_b">Run to the window and shout for help.</string>
+    <string name="quiz_q1_opt_c">Stay in bed, turn face down, and cover your head and neck with pillows.</string>
+    <string name="quiz_q1_expl">Correct! Running in the dark causes tripping injuries, and stairwells often collapse first. Stay in bed and protect your head/neck with pillows.</string>
+
+    <string name="quiz_q2_scenario">The shaking has stopped. You notice a pungent smell of gas in the apartment. What do you do?</string>
+    <string name="quiz_q2_opt_a">Turn on the light switch to locate the leak.</string>
+    <string name="quiz_q2_opt_b">Call emergency services from your landline phone.</string>
+    <string name="quiz_q2_opt_c">Touch no switches, close the main gas valve, open windows, and evacuate via stairs.</string>
+    <string name="quiz_q2_expl">Correct! Any electrical spark can trigger a gas explosion. Do not touch switches, close the gas valve, open windows, and evacuate.</string>
+
+    <string name="quiz_q3_scenario">You are trapped in a structural void under debris after a building collapse. How do you signal rescuers?</string>
+    <string name="quiz_q3_opt_a">Scream continuously at maximum volume.</string>
+    <string name="quiz_q3_opt_b">Try to push heavy concrete slabs away yourself.</string>
+    <string name="quiz_q3_opt_c">Cover your mouth with cloth, conserve oxygen, rhythmically tap on pipes, and keep BLE beacon active.</string>
+    <string name="quiz_q3_expl">Correct! Screaming causes dust inhalation and rapid exhaustion. Tapping metallic objects carries sound far through concrete with minimal oxygen use.</string>
+
+    <string name="quiz_q4_scenario">You are on the 8th floor of an office high-rise during strong shaking. What should you do?</string>
+    <string name="quiz_q4_opt_a">Rush to the elevator to reach the ground floor quickly.</string>
+    <string name="quiz_q4_opt_b">Drop, Cover, and Hold On under a sturdy desk away from windows.</string>
+    <string name="quiz_q4_opt_c">Stand in a doorway.</string>
+    <string name="quiz_q4_expl">Correct! Elevators fail and modern doorways are no stronger than standard walls. Drop under a sturdy desk and hold on.</string>
+
+    <string name="quiz_q5_scenario">You feel severe shaking near an ocean coastline. What is the rule of thumb?</string>
+    <string name="quiz_q5_opt_a">Immediately move inland or to high ground (30m+) without waiting for official sirens.</string>
+    <string name="quiz_q5_opt_b">Wait at the beach for an official loudspeaker evacuation notice.</string>
+    <string name="quiz_q5_opt_c">Take photos of the receding water line.</string>
+    <string name="quiz_q5_expl">Correct! Severe coastal shaking IS your natural tsunami warning. Do not wait for sirens; immediately reach higher ground.</string>
 </resources>

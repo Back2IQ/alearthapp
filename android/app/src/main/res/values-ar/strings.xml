@@ -165,4 +165,42 @@
     <string name="premium_readiness_desc">تنبيهات في الوقت المناسب قبل انتهاء صلاحية المياه والأدوية وحقيبة الطوارئ.</string>
     <string name="premium_auto_sms_title">بث الطوارئ التلقائي</string>
     <string name="premium_auto_sms_desc">إشعار تلقائي لجهات الاتصال بموقع GPS المباشر أثناء الزلازل القوية.</string>
+
+    <!-- Survival Academy & Quiz -->
+    <string name="nav_survival_guide">أكاديمية النجاة والاختبار</string>
+    <string name="quiz_title">تدريب ذكاء النجاة (60 ثانية)</string>
+    <string name="quiz_score_format">النتيجة: %1$d / %2$d · %3$s</string>
+    <string name="btn_start_quiz">بدء تدريب النجاة</string>
+    <string name="btn_next_question">السيناريو التالي</string>
+    <string name="btn_restart_quiz">إعادة التدريب</string>
+
+    <string name="quiz_q1_scenario">وقع زلزال في الساعة 3:00 صباحًا أثناء وجودك في السرير. ما هو تصرفك الفوري؟</string>
+    <string name="quiz_q1_opt_a">القفز فورًا من السرير والركض إلى بيت الدرج.</string>
+    <string name="quiz_q1_opt_b">الركض نحو النافذة والصراخ لطلب المساعدة.</string>
+    <string name="quiz_q1_opt_c">البقاء في السرير، والانبطاح على البطن وحماية الرأس والرقبة بالوسائد.</string>
+    <string name="quiz_q1_expl">صحيح! الركض في الظلام يسبب السقوط، والسلالم غالبًا ما تنهار أولاً. ابقَ في السرير واحمِ رأسك بالوسائد.</string>
+
+    <string name="quiz_q2_scenario">توقف الاهتزاز. لاحظت رائحة غاز نفاذة في الشقة. ماذا تفعل؟</string>
+    <string name="quiz_q2_opt_a">تشغيل مفتاح الإضاءة للبحث عن مكان التسريب.</string>
+    <string name="quiz_q2_opt_b">الاتصال بالطوارئ عبر الهاتف الأرضي من الداخل.</string>
+    <string name="quiz_q2_opt_c">عدم لمس أي مفتاح كهربائي، إغلاق صمام الغاز، فتح النوافذ والإخلاء عبر السلالم.</string>
+    <string name="quiz_q2_expl">صحيح! أي شرارة كهربائية قد تشعل الغاز. لا تلمس المفاتيح، أغلق الغاز واخرج فورًا.</string>
+
+    <string name="quiz_q3_scenario">أنت محاصر في فجوة تحت الأنقاض بعد انهيار مبنى. كيف ترسل إشارة للمنقذين؟</string>
+    <string name="quiz_q3_opt_a">الصراخ المستمر بأعلى صوت ممكن.</string>
+    <string name="quiz_q3_opt_b">محاولة دفع الكتل الخرسانية الثقيلة بنفسك.</string>
+    <string name="quiz_q3_opt_c">تغطية الفم بقماش، وتوفير الأكسجين، والطرق بإيقاع على الأنابيب وإبقاء إشارة BLE تعمل.</string>
+    <string name="quiz_q3_expl">صحيح! الصراخ يسبب استنشاق الغبار والإجهاد السريع. الطرق على الأنابيب ينقل الصوت بفعالية عبر الخرسانة.</string>
+
+    <string name="quiz_q4_scenario">أنت في الطابق الثامن في مبنى مكاتب أثناء اهتزاز قوي. ماذا تفعل؟</string>
+    <string name="quiz_q4_opt_a">الركض فورًا نحو المصعد للنزول إلى الأرضي.</string>
+    <string name="quiz_q4_opt_b">الانبطاح والاحتماء والتمسك تحت مكتب متين بعيدًا عن النوافذ.</string>
+    <string name="quiz_q4_opt_c">الوقوف تحت إطار الباب.</string>
+    <string name="quiz_q4_expl">صحيح! المصاعد تتعطل وإطارات الأبواب الحديثة لا توفر حماية إضافية. احتمِ تحت مكتب متين وتمسّك به.</string>
+
+    <string name="quiz_q5_scenario">شعرت باهتزاز شديد بالقرب من شاطئ البحر. ما هي القاعدة الذهبية؟</string>
+    <string name="quiz_q5_opt_a">التوجه فورًا نحو اليابسة أو الأماكن المرتفعة (30م+) دون انتظار صفارات الإنذار.</string>
+    <string name="quiz_q5_opt_b">الانتظار على الشاطئ لسماع نداءات الإخلاء عبر مكبرات الصوت.</string>
+    <string name="quiz_q5_opt_c">التقاط صور لتراجع مياه البحر.</string>
+    <string name="quiz_q5_expl">صحيح! الاهتزاز الشديد قرب الساحل هو إنذار تسونامي طبيعي. لا تنتظر وتوجه فورًا للمرتفعات.</string>
 </resources>
