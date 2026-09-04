@@ -147,4 +147,9 @@
     <string name="status_injured">BIRÎNDAR</string>
     <string name="status_ok">ELEQE / BAŞ</string>
     <string name="radar_beacon_entry">• %1$s%2$s (Batarî: %3$d%%)</string>
+    <string name="radar_summary_header">%1$d Nîşan li nêzîk</string>
+    <string name="radar_triage_count">🔴 %1$d Bin Avhiyê · 🟡 %2$d Birîndar · 🟢 %3$d Baş</string>
+    <string name="btn_audio_mute">🔊 Dengê Peilandinê: VEKIRÎ</string>
+    <string name="btn_audio_unmute">🔇 Dengê Peilandinê: GIRTÎ</string>
+    <string name="radar_nearest_target">SOS-a herî nêzîk: %1$s (~%2$.1f m)</string>
 </resources>

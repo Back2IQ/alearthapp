@@ -205,4 +205,9 @@
     <string name="status_injured">YARALI</string>
     <string name="status_ok">GÜVENDE / İYİ</string>
     <string name="radar_beacon_entry">• %1$s%2$s (Batarya: %3$d%%)</string>
+    <string name="radar_summary_header">Menzilde %1$d Sinyal</string>
+    <string name="radar_triage_count">🔴 %1$d Enkaz Altında · 🟡 %2$d Yaralı · 🟢 %3$d Güvende</string>
+    <string name="btn_audio_mute">🔊 Sesli Yön Bulma: AÇIK</string>
+    <string name="btn_audio_unmute">🔇 Sesli Yön Bulma: KAPALI</string>
+    <string name="radar_nearest_target">En Yakın SOS: %1$s (~%2$.1f m)</string>
 </resources>

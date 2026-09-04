@@ -85,12 +85,59 @@
                 app:strokeColor="@android:color/white"
                 android:text="@string/btn_rescue_radar" />
 
+            <!-- Visual Rescue Radar Canvas -->
+            <app.alearthapp.RescueRadarView
+                android:id="@+id/rescueRadarView"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+
+            <!-- Radar Triage & Nearest Target Summary -->
+            <LinearLayout
+                android:id="@+id/radarSummaryContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRadarTriageSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#54E6CD"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvRadarNearestTarget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textColor="#FF1744"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnAudioMute"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#B0FFFFFF"
+                    android:text="@string/btn_audio_mute" />
+            </LinearLayout>
+
             <!-- Radar Results Area -->
             <TextView
                 android:id="@+id/tvRadarResults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:padding="12dp"
                 android:background="#20FFFFFF"
                 android:visibility="gone"

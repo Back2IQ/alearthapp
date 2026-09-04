@@ -247,4 +247,9 @@
     <string name="status_injured">INJURED</string>
     <string name="status_ok">SAFE / OK</string>
     <string name="radar_beacon_entry">• %1$s%2$s (Batt: %3$d%%)</string>
+    <string name="radar_summary_header">%1$d Beacons in range</string>
+    <string name="radar_triage_count">🔴 %1$d Trapped · 🟡 %2$d Injured · 🟢 %3$d Safe</string>
+    <string name="btn_audio_mute">🔊 Acoustic Ping: ON</string>
+    <string name="btn_audio_unmute">🔇 Acoustic Ping: MUTED</string>
+    <string name="radar_nearest_target">Nearest SOS: %1$s (~%2$.1f m)</string>
 </resources>

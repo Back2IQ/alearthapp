@@ -35,6 +35,7 @@ class BeaconActivity : AppCompatActivity() {
     private lateinit var scope: CoroutineScope
     private var strobe: Strobe? = null
     private var isRadarActive = false
+    private val proximityAudio = RescueProximityAudio()
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(newBase.withAppLocale())
@@ -74,6 +75,12 @@ class BeaconActivity : AppCompatActivity() {
             toggleRescueRadar()
         }
 
+        findViewById<Button>(R.id.btnAudioMute).setOnClickListener {
+            proximityAudio.isMuted = !proximityAudio.isMuted
+            val btn = findViewById<Button>(R.id.btnAudioMute)
+            btn.setText(if (proximityAudio.isMuted) R.string.btn_audio_unmute else R.string.btn_audio_mute)
+        }
+
         when (intent.getStringExtra(EXTRA_MODE)) {
             MODE_BEACON -> renderBeacon()
             else -> renderAsk()
@@ -93,6 +100,8 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.beaconTitle).setText(R.string.beacon_ask_title)
         findViewById<LinearLayout>(R.id.bleStatusCard).visibility = View.GONE
         findViewById<Button>(R.id.btnRescueRadar).visibility = View.GONE
+        findViewById<View>(R.id.rescueRadarView).visibility = View.GONE
+        findViewById<View>(R.id.radarSummaryContainer).visibility = View.GONE
         findViewById<TextView>(R.id.tvRadarResults).visibility = View.GONE
         findViewById<Button>(R.id.btnSafe).visibility = View.VISIBLE
         findViewById<Button>(R.id.btnHelp).visibility = View.VISIBLE
@@ -132,23 +141,58 @@ class BeaconActivity : AppCompatActivity() {
     private fun toggleRescueRadar() {
         val tvResults = findViewById<TextView>(R.id.tvRadarResults)
         val btnRadar = findViewById<Button>(R.id.btnRescueRadar)
+        val radarView = findViewById<RescueRadarView>(R.id.rescueRadarView)
+        val summaryContainer = findViewById<View>(R.id.radarSummaryContainer)
+        val tvTriage = findViewById<TextView>(R.id.tvRadarTriageSummary)
+        val tvNearest = findViewById<TextView>(R.id.tvRadarNearestTarget)
 
         if (isRadarActive) {
             BleRescueScanner.stopScan()
+            proximityAudio.stop()
             isRadarActive = false
             btnRadar.setText(R.string.btn_rescue_radar)
+            radarView.visibility = View.GONE
+            summaryContainer.visibility = View.GONE
             tvResults.visibility = View.GONE
         } else {
             isRadarActive = true
             btnRadar.setText(R.string.btn_stop_radar)
+            radarView.visibility = View.VISIBLE
+            summaryContainer.visibility = View.VISIBLE
             tvResults.visibility = View.VISIBLE
             tvResults.setText(R.string.radar_searching)
+            tvTriage.text = ""
+            tvNearest.text = ""
+            proximityAudio.start()
 
             BleRescueScanner.startScan(this) { list ->
                 runOnUiThread {
+                    radarView.setBeacons(list)
+                    proximityAudio.updateBeacons(list)
+
                     if (list.isEmpty()) {
                         tvResults.setText(R.string.radar_no_devices)
+                        tvTriage.text = ""
+                        tvNearest.text = ""
                     } else {
+                        val trappedCount = list.count { it.message.status == BleSosStatus.TRAPPED }
+                        val injuredCount = list.count { it.message.status == BleSosStatus.INJURED }
+                        val okCount = list.count { it.message.status == BleSosStatus.OK }
+
+                        tvTriage.text = getString(R.string.radar_triage_count, trappedCount, injuredCount, okCount)
+
+                        val nearestPriority = RescueProximityAudio.selectPriorityBeacon(list)
+                        if (nearestPriority != null) {
+                            val statusStr = when (nearestPriority.message.status) {
+                                BleSosStatus.TRAPPED -> getString(R.string.status_trapped)
+                                BleSosStatus.INJURED -> getString(R.string.status_injured)
+                                BleSosStatus.OK -> getString(R.string.status_ok)
+                            }
+                            tvNearest.text = getString(R.string.radar_nearest_target, statusStr, nearestPriority.estimatedDistanceMeters)
+                        } else {
+                            tvNearest.text = ""
+                        }
+
                         val sb = StringBuilder()
                         sb.append(getString(R.string.radar_found_header, list.size)).append("\n\n")
                         for (item in list) {
@@ -177,6 +221,7 @@ class BeaconActivity : AppCompatActivity() {
     private fun onSafe() {
         if (isRadarActive) {
             BleRescueScanner.stopScan()
+            proximityAudio.stop()
             isRadarActive = false
         }
         strobe?.stopAll()
@@ -187,6 +232,8 @@ class BeaconActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.beaconCountdown).text = ""
         findViewById<LinearLayout>(R.id.bleStatusCard).visibility = View.GONE
         findViewById<Button>(R.id.btnRescueRadar).visibility = View.GONE
+        findViewById<View>(R.id.rescueRadarView).visibility = View.GONE
+        findViewById<View>(R.id.radarSummaryContainer).visibility = View.GONE
         findViewById<TextView>(R.id.tvRadarResults).visibility = View.GONE
         findViewById<Button>(R.id.btnSafe).visibility = View.GONE
         findViewById<Button>(R.id.btnHelp).visibility = View.GONE
@@ -219,7 +266,11 @@ class BeaconActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if (isRadarActive) BleRescueScanner.stopScan()
+        if (isRadarActive) {
+            BleRescueScanner.stopScan()
+            proximityAudio.stop()
+        }
+        proximityAudio.release()
         strobe?.stopAll()
         scope.cancel()
         super.onDestroy()

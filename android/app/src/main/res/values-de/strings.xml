@@ -244,4 +244,9 @@
     <string name="status_injured">VERLETZT</string>
     <string name="status_ok">SICHER / OK</string>
     <string name="radar_beacon_entry">• %1$s%2$s (Akku: %3$d%%)</string>
+    <string name="radar_summary_header">%1$d Signale in Reichweite</string>
+    <string name="radar_triage_count">🔴 %1$d Verschüttet · 🟡 %2$d Verletzt · 🟢 %3$d Sicher</string>
+    <string name="btn_audio_mute">🔊 Peilton: AN</string>
+    <string name="btn_audio_unmute">🔇 Peilton: STUMM</string>
+    <string name="radar_nearest_target">Nächster Notruf: %1$s (~%2$.1f m)</string>
 </resources>

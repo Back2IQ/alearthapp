@@ -147,4 +147,9 @@
     <string name="status_injured">مصاب</string>
     <string name="status_ok">آمن / بخير</string>
     <string name="radar_beacon_entry">• %1$s%2$s (البطارية: %3$d%%)</string>
+    <string name="radar_summary_header">%1$d إشارة في النطاق</string>
+    <string name="radar_triage_count">🔴 %1$d تحت الأنقاض · 🟡 %2$d مصاب · 🟢 %3$d آمن</string>
+    <string name="btn_audio_mute">🔊 إشارة التوجيه الصوتية: مفعّلة</string>
+    <string name="btn_audio_unmute">🔇 إشارة التوجيه الصوتية: مكتومة</string>
+    <string name="radar_nearest_target">أقرب نداء استغاثة: %1$s (~%2$.1f م)</string>
 </resources>
