@@ -1,4 +1,4 @@
-package app.alearthapp
+﻿package app.alearthapp
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -19,7 +19,7 @@ class BlePayloadTest {
         )
 
         val encoded = BleSosMessage.encode(original)
-        assertEquals(BleSosMessage.PAYLOAD_SIZE, encoded.size)
+        assertEquals(BleSosMessage.EXTENDED_PAYLOAD_SIZE, encoded.size)
 
         val decoded = BleSosMessage.decode(encoded)
         assertNotNull(decoded)
@@ -32,7 +32,7 @@ class BlePayloadTest {
 
     @Test
     fun testInvalidMagicReturnsNull() {
-        val bytes = ByteArray(BleSosMessage.PAYLOAD_SIZE) { 0 }
+        val bytes = ByteArray(BleSosMessage.EXTENDED_PAYLOAD_SIZE) { 0 }
         val decoded = BleSosMessage.decode(bytes)
         assertNull(decoded)
     }
@@ -46,11 +46,9 @@ class BlePayloadTest {
 
     @Test
     fun testDistanceEstimation() {
-        // Starkes Signal (-50 dBm) -> Nahbereich (< 2m)
         val near = BleSosMessage.estimateDistanceMeters(-50, -59)
         assertTrue(near in 0.1..2.5)
 
-        // Schwaches Signal (-85 dBm) -> Weiter entfernt
         val far = BleSosMessage.estimateDistanceMeters(-85, -59)
         assertTrue(far > near)
     }

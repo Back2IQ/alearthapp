@@ -27,7 +27,8 @@ object BleEmergencyBeacon {
         context: Context,
         status: BleSosStatus = BleSosStatus.TRAPPED,
         lat: Double = 0.0,
-        lon: Double = 0.0
+        lon: Double = 0.0,
+        isUserResponsive: Boolean = false
     ) {
         if (isBroadcasting) return
 
@@ -47,12 +48,35 @@ object BleEmergencyBeacon {
         val batteryMgr = context.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
         val batteryPct = batteryMgr?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: 50
 
+        // Profil-Daten optional aus dem Notfalltresor laden
+        val profile = EmergencyVaultManager.loadProfile(context)
+        val triage = if (profile.broadcastMedicalData) {
+            val initials = if (profile.fullName.isNotBlank()) {
+                val parts = profile.fullName.trim().split("\\s+".toRegex())
+                if (parts.size >= 2) "${parts[0].first()}.${parts[1].first()}." else profile.fullName.take(4)
+            } else ""
+
+            BleTriageProfile(
+                bloodType = BleBloodType.fromString(profile.bloodType),
+                gender = BleGender.fromString(profile.gender),
+                age = profile.age,
+                isUserResponsive = isUserResponsive,
+                hasInsulinDiabetes = profile.chronicDiseases.contains("insulin", ignoreCase = true) || profile.chronicDiseases.contains("diabetes", ignoreCase = true),
+                hasHeartCondition = profile.chronicDiseases.contains("herz", ignoreCase = true) || profile.chronicDiseases.contains("heart", ignoreCase = true),
+                hasRespiratoryRisk = profile.chronicDiseases.contains("asthma", ignoreCase = true) || profile.chronicDiseases.contains("lunge", ignoreCase = true),
+                nameInitials = initials
+            )
+        } else {
+            BleTriageProfile(isUserResponsive = isUserResponsive)
+        }
+
         val msg = BleSosMessage(
             status = status,
             batteryPercent = batteryPct,
             timestampSec = System.currentTimeMillis() / 1000L,
             coarseLat = lat.toFloat(),
-            coarseLon = lon.toFloat()
+            coarseLon = lon.toFloat(),
+            triage = triage
         )
         val payload = BleSosMessage.encode(msg)
 

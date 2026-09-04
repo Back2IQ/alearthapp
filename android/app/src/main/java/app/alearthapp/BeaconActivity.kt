@@ -205,12 +205,30 @@ class BeaconActivity : AppCompatActivity() {
                             val distStr = if (item.estimatedDistanceMeters > 0) {
                                 String.format(Locale.US, " · ~%.1f m", item.estimatedDistanceMeters)
                             } else ""
+
+                            val t = item.message.triage
+                            val identityDetails = StringBuilder()
+                            if (t.nameInitials.isNotBlank()) identityDetails.append(" [${t.nameInitials}]")
+                            if (t.gender != BleGender.UNKNOWN) identityDetails.append(" ${t.gender.label}")
+                            if (t.age > 0) identityDetails.append(" ${t.age}y")
+                            if (t.bloodType != BleBloodType.UNKNOWN) identityDetails.append(" (${t.bloodType.label})")
+
+                            val medFlags = mutableListOf<String>()
+                            if (t.isUserResponsive) medFlags.add("👤 ACTIVE") else medFlags.add("⚠️ UNRESPONSIVE")
+                            if (t.hasInsulinDiabetes) medFlags.add("💉 INSULIN")
+                            if (t.hasHeartCondition) medFlags.add("🫀 HEART")
+                            if (t.hasRespiratoryRisk) medFlags.add("🫁 ASTHMA")
+
                             sb.append(getString(
                                 R.string.radar_beacon_entry,
                                 statusText,
-                                distStr,
+                                "$distStr$identityDetails",
                                 item.message.batteryPercent
                             )).append("\n")
+
+                            if (medFlags.isNotEmpty()) {
+                                sb.append("   └─ ").append(medFlags.joinToString(" · ")).append("\n")
+                            }
                         }
                         tvResults.text = sb.toString().trimEnd()
                     }

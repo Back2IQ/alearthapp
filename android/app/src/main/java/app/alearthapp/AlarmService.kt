@@ -80,7 +80,7 @@ class AlarmService : Service() {
                 intent.getBooleanExtra(EXTRA_TEST, false)
             )
             ACTION_USER_SAFE -> { safety.onUserSafe(); enterWatch() }
-            ACTION_USER_HELP -> { safety.onUserHelp(); enterBeacon() }
+            ACTION_USER_HELP -> { safety.onUserHelp(); enterBeacon(isUserResponsive = true) }
             ACTION_STOP -> stopEverything()
         }
         return START_STICKY
@@ -103,7 +103,10 @@ class AlarmService : Service() {
             launchBeaconAsk()
             delay(config.deadmanMillis)
             if (!isActive) return@launch
-            if (safety.phase == SafetyPhase.ASKING) { safety.onCountdownElapsed(); enterBeacon() }
+            if (safety.phase == SafetyPhase.ASKING) {
+                safety.onCountdownElapsed()
+                enterBeacon(isUserResponsive = false) // Deadman-Timeout -> Opfer hat nicht reagiert
+            }
         }
     }
 
@@ -164,10 +167,10 @@ class AlarmService : Service() {
         androidx.core.app.NotificationManagerCompat.from(this).cancel(ALARM_FSI_NOTIF_ID)
     }
 
-    private fun enterBeacon() {
+    private fun enterBeacon(isUserResponsive: Boolean = false) {
         updateNotification(getString(R.string.svc_beacon))
         if (Prefs.signalWhistle && !isTestChain) startWhistle()
-        BleEmergencyBeacon.start(this, BleSosStatus.TRAPPED)
+        BleEmergencyBeacon.start(this, BleSosStatus.TRAPPED, isUserResponsive = isUserResponsive)
         val fsi = PendingIntent.getActivity(
             this, 0,
             Intent(this, BeaconActivity::class.java)

@@ -11,30 +11,42 @@ import javax.crypto.spec.SecretKeySpec
 import org.json.JSONObject
 
 data class EmergencyProfile(
+    val fullName: String = "",
+    val age: Int = 0,
+    val gender: String = "",
     val bloodType: String = "",
     val chronicDiseases: String = "",
     val emergencyMedications: String = "",
     val allergies: String = "",
     val emergencyContactsSummary: String = "",
-    val passportOrIdNumber: String = ""
+    val passportOrIdNumber: String = "",
+    val broadcastMedicalData: Boolean = true
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
+        put("fullName", fullName)
+        put("age", age)
+        put("gender", gender)
         put("bloodType", bloodType)
         put("chronicDiseases", chronicDiseases)
         put("emergencyMedications", emergencyMedications)
         put("allergies", allergies)
         put("emergencyContactsSummary", emergencyContactsSummary)
         put("passportOrIdNumber", passportOrIdNumber)
+        put("broadcastMedicalData", broadcastMedicalData)
     }
 
     companion object {
         fun fromJson(json: JSONObject): EmergencyProfile = EmergencyProfile(
+            fullName = json.optString("fullName", ""),
+            age = json.optInt("age", 0),
+            gender = json.optString("gender", ""),
             bloodType = json.optString("bloodType", ""),
             chronicDiseases = json.optString("chronicDiseases", ""),
             emergencyMedications = json.optString("emergencyMedications", ""),
             allergies = json.optString("allergies", ""),
             emergencyContactsSummary = json.optString("emergencyContactsSummary", ""),
-            passportOrIdNumber = json.optString("passportOrIdNumber", "")
+            passportOrIdNumber = json.optString("passportOrIdNumber", ""),
+            broadcastMedicalData = json.optBoolean("broadcastMedicalData", true)
         )
     }
 }
