@@ -338,4 +338,18 @@ class WebBridge(private val activity: Activity) {
             true
         }.getOrDefault(false)
     }
+
+    /** Teilt den Einladungs-Link für das Guardian Circle Familien-Sicherheitsnetzwerk. */
+    @JavascriptInterface
+    fun shareGuardianInvite(inviteCode: String) {
+        activity.runOnUiThread {
+            val inviteUrl = "https://back2iq.com/alert2iq/guardian?invite=$inviteCode"
+            val text = "🛡️ Tritt meinem Alert2IQ Notfall-Familiennetzwerk bei: $inviteUrl"
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+            runCatching { activity.startActivity(Intent.createChooser(intent, "Guardian Circle Einladung teilen")) }
+        }
+    }
 }

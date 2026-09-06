@@ -475,7 +475,47 @@
   <!-- LOCATION -->
   <div class="panel">
     <h2 id="locTitle">Your location</h2>
-    <div class="loc-actions">
+    
+  <!-- GUARDIAN CIRCLE (FAMILY SAFETY NETWORK) -->
+  <div class="panel" id="guardianCirclePanel" style="margin-top:14px;">
+    <h2><span id="lblGuardianCircleTitle">🛡️ Guardian Circle — Familien-Sicherheitsnetzwerk</span></h2>
+    <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px;" id="lblGuardianCircleDesc">
+      Lade deine Familie & engen Kontakte ein. Im Ernstfall siehst du sofort auf 1 Blick, wer in Sicherheit ist.
+    </p>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(84,230,205,0.08); border:1px solid rgba(84,230,205,0.25); border-radius:10px; margin-bottom:12px;">
+      <div>
+        <div style="font-family:var(--font-display); font-weight:700; font-size:0.9rem;" id="lblCircleName">Familie Kiran</div>
+        <div style="font-size:0.72rem; color:var(--muted);" id="lblCircleCode">Code: <strong id="valCircleCode" style="color:var(--calm);">BK2IQ-9A8F</strong></div>
+      </div>
+      <button class="btn accent small" id="btnInviteGuardian">📲 <span id="lblInviteBtn">Einladen</span></button>
+    </div>
+
+    <div id="guardianMemberList">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.82rem;">
+        <span><strong>Du</strong> (Lokales Gerät)</span>
+        <span class="expiry-badge ok">🟢 In Sicherheit</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.82rem;">
+        <span>Mama (+49170***)</span>
+        <span class="expiry-badge soon">🟡 Ausstehend</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- B2B & CAP V1.2 ENTERPRISE ECOSYSTEM PANEL (Developers / Industrial Automation) -->
+  <div class="panel" id="enterpriseCapPanel" style="margin-top:14px;">
+    <h2><span id="lblCapTitle">🏢 Enterprise & Government Interface (OASIS CAP v1.2)</span></h2>
+    <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px;" id="lblCapDesc">
+      Schnittstellen für Katastrophenschutz-Behörden (AFAD/EMSC/GDACS) und Industrie-Gebäudeautomatisierung.
+    </p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <button class="btn ghost small" id="btnExportCap">📄 <span id="lblExportCap">CAP v1.2 XML/JSON</span></button>
+      <button class="btn ghost small" id="btnTestWebhook">⚡ <span id="lblTestWebhook">Industrie-Webhook</span></button>
+    </div>
+  </div>
+
+<div class="loc-actions">
       <button class="btn accent" style="flex:1" id="btnGps">📡 <span id="btnGpsText">Use my location</span></button>
     </div>
     <div class="search-box">
@@ -3654,6 +3694,7 @@ function init() {
   loadPrefs();
   $("langSelect").value = lang;
   initCityChips(); bind();
+  initGrowthAndB2BUI();
 
   initVaultUI();
   initQuizUI();
