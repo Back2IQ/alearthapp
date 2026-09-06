@@ -1,4 +1,4 @@
-﻿package app.alert2iq
+package app.alert2iq
 
 import android.content.Context
 import java.nio.charset.StandardCharsets
@@ -20,7 +20,7 @@ data class EmergencyProfile(
     val allergies: String = "",
     val emergencyContactsSummary: String = "",
     val passportOrIdNumber: String = "",
-    val broadcastMedicalData: Boolean = true
+    val broadcastMedicalData: Boolean = false
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         put("fullName", fullName)
@@ -46,7 +46,7 @@ data class EmergencyProfile(
             allergies = json.optString("allergies", ""),
             emergencyContactsSummary = json.optString("emergencyContactsSummary", ""),
             passportOrIdNumber = json.optString("passportOrIdNumber", ""),
-            broadcastMedicalData = json.optBoolean("broadcastMedicalData", true)
+            broadcastMedicalData = json.optBoolean("broadcastMedicalData", false)
         )
     }
 }
@@ -122,6 +122,19 @@ object EmergencyVaultManager {
             EmergencyProfile.fromJson(json)
         } catch (_: Exception) {
             EmergencyProfile()
+        }
+    }
+
+    /**
+     * DSGVO-konforme vollständige Löschung aller lokal gespeicherten Notfalldaten und Schlüssel.
+     */
+    fun clearProfile(context: Context): Boolean {
+        return try {
+            val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
+            prefs.edit().clear().apply()
+            true
+        } catch (_: Exception) {
+            false
         }
     }
 }
