@@ -16,7 +16,9 @@ object SeismicPolarizationFilter {
         val magnitudeG: Double,
         val dipAngleDeg: Double,
         val staLtaRatio: Double,
-        val confidenceScore: Double
+        val confidenceScore: Double,
+        val vectorEvidenceIndex: Double = 0.0,
+        val signalConsistencyScore: Double = 0.0
     )
 
     /**
@@ -32,7 +34,10 @@ object SeismicPolarizationFilter {
         ay: Double,
         az: Double,
         staLta: Double,
-        gravityNorm: Double = 9.81
+        gravityNorm: Double = 9.81,
+        reputation: Double = 1.0,
+        envNoise: Double = 0.0,
+        tSeconds: Double = 1.0
     ): VectorResult {
         if (ax.isNaN() || ay.isNaN() || az.isNaN() || staLta.isNaN()) {
             return VectorResult(
@@ -40,7 +45,9 @@ object SeismicPolarizationFilter {
                 magnitudeG = 0.0,
                 dipAngleDeg = 0.0,
                 staLtaRatio = 0.0,
-                confidenceScore = 0.0
+                confidenceScore = 0.0,
+                vectorEvidenceIndex = 0.0,
+                signalConsistencyScore = 0.0
             )
         }
 
@@ -51,7 +58,9 @@ object SeismicPolarizationFilter {
                 magnitudeG = 0.0,
                 dipAngleDeg = 0.0,
                 staLtaRatio = staLta,
-                confidenceScore = 0.0
+                confidenceScore = 0.0,
+                vectorEvidenceIndex = 0.0,
+                signalConsistencyScore = 0.0
             )
         }
 
@@ -59,10 +68,23 @@ object SeismicPolarizationFilter {
         val cosTheta = (az / totalMag).coerceIn(-1.0, 1.0)
         val dipAngleDeg = acos(cosTheta) * (180.0 / Math.PI)
 
-        // P-wave criteria:
-        // 1. STA/LTA ratio >= 4.5 (impulsive onset)
-        // 2. Total magnitude exceeds 0.05g above baseline
-        // 3. Dip angle reveals strong vertical component (dip angle < 45 deg or > 135 deg relative to Z-axis)
+        // Vertical-motion compatibility indicator d in {0.0, 1.0} (theta >= 15 deg)
+        val thetaRad = Math.asin((Math.abs(az) / totalMag).coerceAtMost(1.0))
+        val dVertical = if (thetaRad >= (Math.PI / 12.0)) 1.0 else 0.0
+
+        // Degree of polarization p in [0.0, 1.0]
+        val pPolarization = (Math.abs(az) / totalMag).coerceIn(0.0, 1.0)
+
+        // Normalized STA/LTA ratio s_n in [0.0, 1.0]
+        val sNorm = ((staLta - 1.5) / 8.5).coerceIn(0.0, 1.0)
+
+        // Vector Evidence Index S_vec = d * p * s_n in [0.0, 1.0]
+        val sVec = dVertical * pPolarization * sNorm
+
+        // Signal Consistency Score S_cons = clamp((S_vec - 0.2) * R^2 / ((1 + N_env) * T), 0.0, 1.0)
+        val sConsRaw = ((sVec - 0.2) * (reputation * reputation)) / ((1.0 + envNoise.coerceAtLeast(0.0)) * tSeconds.coerceAtLeast(0.1))
+        val sCons = sConsRaw.coerceIn(0.0, 1.0)
+
         val isVerticalImpulse = dipAngleDeg <= 45.0 || dipAngleDeg >= 135.0
         val isImpulsive = staLta >= 4.5
         val netMagG = (totalMag - gravityNorm).coerceAtLeast(0.0) / gravityNorm
@@ -81,7 +103,9 @@ object SeismicPolarizationFilter {
             magnitudeG = netMagG,
             dipAngleDeg = dipAngleDeg,
             staLtaRatio = staLta,
-            confidenceScore = confidenceScore
+            confidenceScore = confidenceScore,
+            vectorEvidenceIndex = sVec,
+            signalConsistencyScore = sCons
         )
     }
 }

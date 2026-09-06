@@ -31,3 +31,14 @@ class DensityTracker:
                 del devs[dev]
             if not devs:
                 del self._last[cell]
+
+    def required_nodes(self, cell: str, now_ms: int, rho_urban: float = 500.0, n_urban: int = 15) -> int:
+        """Calculates Voronoi-adaptive required node count N_req(rho) = max(3, floor(N_urban * (rho/rho_urban)^0.5))."""
+        import math
+        current_devs = self.nu(cell, now_ms)
+        if current_devs <= 0:
+            return 3
+        # Estimate local density rho in nodes per cell area (approx 4 km^2 for 2km x 2km grid)
+        rho = current_devs / 4.0
+        scaled = n_urban * math.sqrt(max(0.001, rho / rho_urban))
+        return max(3, math.floor(scaled))
