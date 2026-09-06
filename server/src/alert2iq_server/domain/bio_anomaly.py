@@ -46,6 +46,36 @@ class BioAnomalyClusterEngine:
         cutoff = now - self.time_window_sec
         self.reports = [r for r in self.reports if r.timestamp_ts >= cutoff]
 
+    def calculate_hurst_exponent(self, time_series: List[float]) -> float:
+        """Calculates Hurst Exponent H_bio = 1 - sum(log(R/S)_n) / (2 * log(n)).
+        P0c Tertiary Research Indicator: H_bio < 0.3 indicates anomalous pet agitation cluster.
+        Does NOT trigger siren gates (C0-C2), acts solely as Advanced Mode confidence booster.
+        """
+        n = len(time_series)
+        if n < 4:
+            return 0.5 # Random walk default
+        
+        mean_val = sum(time_series) / n
+        deviations = [x - mean_val for x in time_series]
+        
+        # Cumulative deviations
+        cum_dev = []
+        current_sum = 0.0
+        for dev in deviations:
+            current_sum += dev
+            cum_dev.append(current_sum)
+            
+        r_range = max(cum_dev) - min(cum_dev)
+        variance = sum(d * d for d in deviations) / n
+        s_std = math.sqrt(max(1e-6, variance))
+        
+        rs = r_range / s_std
+        if rs <= 0 or n <= 1:
+            return 0.5
+            
+        h_bio = 1.0 - (math.log(max(1.0001, rs)) / (2.0 * math.log(n)))
+        return min(1.0, max(0.0, h_bio))
+
     def evaluate_clusters(self, target_lat: float, target_lon: float, now_ts: Optional[float] = None) -> Dict:
         self.cleanup_old_reports(now_ts)
         nearby_reports = [
@@ -57,6 +87,18 @@ class BioAnomalyClusterEngine:
         cluster_size = len(unique_users)
         is_elevated = cluster_size >= self.min_reports_threshold
 
+        # Time series of report counts per 5-min bin
+        binned_counts = [0] * 6
+        if now_ts is None:
+            now_ts = time.time()
+        for r in nearby_reports:
+            age_min = (now_ts - r.timestamp_ts) / 60.0
+            bin_idx = min(5, max(0, int(age_min / 5.0)))
+            binned_counts[bin_idx] += 1
+            
+        h_bio = self.calculate_hurst_exponent(binned_counts)
+        is_anomalous = h_bio < 0.3 and is_elevated
+
         return {
             "target_lat": target_lat,
             "target_lon": target_lon,
@@ -65,5 +107,8 @@ class BioAnomalyClusterEngine:
             "unique_user_count": cluster_size,
             "threshold": self.min_reports_threshold,
             "is_elevated_attention": is_elevated,
-            "status": "ATTENTION_ELEVATED" if is_elevated else "NORMAL"
+            "h_bio_exponent": round(h_bio, 4),
+            "is_p0c_research_anomaly": is_anomalous,
+            "status": "ATTENTION_ELEVATED" if is_elevated else "NORMAL",
+            "tier": "P0c_EXPERIMENTAL"
         }
