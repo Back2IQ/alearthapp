@@ -17,6 +17,7 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     dlat = (lat2 - lat1) * r
     dlon = (lon2 - lon1) * r
     a = math.sin(dlat / 2.0) ** 2 + math.cos(la1) * math.cos(la2) * math.sin(dlon / 2.0) ** 2
+    a = min(1.0, max(0.0, a))
     return EARTH_RADIUS_KM * 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
 
 @dataclass

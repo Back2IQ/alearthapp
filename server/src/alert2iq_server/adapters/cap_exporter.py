@@ -20,7 +20,12 @@ class CapExporter:
         lat = alert_payload.get("lat", 0.0)
         lon = alert_payload.get("lon", 0.0)
         city_name = alert_payload.get("cityName", alert_payload.get("place", "Unknown Location"))
-        origin_ts = alert_payload.get("originTs", alert_payload.get("time", int(datetime.now(timezone.utc).timestamp() * 1000)))
+
+        raw_ts = alert_payload.get("originTs") or alert_payload.get("time") or (datetime.now(timezone.utc).timestamp() * 1000)
+        try:
+            origin_ts = float(raw_ts)
+        except (ValueError, TypeError):
+            origin_ts = datetime.now(timezone.utc).timestamp() * 1000.0
 
         sent_iso = datetime.fromtimestamp(origin_ts / 1000.0, timezone.utc).isoformat()
         

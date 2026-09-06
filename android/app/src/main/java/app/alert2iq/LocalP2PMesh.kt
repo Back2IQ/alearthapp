@@ -53,24 +53,27 @@ object LocalP2PMesh {
      * Unpacks a 64-byte binary alert packet.
      */
     fun unpackAlertPayload(data: ByteArray): MeshAlertPacket? {
-        if (data.size < 42) return null
-        val buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN)
-        val magic = buffer.short
-        if (magic != MESH_MAGIC) return null
+        return runCatching {
+            if (data.size < 42) return null
+            val buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN)
+            val magic = buffer.short
+            if (magic != MESH_MAGIC) return null
 
-        val geoBytes = ByteArray(8)
-        buffer.get(geoBytes)
-        val geohash = String(geoBytes, Charsets.UTF_8).trim()
+            val geoBytes = ByteArray(8)
+            buffer.get(geoBytes)
+            val geohash = String(geoBytes, Charsets.UTF_8).trim()
 
-        val magnitude = buffer.double
-        val timestampMs = buffer.long
+            val magnitude = buffer.double
+            val timestampMs = buffer.long
 
-        val devBytes = ByteArray(16)
-        buffer.get(devBytes)
-        val deviceIdHash = String(devBytes, Charsets.UTF_8).trim()
+            val devBytes = ByteArray(16)
+            buffer.get(devBytes)
+            val deviceIdHash = String(devBytes, Charsets.UTF_8).trim()
 
-        return MeshAlertPacket(geohash, magnitude, timestampMs, deviceIdHash)
+            MeshAlertPacket(geohash, magnitude, timestampMs, deviceIdHash)
+        }.getOrNull()
     }
+
 
     /**
      * Broadcasts a 64-byte alert payload to the local subnet asynchronously.

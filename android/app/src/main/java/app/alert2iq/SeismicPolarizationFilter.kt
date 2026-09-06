@@ -34,8 +34,18 @@ object SeismicPolarizationFilter {
         staLta: Double,
         gravityNorm: Double = 9.81
     ): VectorResult {
+        if (ax.isNaN() || ay.isNaN() || az.isNaN() || staLta.isNaN()) {
+            return VectorResult(
+                isPWaveVector = false,
+                magnitudeG = 0.0,
+                dipAngleDeg = 0.0,
+                staLtaRatio = 0.0,
+                confidenceScore = 0.0
+            )
+        }
+
         val totalMag = sqrt(ax * ax + ay * ay + az * az)
-        if (totalMag < 0.001) {
+        if (totalMag.isNaN() || totalMag < 0.001) {
             return VectorResult(
                 isPWaveVector = false,
                 magnitudeG = 0.0,
