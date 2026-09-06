@@ -1,6 +1,6 @@
-from tda_server.p0b.background import BackgroundModel
-from tda_server.p0b.detector import build_p0b_detector
-from tda_server.p0b.replay import generate_scenario, replay_scenario
+from alert2iq_server.p0b.background import BackgroundModel
+from alert2iq_server.p0b.detector import build_p0b_detector
+from alert2iq_server.p0b.replay import generate_scenario, replay_scenario
 
 
 def factory(nu: int):

@@ -1,8 +1,8 @@
-from tda_server.geo.cells import haversine_km
-from tda_server.p0a.detector import P0aDetector
-from tda_server.p0a.discriminate import SourceZone
-from tda_server.p0a.epic import StationPick
-from tda_server.p0a.plum import IntensityObs
+from alert2iq_server.geo.cells import haversine_km
+from alert2iq_server.p0a.detector import P0aDetector
+from alert2iq_server.p0a.discriminate import SourceZone
+from alert2iq_server.p0a.epic import StationPick
+from alert2iq_server.p0a.plum import IntensityObs
 
 ZONES = [SourceZone(36.0, 40.0, 35.0, 44.0)]
 NEAR = {"S0", "S1", "S2", "S3", "S4"}

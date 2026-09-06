@@ -1,5 +1,5 @@
-from tda_server.p0b.cluster import cluster_origin, form_cluster
-from tda_server.p0b.wavefront import CellHit
+from alert2iq_server.p0b.cluster import cluster_origin, form_cluster
+from alert2iq_server.p0b.wavefront import CellHit
 
 
 def test_largest_connected_group_wins():

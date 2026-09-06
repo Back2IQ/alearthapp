@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 
 import fakeredis.aioredis
 
-from tda_server.domain.events import SourceEvent
-from tda_server.stream.base import InMemoryStream, deserialize_source_event, serialize_source_event
-from tda_server.stream.redis_stream import RedisStream
+from alert2iq_server.domain.events import SourceEvent
+from alert2iq_server.stream.base import InMemoryStream, deserialize_source_event, serialize_source_event
+from alert2iq_server.stream.redis_stream import RedisStream
 
 
 def sample() -> SourceEvent:

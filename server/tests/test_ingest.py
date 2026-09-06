@@ -1,5 +1,5 @@
 import pytest
-from tda_server.serve.ingest import parse_ping_body, parse_trigger_body
+from alert2iq_server.serve.ingest import parse_ping_body, parse_trigger_body
 
 
 def test_parse_trigger_body_ok():
@@ -30,8 +30,8 @@ def test_parse_ping_body_ok():
     assert p.received_ms == 1755691200100
 
 
-from tda_server.p0b.gateway import AllowlistVerifier, RateLimiter, TriggerGate
-from tda_server.serve.ingest import TriggerIngestor
+from alert2iq_server.p0b.gateway import AllowlistVerifier, RateLimiter, TriggerGate
+from alert2iq_server.serve.ingest import TriggerIngestor
 
 
 def make_ingestor():
@@ -82,8 +82,8 @@ import json
 import time
 import urllib.request
 
-from tda_server.serve.ingest import start_ingest
-from tda_server.stream.base import InMemoryStream
+from alert2iq_server.serve.ingest import start_ingest
+from alert2iq_server.stream.base import InMemoryStream
 
 
 def test_start_ingest_end_to_end_localhost():

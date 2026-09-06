@@ -4,11 +4,11 @@ from datetime import datetime, timezone
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.alert.publisher import FakeTransport, Publisher
-from tda_server.domain.events import SourceEvent
-from tda_server.fusion.correlator import Correlator
-from tda_server.pipeline import run_consumer
-from tda_server.stream.base import InMemoryStream, serialize_source_event
+from alert2iq_server.alert.publisher import FakeTransport, Publisher
+from alert2iq_server.domain.events import SourceEvent
+from alert2iq_server.fusion.correlator import Correlator
+from alert2iq_server.pipeline import run_consumer
+from alert2iq_server.stream.base import InMemoryStream, serialize_source_event
 
 
 def priv_b64() -> str:

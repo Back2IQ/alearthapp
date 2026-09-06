@@ -1,6 +1,6 @@
-from tda_server.geo.cells import haversine_km
-from tda_server.p0a.associator import associate, grid_search_origin
-from tda_server.p0a.epic import StationPick
+from alert2iq_server.geo.cells import haversine_km
+from alert2iq_server.p0a.associator import associate, grid_search_origin
+from alert2iq_server.p0a.epic import StationPick
 
 
 def picks_around(origin=(39.0, 40.0), t0=1_000_000, vp=6.0):

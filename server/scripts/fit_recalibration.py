@@ -5,7 +5,7 @@ import sys
 
 import numpy as np
 
-from tda_server.p0a.recalibrate import fit_pd_mw
+from alert2iq_server.p0a.recalibrate import fit_pd_mw
 
 if __name__ == "__main__":
     rows = list(csv.DictReader(open(sys.argv[1], encoding="utf-8")))

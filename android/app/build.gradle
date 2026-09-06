@@ -13,11 +13,11 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace 'app.alearthapp'
+    namespace 'app.alert2iq'
     compileSdk 36
 
     defaultConfig {
-        applicationId 'app.alearthapp'
+        applicationId 'app.alert2iq'
         minSdk 26
         targetSdk 36
         versionCode 1

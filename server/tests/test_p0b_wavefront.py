@@ -1,6 +1,6 @@
-from tda_server.p0b.signals import detect_cell_center
-from tda_server.p0b.wavefront import CellHit, wavefront_consistent
-from tda_server.geo.cells import haversine_km
+from alert2iq_server.p0b.signals import detect_cell_center
+from alert2iq_server.p0b.wavefront import CellHit, wavefront_consistent
+from alert2iq_server.geo.cells import haversine_km
 
 
 def hit_at(cell: str, origin_cell: str, v_kms: float, t0: int) -> CellHit:

@@ -1349,7 +1349,7 @@ Vor `</resources>` einfügen:
     <string name="beacon_need_help">I need help</string>
     <string name="beacon_stop">Stop beacon</string>
     <string name="beacon_share_safe">Share “I\'m safe”</string>
-    <string name="beacon_share_text">I\'m safe. — via Turkey Disaster Alert</string>
+    <string name="beacon_share_text">I\'m safe. — via Alert2IQ</string>
 ```
 
 - [ ] **Step 5: Gate**
@@ -1501,7 +1501,7 @@ In `app/src/main/res/values-tr/strings.xml` vor `</resources>` einfügen:
     <string name="beacon_need_help">Yardıma ihtiyacım var</string>
     <string name="beacon_stop">Sinyali durdur</string>
     <string name="beacon_share_safe">“Güvendeyim”i paylaş</string>
-    <string name="beacon_share_text">Güvendeyim. — Turkey Disaster Alert ile</string>
+    <string name="beacon_share_text">Güvendeyim. — Alert2IQ ile</string>
     <string name="btn_test_beacon_chain">Sinyal zincirini test et (TEST)</string>
     <string name="test_beacon_started">TEST sinyal zinciri kuruldu — bu yalnızca bir tatbikat.</string>
     <string name="dnd_optin_explain">Uygulamanın “Rahatsız Etmeyin”de çalmasına izin ver. Bu olmadan tam DND, hayat kurtaran bir uyarıyı bile susturabilir.</string>
@@ -1532,7 +1532,7 @@ In `app/src/main/res/values-ku/strings.xml` vor `</resources>` denselben Block e
     <string name="beacon_need_help">Alîkariya min divê</string>
     <string name="beacon_stop">Sînyalê rawestîne</string>
     <string name="beacon_share_safe">“Ez ewle me” parve bike</string>
-    <string name="beacon_share_text">Ez ewle me. — bi Turkey Disaster Alert</string>
+    <string name="beacon_share_text">Ez ewle me. — bi Alert2IQ</string>
     <string name="btn_test_beacon_chain">Zincîra sînyalê biceribîne (TEST)</string>
     <string name="test_beacon_started">Zincîra sînyalê ya TEST hate amadekirin — ev tenê şêwirandin e.</string>
     <string name="dnd_optin_explain">Destûrê bide ku app di “Aciz neke” de bibe deng. Bêyî vê, DND-a temam dikare hişyariyeke jiyanparêz jî bêdeng bike.</string>
@@ -1563,7 +1563,7 @@ In `app/src/main/res/values-ar/strings.xml` vor `</resources>` denselben Block a
     <string name="beacon_need_help">أحتاج المساعدة</string>
     <string name="beacon_stop">إيقاف الإشارة</string>
     <string name="beacon_share_safe">مشاركة ”أنا بأمان“</string>
-    <string name="beacon_share_text">أنا بأمان. — عبر Turkey Disaster Alert</string>
+    <string name="beacon_share_text">أنا بأمان. — عبر Alert2IQ</string>
     <string name="btn_test_beacon_chain">اختبار سلسلة الإشارة (اختبار)</string>
     <string name="test_beacon_started">تم تجهيز سلسلة إشارة الاختبار — هذا تدريب فقط.</string>
     <string name="dnd_optin_explain">اسمح للتطبيق بإصدار صوت أثناء ”عدم الإزعاج“. بدون ذلك قد يُسكت وضع عدم الإزعاج الكامل حتى تنبيهًا منقذًا للحياة.</string>

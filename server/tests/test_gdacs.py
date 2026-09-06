@@ -6,10 +6,10 @@ from pathlib import Path
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.adapters.gdacs import parse_gdacs_feed
-from tda_server.alert.hazard_payload import build_hazard_payload
-from tda_server.alert.payload import sign_payload, verify_payload
-from tda_server.domain.hazards import (
+from alert2iq_server.adapters.gdacs import parse_gdacs_feed
+from alert2iq_server.alert.hazard_payload import build_hazard_payload
+from alert2iq_server.alert.payload import sign_payload, verify_payload
+from alert2iq_server.domain.hazards import (
     HAZARD_TYPES, HazardEvent, deserialize_hazard, hazard_confidence, serialize_hazard,
 )
 

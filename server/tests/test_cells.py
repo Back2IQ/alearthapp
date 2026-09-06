@@ -1,4 +1,4 @@
-from tda_server.geo.cells import affected_cells, alert_radius_km, cell_id, haversine_km
+from alert2iq_server.geo.cells import affected_cells, alert_radius_km, cell_id, haversine_km
 
 
 def test_haversine_istanbul_ankara():

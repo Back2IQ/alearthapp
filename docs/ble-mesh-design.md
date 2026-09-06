@@ -1,6 +1,6 @@
 # Ernstfall-BLE-Mesh — Designdokument (Stufe 2)
 
-Optionales, Ernstfall-getriggertes, signiertes BLE-Broadcast-Relay für den Android-Client von „Turkey Disaster Alert". Trägt im Katastrophenfall (Mobilfunk/Internet tot nach Starkbeben) eine winzige **signierte Alarm-** (und optional **SOS-**) Nachricht von Handy zu Handy weiter — maximal akkusparend. **Dies ist ein Entwurf, kein Code.**
+Optionales, Ernstfall-getriggertes, signiertes BLE-Broadcast-Relay für den Android-Client von „Alert2IQ". Trägt im Katastrophenfall (Mobilfunk/Internet tot nach Starkbeben) eine winzige **signierte Alarm-** (und optional **SOS-**) Nachricht von Handy zu Handy weiter — maximal akkusparend. **Dies ist ein Entwurf, kein Code.**
 
 Grundlage: die belegte Recherche (BitChat als Blueprint, Serval als Erdbeben-Präzedenz, Bridgefy/FireChat als Sicherheits-Gegenbeispiele). Kernprinzip: **kein Eigenkrypto — wir nutzen die bereits vorhandene Ed25519-Signatur wieder.**
 

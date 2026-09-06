@@ -1,10 +1,10 @@
-# Proguard / R8 Rules for AlearthApp
+# Proguard / R8 Rules for Alert2IQ
 
 # Keep WebBridge Javascript Interfaces
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
 }
--keep class app.alearthapp.WebBridge { *; }
+-keep class app.alert2iq.WebBridge { *; }
 
 # Keep osmdroid
 -keep class org.osmdroid.** { *; }
@@ -17,8 +17,8 @@
 -keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
 
 # Keep Data Models
--keep class app.alearthapp.DisasterEvent { *; }
--keep class app.alearthapp.DisasterType { *; }
--keep class app.alearthapp.AlertLevel { *; }
--keep class app.alearthapp.DisastersFilter { *; }
--keep class app.alearthapp.Eew$Tier { *; }
+-keep class app.alert2iq.DisasterEvent { *; }
+-keep class app.alert2iq.DisasterType { *; }
+-keep class app.alert2iq.AlertLevel { *; }
+-keep class app.alert2iq.DisastersFilter { *; }
+-keep class app.alert2iq.Eew$Tier { *; }

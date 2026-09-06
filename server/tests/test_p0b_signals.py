@@ -1,4 +1,4 @@
-from tda_server.p0b.signals import (
+from alert2iq_server.p0b.signals import (
     ActivePing, PhoneTrigger, coarsen_cell, detect_cell_center,
     deserialize_ping, deserialize_trigger, serialize_ping, serialize_trigger,
 )

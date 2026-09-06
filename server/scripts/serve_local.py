@@ -5,11 +5,11 @@ import os
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.p0b.gateway import AllowlistVerifier, RateLimiter, TriggerGate
-from tda_server.serve.http_proxy import start_http_proxy
-from tda_server.serve.ingest import TriggerIngestor, start_ingest
-from tda_server.serve.ws_bridge import serve
-from tda_server.stream.base import InMemoryStream
+from alert2iq_server.p0b.gateway import AllowlistVerifier, RateLimiter, TriggerGate
+from alert2iq_server.serve.http_proxy import start_http_proxy
+from alert2iq_server.serve.ingest import TriggerIngestor, start_ingest
+from alert2iq_server.serve.ws_bridge import serve
+from alert2iq_server.stream.base import InMemoryStream
 
 
 def _load_or_generate_keys() -> tuple[str, str]:

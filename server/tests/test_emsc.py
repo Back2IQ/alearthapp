@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tda_server.adapters.emsc import parse_emsc_message
+from alert2iq_server.adapters.emsc import parse_emsc_message
 
 FIX = Path(__file__).parent / "fixtures" / "emsc_create.json"
 NOW = datetime(2026, 8, 20, 12, 0, 0, tzinfo=timezone.utc)

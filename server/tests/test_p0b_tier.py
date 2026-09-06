@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
-from tda_server.alert.payload import build_payload, derive_tier
-from tda_server.domain.events import CanonicalEvent, EventState, SourceEvent
-from tda_server.fusion.correlator import Transition
+from alert2iq_server.alert.payload import build_payload, derive_tier
+from alert2iq_server.domain.events import CanonicalEvent, EventState, SourceEvent
+from alert2iq_server.fusion.correlator import Transition
 
 
 def se(source: str, mag: float) -> SourceEvent:

@@ -86,7 +86,7 @@
                 android:text="@string/btn_rescue_radar" />
 
             <!-- Visual Rescue Radar Canvas -->
-            <app.alearthapp.RescueRadarView
+            <app.alert2iq.RescueRadarView
                 android:id="@+id/rescueRadarView"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"

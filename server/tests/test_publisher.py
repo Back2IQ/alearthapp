@@ -4,10 +4,10 @@ from datetime import datetime, timezone
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.alert.payload import verify_payload
-from tda_server.alert.publisher import FakeTransport, Publisher
-from tda_server.domain.events import CanonicalEvent, SourceEvent
-from tda_server.fusion.correlator import Transition
+from alert2iq_server.alert.payload import verify_payload
+from alert2iq_server.alert.publisher import FakeTransport, Publisher
+from alert2iq_server.domain.events import CanonicalEvent, SourceEvent
+from alert2iq_server.fusion.correlator import Transition
 
 
 def keys() -> tuple[str, str]:

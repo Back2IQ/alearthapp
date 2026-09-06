@@ -1,6 +1,6 @@
 # TDA Android-Client MVP — Bau-Spezifikation
 
-Nativer Android-Client (Kotlin) für Turkey Disaster Alert. Ziel: eine **echte, installierbare Debug-APK**, die den Frühwarn-Kern für den Nutzer erlebbar macht — Alarm mit S-Wellen-Countdown, Schutzstatus, echtem Handy-Seismogramm, Nachbeben-Sequenz, Mehrsprachigkeit und Themes. Testbar **ohne Backend** über einen lokalen Testszenario-Injektor.
+Nativer Android-Client (Kotlin) für Alert2IQ. Ziel: eine **echte, installierbare Debug-APK**, die den Frühwarn-Kern für den Nutzer erlebbar macht — Alarm mit S-Wellen-Countdown, Schutzstatus, echtem Handy-Seismogramm, Nachbeben-Sequenz, Mehrsprachigkeit und Themes. Testbar **ohne Backend** über einen lokalen Testszenario-Injektor.
 
 ## Bewiesene Toolchain (exakt so verwenden — STABILER Ort, nicht Scratchpad)
 - JDK: `C:/Users/HP/.tda-toolchain/jdk-17.0.20.1+1` → `JAVA_HOME` (auch als `org.gradle.java.home` in `android/gradle.properties` gesetzt)

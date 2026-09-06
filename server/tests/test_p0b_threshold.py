@@ -1,5 +1,5 @@
 import numpy as np
-from tda_server.p0b.threshold import calibrate_threshold, gpd_fit_mom, return_level
+from alert2iq_server.p0b.threshold import calibrate_threshold, gpd_fit_mom, return_level
 
 
 def test_gpd_fit_recovers_scale_for_exponential_tail():

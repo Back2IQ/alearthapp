@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from tda_server.domain.events import EventState, SourceEvent
-from tda_server.fusion.correlator import Correlator
+from alert2iq_server.domain.events import EventState, SourceEvent
+from alert2iq_server.fusion.correlator import Correlator
 
 T0 = datetime(2026, 8, 20, 12, 0, 0, tzinfo=timezone.utc)
 

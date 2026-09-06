@@ -1,10 +1,10 @@
 import asyncio
-from tda_server.p0b.gateway import (
+from alert2iq_server.p0b.gateway import (
     AllowlistVerifier, RateLimiter, TriggerGate, run_trigger_gateway,
     evaluate_trigger,
 )
-from tda_server.p0b.signals import PhoneTrigger, deserialize_trigger
-from tda_server.stream.base import InMemoryStream
+from alert2iq_server.p0b.signals import PhoneTrigger, deserialize_trigger
+from alert2iq_server.stream.base import InMemoryStream
 
 
 def trig(dev: str, tms: int, unc: int = 50, rec: int | None = None) -> PhoneTrigger:

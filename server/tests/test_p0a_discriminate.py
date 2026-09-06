@@ -1,4 +1,4 @@
-from tda_server.p0a.discriminate import (
+from alert2iq_server.p0a.discriminate import (
     SourceZone, in_source_zone, is_blast, is_teleseism, local_time_features,
 )
 

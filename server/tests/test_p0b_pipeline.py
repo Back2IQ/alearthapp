@@ -1,13 +1,13 @@
 import asyncio
-from tda_server.fusion.correlator import Correlator, Transition
-from tda_server.p0b.background import BackgroundModel
-from tda_server.p0b.detector import P0bDetector, build_p0b_detector
-from tda_server.p0b.density import DensityTracker
-from tda_server.p0b.pipeline import run_p0b_pipeline
-from tda_server.p0b.signals import ActivePing, PhoneTrigger, serialize_ping, serialize_trigger, coarsen_cell
-from tda_server.stream.base import InMemoryStream
-from tda_server.geo.cells import haversine_km
-from tda_server.p0b.signals import detect_cell_center
+from alert2iq_server.fusion.correlator import Correlator, Transition
+from alert2iq_server.p0b.background import BackgroundModel
+from alert2iq_server.p0b.detector import P0bDetector, build_p0b_detector
+from alert2iq_server.p0b.density import DensityTracker
+from alert2iq_server.p0b.pipeline import run_p0b_pipeline
+from alert2iq_server.p0b.signals import ActivePing, PhoneTrigger, serialize_ping, serialize_trigger, coarsen_cell
+from alert2iq_server.stream.base import InMemoryStream
+from alert2iq_server.geo.cells import haversine_km
+from alert2iq_server.p0b.signals import detect_cell_center
 
 
 async def test_pipeline_emits_transition_from_trigger_burst():

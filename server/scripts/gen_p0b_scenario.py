@@ -1,7 +1,7 @@
 import json
 import sys
 
-from tda_server.p0b.replay import generate_scenario
+from alert2iq_server.p0b.replay import generate_scenario
 
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else "tests/fixtures/p0b_scenario_turkiye.json"

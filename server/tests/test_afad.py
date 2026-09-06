@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tda_server.adapters.afad import _remember_seen, parse_afad_response
+from alert2iq_server.adapters.afad import _remember_seen, parse_afad_response
 
 FIX = Path(__file__).parent / "fixtures" / "afad_filter.json"
 NOW = datetime(2026, 8, 20, 12, 0, 0, tzinfo=timezone.utc)

@@ -1,4 +1,4 @@
-from tda_server.p0b.reputation import ReputationStore, trigger_weight
+from alert2iq_server.p0b.reputation import ReputationStore, trigger_weight
 
 
 def test_new_device_starts_low():

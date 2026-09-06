@@ -1,5 +1,5 @@
-from tda_server.p0a.epic import StationPick
-from tda_server.p0a.picker import dedupe_picks
+from alert2iq_server.p0a.epic import StationPick
+from alert2iq_server.p0a.picker import dedupe_picks
 
 
 def p(st, phase, t, pd=0.5):

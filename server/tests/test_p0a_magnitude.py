@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from tda_server.p0a.magnitude import (
+from alert2iq_server.p0a.magnitude import (
     combined_magnitude, is_damaging_pd, magnitude_from_pd,
     pd_from_displacement, tauc_magnitude,
 )

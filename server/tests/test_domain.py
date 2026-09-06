@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from tda_server.domain.events import CanonicalEvent, EventState, SourceEvent
+from alert2iq_server.domain.events import CanonicalEvent, EventState, SourceEvent
 
 
 def se(source: str, mag: float, eid: str = "x1") -> SourceEvent:

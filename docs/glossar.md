@@ -1,4 +1,4 @@
-# AlearthApp — Glossar
+# Alert2IQ — Glossar
 
 Kurze, alltagstaugliche Erklärungen der Begriffe, die in der App und im Projekt vorkommen.
 Ziel: verständlich für normale Nutzer:innen, nicht für Seismolog:innen.
@@ -106,7 +106,7 @@ Manuelles Beenden/Quittieren eines Alarms.
 ## App- & Technik-Begriffe
 
 **Hybrid-App**
-AlearthApp ist eine **native** Android-App, die die gestaltete Web-Oberfläche in sich lädt
+Alert2IQ ist eine **native** Android-App, die die gestaltete Web-Oberfläche in sich lädt
 (WebView) und mit einer lebensrettenden nativen Schicht verbindet — das Beste aus beidem.
 
 **FCM (*Firebase Cloud Messaging*)**

@@ -1,6 +1,6 @@
 import numpy as np
-from tda_server.p0a import magnitude
-from tda_server.p0a.recalibrate import PdMwModel, apply_to_magnitude_module, fit_pd_mw
+from alert2iq_server.p0a import magnitude
+from alert2iq_server.p0a.recalibrate import PdMwModel, apply_to_magnitude_module, fit_pd_mw
 
 
 def test_fit_recovers_known_relation():

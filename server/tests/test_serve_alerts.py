@@ -6,8 +6,8 @@ import pytest
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.alert.payload import verify_payload
-from tda_server.serve.alerts import scenario_alerts
+from alert2iq_server.alert.payload import verify_payload
+from alert2iq_server.serve.alerts import scenario_alerts
 
 
 def _keypair() -> tuple[str, str]:

@@ -1,4 +1,4 @@
-# Plan-Landkarte — Turkey Disaster Alert (MVP)
+# Plan-Landkarte — Alert2IQ (MVP)
 
 **Zweck:** Reihenfolge, Abhängigkeiten und Zuschnitt aller Implementierungspläne, damit nicht der kleinste Teil fertig wird, während der USP (P0a) unadressiert bleibt. Spec: `../../../../UMSETZUNGSPLAN.md` (Vollrevision 4). Grundlage: Spec §8 (MVP-Umfang) + §11 (offene Entscheidungen mit Reihenfolge).
 

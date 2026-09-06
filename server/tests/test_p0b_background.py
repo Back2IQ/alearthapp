@@ -1,5 +1,5 @@
 import numpy as np
-from tda_server.p0b.background import BackgroundModel, fit_poisson
+from alert2iq_server.p0b.background import BackgroundModel, fit_poisson
 
 
 def test_fit_recovers_known_coefficients():

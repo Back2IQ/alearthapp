@@ -1,4 +1,4 @@
-# Turkey Disaster Alert (TDA) — Vollspezifikation
+# Alert2IQ (TDA) — Vollspezifikation
 
 **Stand:** 21. August 2026 · **Geltungsbereich:** die in diesem Repository vorhandene App (Server `tda/server/`, Android-Client `tda/android/`, Web-App `tda/webapp/`) samt geplanter Ausbaustufen.
 **Abgrenzung:** Diese Spezifikation enthält **keine Design- und Stilvorgaben** (keine Farben, Themes, Layouts, Typografie). Funktionale Barrierefreiheits-Anforderungen (Redundanz von Bedeutungsträgern, Vibration, TTS) sind Verhalten, kein Stil, und bleiben enthalten.

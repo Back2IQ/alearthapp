@@ -8,8 +8,8 @@ import websockets
 from cryptography.hazmat.primitives import serialization as ser
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.alert.payload import verify_payload
-from tda_server.serve.ws_bridge import start_server
+from alert2iq_server.alert.payload import verify_payload
+from alert2iq_server.serve.ws_bridge import start_server
 
 
 def _keypair() -> tuple[str, str]:

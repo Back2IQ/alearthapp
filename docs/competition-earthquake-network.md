@@ -116,15 +116,15 @@ Eine zusätzliche Firebase-Realtime-DB-Instanz `hybrid-bastion-406.firebaseio.co
 
 ---
 
-## Differenzierungs-Chancen für AlearthApp (priorisiert)
+## Differenzierungs-Chancen für Alert2IQ (priorisiert)
 
 1. **"Kein Pay-to-be-warned-first"** — als zentrales, hart kommunizierbares Ethik-Versprechen: Alarme gehen bei uns gleichzeitig an alle im Gefahrenradius, unabhängig von Abo-Stufe. Direkter, faktenbasierter Kontrast zum dokumentierten TOP-10K/TOP-100K-Prioritätssystem von EQN.
-2. **Größeres/durchgängigeres Sensornetz**: Wenn AlearthApp Crowd-Sensing nicht auf "idle + laden" beschränkt (bzw. das transparent und nutzerfreundlicher konfigurierbar macht), ist das ein direkter technischer Vorteil in der Netzdichte — ehrlich kommunizieren, inkl. eigener Akku-Trade-offs.
+2. **Größeres/durchgängigeres Sensornetz**: Wenn Alert2IQ Crowd-Sensing nicht auf "idle + laden" beschränkt (bzw. das transparent und nutzerfreundlicher konfigurierbar macht), ist das ein direkter technischer Vorteil in der Netzdichte — ehrlich kommunizieren, inkl. eigener Akku-Trade-offs.
 3. **Echte Multi-Hazard-Abdeckung + Türkei-Fokus (AFAD/Kandilli)**: EQN hat weder das eine noch (erkennbar) das andere — klare Marktlücke, besonders für den türkischen Markt.
 4. **Redundante Alarmzustellung** (mehrere Push-Kanäle / eigener Wake-Mechanismus) als Widerstandsfähigkeit gegen OEM-Battery-Killer — explizit gegen EQNs Single-Channel-FCM-Abhängigkeit positionieren.
 5. **Schlanke, fokussierte UX** ohne eingebautes Social-Network — "eine App, ein Zweck" gegen EQNs Chat/Freunde/Profile-Bloat.
 6. **Konsequente Ehrlichkeitsschicht**: über EQNs punktuelle Unsicherheitshinweise hinaus – systematische, region-basierte Fehlalarm-/Trefferquote sichtbar machen.
-7. **Gratis + werbefrei ohne Kompromiss**: EQNs Paid-Version ist zwar auch werbefrei, verlangt dafür aber zusätzlich Abo-Zahlungen für Alarmgeschwindigkeit selbst — AlearthApp kann "gratis UND schnell für alle gleich" als Alleinstellungsmerkmal beanspruchen.
+7. **Gratis + werbefrei ohne Kompromiss**: EQNs Paid-Version ist zwar auch werbefrei, verlangt dafür aber zusätzlich Abo-Zahlungen für Alarmgeschwindigkeit selbst — Alert2IQ kann "gratis UND schnell für alle gleich" als Alleinstellungsmerkmal beanspruchen.
 
 ---
 

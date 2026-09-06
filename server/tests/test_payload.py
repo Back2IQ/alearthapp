@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from tda_server.alert.payload import build_payload, canonical_bytes, sign_payload, verify_payload
-from tda_server.domain.events import CanonicalEvent, EventState, SourceEvent
-from tda_server.fusion.correlator import Transition
+from alert2iq_server.alert.payload import build_payload, canonical_bytes, sign_payload, verify_payload
+from alert2iq_server.domain.events import CanonicalEvent, EventState, SourceEvent
+from alert2iq_server.fusion.correlator import Transition
 
 
 def make_transition() -> Transition:

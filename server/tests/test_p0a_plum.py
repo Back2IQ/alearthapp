@@ -1,5 +1,5 @@
-from tda_server.geo.cells import cell_id
-from tda_server.p0a.plum import IntensityObs, plum_cells, plum_triggered
+from alert2iq_server.geo.cells import cell_id
+from alert2iq_server.p0a.plum import IntensityObs, plum_cells, plum_triggered
 
 
 def test_strong_obs_projects_to_local_cells():

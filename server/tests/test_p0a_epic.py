@@ -1,5 +1,5 @@
-from tda_server.geo.cells import haversine_km
-from tda_server.p0a.epic import StationPick, epic_alarm, travel_time_rms
+from alert2iq_server.geo.cells import haversine_km
+from alert2iq_server.p0a.epic import StationPick, epic_alarm, travel_time_rms
 
 
 def pick(st, lat, lon, origin=(39.0, 40.0), t0=1_000_000, vp=6.0, jitter_ms=0):

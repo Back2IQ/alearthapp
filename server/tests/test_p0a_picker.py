@@ -3,7 +3,7 @@ import pytest
 
 seisbench = pytest.importorskip("seisbench")
 from obspy import read
-from tda_server.p0a.picker import PhaseNetPicker
+from alert2iq_server.p0a.picker import PhaseNetPicker
 
 FIX = Path(__file__).parent / "fixtures" / "kahramanmaras_window.mseed"
 

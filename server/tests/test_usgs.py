@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tda_server.adapters.usgs import _remember_seen, parse_usgs_feed
+from alert2iq_server.adapters.usgs import _remember_seen, parse_usgs_feed
 
 FIX = Path(__file__).parent / "fixtures" / "usgs_all_hour.json"
 NOW = datetime(2026, 8, 20, 12, 0, 0, tzinfo=timezone.utc)

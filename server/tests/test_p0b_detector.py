@@ -1,7 +1,7 @@
-from tda_server.p0b.background import BackgroundModel
-from tda_server.p0b.density import DensityTracker
-from tda_server.p0b.detector import ScoreDetector, ScoreWindow
-from tda_server.p0b.signals import ActivePing
+from alert2iq_server.p0b.background import BackgroundModel
+from alert2iq_server.p0b.density import DensityTracker
+from alert2iq_server.p0b.detector import ScoreDetector, ScoreWindow
+from alert2iq_server.p0b.signals import ActivePing
 
 
 def make_density(cell: str, n: int, now: int) -> DensityTracker:
@@ -58,14 +58,14 @@ def test_score_minus_one_when_no_active_devices():
 
 
 from datetime import timezone
-from tda_server.domain.events import SourceEvent
-from tda_server.p0b.detector import P0bDetector, build_p0b_detector
-from tda_server.p0b.signals import PhoneTrigger, coarsen_cell
+from alert2iq_server.domain.events import SourceEvent
+from alert2iq_server.p0b.detector import P0bDetector, build_p0b_detector
+from alert2iq_server.p0b.signals import PhoneTrigger, coarsen_cell
 
 
 def burst_triggers(origin=(41.0, 29.0), n_cells=5, t0=100_000, v_kms=3.5):
-    from tda_server.geo.cells import haversine_km
-    from tda_server.p0b.signals import detect_cell_center
+    from alert2iq_server.geo.cells import haversine_km
+    from alert2iq_server.p0b.signals import detect_cell_center
     ocell = coarsen_cell(*origin)
     ola, olo = detect_cell_center(ocell)
     trigs = []

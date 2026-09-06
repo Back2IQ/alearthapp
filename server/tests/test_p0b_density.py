@@ -1,5 +1,5 @@
-from tda_server.p0b.density import DensityTracker
-from tda_server.p0b.signals import ActivePing
+from alert2iq_server.p0b.density import DensityTracker
+from alert2iq_server.p0b.signals import ActivePing
 
 
 def ping(dev: str, cell: str, ms: int) -> ActivePing:

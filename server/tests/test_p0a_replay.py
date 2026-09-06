@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
-from tda_server.alert.payload import derive_tier
-from tda_server.domain.events import EventState, SourceEvent
-from tda_server.fusion.correlator import Correlator
-from tda_server.geo.cells import haversine_km
-from tda_server.p0a.detector import P0aDetector
-from tda_server.p0a.discriminate import SourceZone
-from tda_server.p0a.epic import StationPick
-from tda_server.p0a.replay import replay_p0a
+from alert2iq_server.alert.payload import derive_tier
+from alert2iq_server.domain.events import EventState, SourceEvent
+from alert2iq_server.fusion.correlator import Correlator
+from alert2iq_server.geo.cells import haversine_km
+from alert2iq_server.p0a.detector import P0aDetector
+from alert2iq_server.p0a.discriminate import SourceZone
+from alert2iq_server.p0a.epic import StationPick
+from alert2iq_server.p0a.replay import replay_p0a
 
 ZONES = [SourceZone(36.0, 40.0, 35.0, 44.0)]
 NEAR = {"S0", "S1", "S2", "S3", "S4"}
