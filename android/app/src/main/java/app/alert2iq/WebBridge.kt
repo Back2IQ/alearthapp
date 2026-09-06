@@ -5,6 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.webkit.JavascriptInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 /**
@@ -352,4 +355,27 @@ class WebBridge(private val activity: Activity) {
             runCatching { activity.startActivity(Intent.createChooser(intent, "Guardian Circle Einladung teilen")) }
         }
     }
+
+    /** Evaluation des 3D Seismischen Polarisationsvektors. */
+    @JavascriptInterface
+    fun evaluatePolarizationVector(ax: Double, ay: Double, az: Double, staLta: Double): String {
+        val result = SeismicPolarizationFilter.evaluate(ax, ay, az, staLta)
+        return org.json.JSONObject().apply {
+            put("isPWaveVector", result.isPWaveVector)
+            put("magnitudeG", result.magnitudeG)
+            put("dipAngleDeg", result.dipAngleDeg)
+            put("staLtaRatio", result.staLtaRatio)
+            put("confidenceScore", result.confidenceScore)
+        }.toString()
+    }
+
+    /** Sub-2ms Lokaler P2P Multicast Subnet Ping im lokalen WLAN / LAN. */
+    @JavascriptInterface
+    fun broadcastLocalMeshPing(geohash: String, mag: Double, deviceIdHash: String): Boolean {
+        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            LocalP2PMesh.broadcastLocalAlert(geohash, mag, deviceIdHash)
+        }
+        return true
+    }
 }
+
