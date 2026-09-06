@@ -441,19 +441,517 @@
   .badge-title { font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--calm); margin:0 0 6px; }
   .badge-score { font-size:0.9rem; color:var(--muted); margin-bottom:16px; }
 
+  /* ---- Redesigned 4-Screen Header & Navigation System ---- */
+  .top-status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+  }
+  .top-status-header .hdr-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .top-status-header .hdr-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--calm);
+    box-shadow: 0 0 8px var(--calm);
+    flex: none;
+  }
+  .top-status-header .hdr-title {
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .top-status-header .hdr-sep {
+    color: var(--faint);
+  }
+  .top-status-header .hdr-grid-info {
+    color: var(--muted);
+    font-size: 0.76rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-status-header .hdr-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+  }
+  .hdr-lang-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hdr-gear-btn {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  /* Sub-navigation Pills */
+  .subnav-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .subnav-pills::-webkit-scrollbar { display: none; }
+  .subnav-pill {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .subnav-pill.active {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-color: var(--accent);
+    color: var(--text);
+    box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .subnav-pill.underline-active {
+    position: relative;
+    color: #54e6cd;
+    border-color: rgba(84, 230, 205, 0.4);
+  }
+
+  /* Screen 1 Home Cards */
+  .home-hero-header {
+    text-align: center;
+    margin: 10px 0 18px;
+  }
+  .home-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .home-date {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .card-seismic-status {
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+    box-shadow: 0 10px 25px -8px rgba(13, 71, 161, 0.5);
+    margin-bottom: 14px;
+  }
+  .card-seismic-status .status-txt {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .card-seismic-status .status-bell {
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+  }
+
+  .btn-hero-action {
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .btn-hero-action:active {
+    transform: scale(0.98);
+  }
+  .btn-safe-primary {
+    background: linear-gradient(135deg, #00b4d8, #0077b6);
+    color: #ffffff;
+    box-shadow: 0 10px 28px -8px rgba(0, 180, 216, 0.5);
+  }
+  .btn-sos-rescue {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    box-shadow: 0 10px 28px -8px rgba(245, 158, 11, 0.5);
+  }
+
+  .card-gobag-gauge {
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .gobag-gauge-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .gobag-gauge-head .left-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gobag-gauge-head .icon { font-size: 1.2rem; }
+  .gobag-gauge-head .title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .gobag-gauge-head .pct {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--calm);
+  }
+  .gobag-track-bar {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .gobag-fill-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #00b4d8, #54e6cd);
+    box-shadow: 0 0 10px rgba(84, 230, 205, 0.6);
+    transition: width 0.4s ease;
+  }
+
+  /* Activity Screen Event List */
+  .event-card-item {
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .event-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .event-card-title {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .event-pill {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .pill-c1 { background: #f59e0b; }
+  .pill-c2 { background: #ef4444; }
+  .event-grid-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .event-grid-info strong {
+    color: var(--text);
+    font-family: var(--font-display);
+  }
+
+  /* Community Voronoi & Fault Stress */
+  .fault-stress-legend {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .fault-stress-legend .lbl-stress {
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .stress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    font-family: var(--font-display);
+    color: var(--faint);
+  }
+  .stress-gradient-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #eab308, #ef4444);
+  }
+
+  /* Vault Screen Components */
+  .vault-hsm-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .vault-hsm-card .hsm-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .vault-hsm-card .hsm-icon { font-size: 1.4rem; }
+  .vault-hsm-card .hsm-title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .vault-hsm-card .lock-badge { font-size: 1.1rem; color: #f59e0b; }
+
+  .secured-doc-card {
+    padding: 14px 16px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .secured-doc-card .doc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .secured-doc-card .doc-sub { font-size: 0.76rem; color: var(--muted); }
+  .secured-doc-card .doc-skeleton {
+    width: 60%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+
+  .contacts-list-card {
+    padding: 14px 16px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .contacts-list-card .card-head {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .contact-row-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .contact-row-item:last-child { border-bottom: 0; }
+  .contact-avatar-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    flex: none;
+  }
+  .contact-meta-info { flex: 1; min-width: 0; }
+  .contact-meta-info .c-name { font-weight: 600; font-size: 0.85rem; }
+  .contact-meta-info .c-sub { font-size: 0.74rem; color: var(--muted); }
+  .contact-row-item .c-arrow { color: var(--faint); font-size: 0.9rem; }
+
+  .dnd-bypass-card {
+    padding: 16px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 14px;
+  }
+
+  .btn-loschrecht {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 14px;
+    transition: background 0.2s ease;
+  }
+  .btn-loschrecht:hover {
+    background: rgba(239, 68, 68, 0.16);
+  }
+
+  .btn-sticky-safe {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: 0;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px -6px rgba(16, 185, 129, 0.5);
+    margin-top: 10px;
+  }
+
+  /* Redesigned 4-Tab Bottom Navigation Bar */
+  .bottom-tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    background: rgba(10, 15, 24, 0.94);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .bottom-tabbar button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.12s ease;
+  }
+  .bottom-tabbar button .tab-ic {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .bottom-tabbar button[aria-selected="true"] {
+    font-weight: 700;
+  }
+  .bottom-tabbar button[data-tab="start"][aria-selected="true"] { color: #54e6cd; }
+  .bottom-tabbar button[data-tab="activity"][aria-selected="true"] { color: #22e3b0; }
+  .bottom-tabbar button[data-tab="community"][aria-selected="true"] { color: #f2bc69; }
+  .bottom-tabbar button[data-tab="vault"][aria-selected="true"] { color: #ff5245; }
 </style>
 </head>
 <body data-status="READY">
 <div class="bg-field"><div class="grid-lines"></div></div>
 
 <div class="wrap" id="startScreen">
-  <div class="brand">
+  <!-- Top Status Header Bar -->
+  <div class="top-status-header" id="topStatusHeader">
+    <div class="hdr-left">
+      <span class="hdr-dot"></span>
+      <span class="hdr-title">Alert2IQ</span>
+      <span class="hdr-sep">|</span>
+      <span class="hdr-grid-info" id="hdrLocGrid">ANTALYA (GRID #4208)</span>
+    </div>
+    <div class="hdr-right">
+      <select id="hdrLangSelect" class="hdr-lang-btn" aria-label="Language">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+        <option value="tr">TR</option>
+        <option value="fr">FR</option>
+        <option value="es">ES</option>
+        <option value="ru">RU</option>
+        <option value="ar">AR</option>
+      </select>
+      <button class="hdr-gear-btn" id="hdrSettingsBtn" aria-label="Settings">⚙</button>
+    </div>
+  </div>
+
+  <!-- Sub-navigation Pills -->
+  <div class="subnav-pills" id="subnavPills">
+    <button class="subnav-pill active" data-subtab="home" id="pillHome">HOME</button>
+    <button class="subnav-pill" data-subtab="activity" id="pillActivity">ACTIVITY</button>
+    <button class="subnav-pill" data-subtab="community" id="pillCommunity">COMMUNITY</button>
+    <button class="subnav-pill" data-subtab="biopet" id="pillBiopet">BIO-PET</button>
+  </div>
+
+  <div class="brand" style="display:none;">
       <div class="header-actions">
         <button class="hud-badge" id="btnHeaderUiMode" title="UI Mode Switcher">🟢 <span id="lblHeaderUiMode">Einfach</span></button>
         <button class="hud-badge" id="btnOpenVault" title="Encrypted Emergency Vault">🔒 <span id="lblHeaderVault">Pass</span></button>
         <button class="hud-badge" id="btnOpenQuiz" title="Survival Academy Drill">🎓 <span id="lblHeaderQuiz">Academy</span></button>
       </div>
-
 
     <div class="mark">◎</div>
     <div>
@@ -463,7 +961,44 @@
     <button class="btn icon-btn ghost settings-btn" id="btnSettings" aria-label="Settings">⚙</button>
   </div>
 
+  <!-- SCREEN 1: HOME VIEW -->
   <section class="tab-view active" data-tab="start" id="view-start">
+    <div class="home-hero-header">
+      <h1 class="home-title">Alert2IQ</h1>
+      <div class="home-date" id="homeDate">6. September 2026</div>
+    </div>
+
+    <!-- Card 1: Seismic Status -->
+    <div class="card-seismic-status" id="cardSeismicStatus">
+      <div class="status-txt" id="lblSeismicStatusNominal">SEISMIC STATUS: NOMINAL (C0 GATE)</div>
+      <div class="status-bell">🔔</div>
+    </div>
+
+    <!-- Card 2: Primary Safety Action Button -->
+    <button class="btn-hero-action btn-safe-primary" id="btnHeroSafe">
+      <span>🛡️</span>
+      <span id="lblHeroSafe">ICH BIN IN SICHERHEIT</span>
+    </button>
+
+    <!-- Card 3: SOS Rescue Action Button -->
+    <button class="btn-hero-action btn-sos-rescue" id="btnHeroSos">
+      <span>🤲</span>
+      <span id="lblHeroSos">SOS RESCUE (5s)</span>
+    </button>
+
+    <!-- Card 4: Smart Go-Bag Readiness Gauge -->
+    <div class="card-gobag-gauge" id="cardGobagGaugeHome">
+      <div class="gobag-gauge-head">
+        <div class="left-wrap">
+          <span class="icon">🎒</span>
+          <span class="title" id="lblGobagGaugeTitleHome">Smart Go-Bag Readiness Gauge</span>
+        </div>
+        <span class="pct" id="valGobagGaugePct">85%</span>
+      </div>
+      <div class="gobag-track-bar">
+        <div class="gobag-fill-bar" id="barGobagGaugeFill" style="width: 85%;"></div>
+      </div>
+    </div>
   <!-- STATUS HERO -->
   <div class="panel hero" id="hero">
     <div class="pulse"><span class="glyph" id="heroGlyph">🛡</span></div>
@@ -858,14 +1393,188 @@
     </div>
   </section>
 
-  <nav class="tabbar" id="tabbar" role="tablist">
-    <button data-tab="start" aria-selected="true"><span class="ic">⌂</span><span id="tabStart">Start</span></button>
-    <button data-tab="map" aria-selected="false"><span class="ic">◎</span><span id="tabMap">Map</span></button>
-    <button data-tab="disasters" aria-selected="false"><span class="ic">⚠</span><span id="tabDisasters">Disasters</span></button>
-    <button data-tab="network" aria-selected="false"><span class="ic">⚡</span><span id="tabNetwork">Network</span></button>
-    <button data-tab="vorsorge" aria-selected="false"><span class="ic">🎒</span><span id="tabVorsorge">Prepare</span></button>
-    <button data-tab="faq" aria-selected="false"><span class="ic">❔</span><span id="tabFaq">FAQ</span></button>
-    <button data-tab="settings" aria-selected="false"><span class="ic">⚙</span><span id="tabSettings">Settings</span></button>
+  <!-- SCREEN 2: ACTIVITY VIEW -->
+  <section class="tab-view" data-tab="activity" id="view-activity">
+    <div class="panel">
+      <h2 id="lblSeisSeedlinkTitle">SeedLink STA/LTA seismogram 📶</h2>
+      <canvas id="seisCanvasActivity" width="520" height="110" style="width:100%; height:110px; border-radius:10px; background:#071217; border:1px solid var(--border);"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2 id="lblSeismicEventsTitle">Seismic Events</h2>
+
+      <div class="event-card-item">
+        <div class="event-card-header">
+          <span class="event-card-title">Seismic Events</span>
+          <span class="event-pill pill-c1">C1</span>
+        </div>
+        <div class="event-grid-info">
+          <div>Grid Hash:<br><strong class="mono">09564298</strong></div>
+          <div>Magnitude:<br><strong class="mono">3.1</strong></div>
+          <div>Time:<br><strong class="mono">16:88.575</strong></div>
+        </div>
+        <div class="event-grid-info" style="margin-top:6px">
+          <div>Grid Hash:<br><strong class="mono">01655258</strong></div>
+          <div>Magnitude:<br><strong class="mono">5.3</strong></div>
+          <div>Time:<br><strong class="mono">16:58.379</strong></div>
+        </div>
+      </div>
+
+      <div class="event-card-item">
+        <div class="event-card-header">
+          <span class="event-card-title">Seismic Events</span>
+          <span class="event-pill pill-c1">C1</span>
+        </div>
+        <div class="event-grid-info">
+          <div>Grid Hash:<br><strong class="mono">09564256</strong></div>
+          <div>Magnitude:<br><strong class="mono">3.4</strong></div>
+          <div>Time:<br><strong class="mono">16:89.375</strong></div>
+        </div>
+        <div class="event-grid-info" style="margin-top:6px">
+          <div>Grid Hash:<br><strong class="mono">01655256</strong></div>
+          <div>Magnitude:<br><strong class="mono">5.5</strong></div>
+          <div>Time:<br><strong class="mono">16:58.379</strong></div>
+        </div>
+      </div>
+
+      <div class="event-card-item">
+        <div class="event-card-header">
+          <span class="event-card-title">Seismic Events</span>
+          <span class="event-pill pill-c2">C2</span>
+        </div>
+        <div class="event-grid-info">
+          <div>Grid Hash:<br><strong class="mono">09664256</strong></div>
+          <div>Magnitude:<br><strong class="mono">3.9</strong></div>
+          <div>Time:<br><strong class="mono">16:99.275</strong></div>
+        </div>
+        <div class="event-grid-info" style="margin-top:6px">
+          <div>Grid Hash:<br><strong class="mono">01655256</strong></div>
+          <div>Magnitude:<br><strong class="mono">5.3</strong></div>
+          <div>Time:<br><strong class="mono">16:59.293</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: COMMUNITY & BIO-PET VIEW -->
+  <section class="tab-view" data-tab="community" id="view-community">
+    <div class="panel">
+      <h2 id="lblVoronoiTitle">Voronoi Grid Overlay 🔍</h2>
+      <div class="map-wrap">
+        <div id="voronoiMap" style="width:100%; height:220px; border-radius:10px; background:#071217;"></div>
+      </div>
+      <div class="fault-stress-legend">
+        <div class="lbl-stress" id="lblTectonicFaultStress">Tektonic Fault Stress models overyed.</div>
+        <div class="stress-bar-wrap">
+          <span id="lblStressLow">Low</span>
+          <div class="stress-gradient-bar"></div>
+          <span id="lblStressHigh">High</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+        <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.1); display:grid; place-items:center; font-size:1.1rem">👤</div>
+        <div>
+          <div style="font-family:var(--font-display); font-weight:600; font-size:0.9rem" id="lblDiscussionTitle">Discussion</div>
+          <div style="font-size:0.72rem; color:var(--muted)">3m</div>
+        </div>
+      </div>
+      <p style="font-size:0.82rem; color:var(--muted); margin:0; line-height:1.4">
+        All anomaly reports that is Anomaly tnooxscaes for raotamericojurt and bir...
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2 id="lblGroupChecklistTitle">Collaborative Group Checklist</h2>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
+          <span>Smart Go-Bag Checklist</span>
+          <span style="color:#10b981; font-weight:700">✓</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
+          <span>Smart Go-Bag Checklist</span>
+          <span style="color:#10b981; font-weight:700">✓</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; padding:6px 0">
+          <span>Smart Go-Bag Checklist</span>
+          <span style="color:var(--muted)">○</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 4: SAFETY / VAULT VIEW -->
+  <section class="tab-view" data-tab="vault" id="view-vault">
+    <div class="vault-hsm-card" id="btnCardOpenVaultHsm">
+      <div class="hsm-left">
+        <span class="hsm-icon">🔐</span>
+        <span class="hsm-title" id="lblEncryptedVaultHsmTitle">Encrypted Vault (Local HSM)</span>
+      </div>
+      <span class="lock-badge">🔒</span>
+    </div>
+
+    <div class="secured-doc-card">
+      <div class="doc-head">
+        <span id="lblSecuredDocTitle">Secured Document</span>
+        <span>🔒</span>
+      </div>
+      <div class="doc-sub">Secured document</div>
+      <div class="doc-skeleton"></div>
+    </div>
+
+    <div class="contacts-list-card">
+      <div class="card-head" id="lblEmergencyContactsTitle">Emergency Contacts</div>
+      <div class="contact-row-item">
+        <div class="contact-avatar-circle">6L</div>
+        <div class="contact-meta-info">
+          <div class="c-name">Astina Brvn</div>
+          <div class="c-sub">Emergency Contact</div>
+        </div>
+        <span class="c-arrow">&gt;</span>
+      </div>
+      <div class="contact-row-item">
+        <div class="contact-avatar-circle">DR</div>
+        <div class="contact-meta-info">
+          <div class="c-name">Roberm Rudison</div>
+          <div class="c-sub">irsmissen@amloser</div>
+        </div>
+        <span class="c-arrow">&gt;</span>
+      </div>
+      <div class="contact-row-item">
+        <div class="contact-avatar-circle">DE</div>
+        <div class="contact-meta-info">
+          <div class="c-name">Robert Under</div>
+          <div class="c-sub">Emergency Contact</div>
+        </div>
+        <span class="c-arrow">&gt;</span>
+      </div>
+    </div>
+
+    <div class="dnd-bypass-card">
+      <div class="toggle-row">
+        <div>
+          <div style="font-family:var(--font-display); font-weight:600; font-size:0.88rem" id="lblDndBypassTitle">DND-Bypass Sirens</div>
+          <div style="font-size:0.75rem; color:var(--muted); margin-top:2px" id="lblDndBypassSub">Set up DND-Bypass Sirens to allow</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="vaultDndSwitch" checked><span class="slider"></span></label>
+      </div>
+      <button class="btn-loschrecht" id="btnLoschrecht">Löschrecht</button>
+    </div>
+
+    <button class="btn-sticky-safe" id="btnStickySafe">
+      <span>🛡️</span>
+      <span id="lblStickySafeText">ICH BIN IN SICHERHEIT</span>
+    </button>
+  </section>
+
+  <!-- REDESIGNED 4-TAB BOTTOM NAVBAR -->
+  <nav class="bottom-tabbar" id="tabbar" role="tablist">
+    <button data-tab="start" aria-selected="true" id="navTabStart"><span class="tab-ic">🏠</span><span id="lblTabHomeNav">Home</span></button>
+    <button data-tab="activity" aria-selected="false" id="navTabActivity"><span class="tab-ic">📈</span><span id="lblTabActivityNav">Activity</span></button>
+    <button data-tab="community" aria-selected="false" id="navTabCommunity"><span class="tab-ic">👥</span><span id="lblTabCommunityNav">Community</span></button>
+    <button data-tab="vault" aria-selected="false" id="navTabVault"><span class="tab-ic">🔒</span><span id="lblTabVaultNav">Safety/Vault</span></button>
   </nav>
 </div>
 
@@ -1348,8 +2057,51 @@ const STR = {
     prep_item_smokemask:"FFP3 smoke mask", prep_why_smokemask:"Filter wildfire smoke.",
     prep_item_fireblanket:"Fire blanket", prep_why_fireblanket:"Smother small fires.",
     prep_item_goggles:"Safety goggles", prep_why_goggles:"Protect eyes from smoke and ash.",
+
+    seismic_status_nominal: "SEISMIC STATUS: NOMINAL (C0 GATE)",
+    sos_rescue_5s: "SOS RESCUE (5s)",
+    gobag_readiness_gauge: "Smart Go-Bag Readiness Gauge",
+    nav_home: "Home",
+    nav_activity: "Activity",
+    nav_community: "Community",
+    nav_vault: "Safety/Vault",
+    seis_seedlink_title: "SeedLink STA/LTA seismogram",
+    seismic_events_title: "Seismic Events",
+    voronoi_grid_overlay: "Voronoi Grid Overlay",
+    tectonic_fault_stress: "Tektonic Fault Stress models overyed.",
+    fault_stress_low: "Low",
+    fault_stress_high: "High",
+    discussion_title: "Discussion",
+    group_checklist_title: "Collaborative Group Checklist",
+    encrypted_vault_title: "Encrypted Vault (Local HSM)",
+    secured_document: "Secured Document",
+    emergency_contacts: "Emergency Contacts",
+    dnd_bypass_sirens: "DND-Bypass Sirens",
+    dnd_bypass_sub: "Set up DND-Bypass Sirens to allow",
+    btn_loschrecht: "Löschrecht",
   },
   de: {
+    seismic_status_nominal: "SEISMISCHER STATUS: NORMAL (C0 GATE)",
+    sos_rescue_5s: "SOS RESCUE (5s)",
+    gobag_readiness_gauge: "Smart Go-Bag Readiness Gauge",
+    nav_home: "Home",
+    nav_activity: "Aktivität",
+    nav_community: "Community",
+    nav_vault: "Safety/Vault",
+    seis_seedlink_title: "SeedLink STA/LTA Seismogramm",
+    seismic_events_title: "Seismische Ereignisse",
+    voronoi_grid_overlay: "Voronoi Grid Overlay",
+    tectonic_fault_stress: "Tektonische Verwerfungs-Stressmodelle überlagert.",
+    fault_stress_low: "Niedrig",
+    fault_stress_high: "Hoch",
+    discussion_title: "Diskussion",
+    group_checklist_title: "Kollaborative Gruppen-Checkliste",
+    encrypted_vault_title: "Verschlüsselter Tresor (Lokales HSM)",
+    secured_document: "Geschütztes Dokument",
+    emergency_contacts: "Notfallkontakte",
+    dnd_bypass_sirens: "DND-Bypass Sirenen",
+    dnd_bypass_sub: "DND-Bypass Sirenen aktivieren",
+    btn_loschrecht: "Löschrecht (DSGVO)",
     lblHeaderVault: "Notfall-Pass",
     lblHeaderQuiz: "Academy",
     lblAlertSafe: "ICH BIN IN SICHERHEIT",
@@ -1504,6 +2256,27 @@ const STR = {
     prep_item_goggles:"Schutzbrille", prep_why_goggles:"Schützt die Augen vor Rauch und Asche.",
   },
   tr: {
+    seismic_status_nominal: "SİSMİK DURUM: NORMAL (C0 GATE)",
+    sos_rescue_5s: "SOS RESCUE (5s)",
+    gobag_readiness_gauge: "Akıllı Acil Çanta Hazırlık Göstergesi",
+    nav_home: "Ana Sayfa",
+    nav_activity: "Aktivite",
+    nav_community: "Topluluk",
+    nav_vault: "Güvenlik/Kasa",
+    seis_seedlink_title: "SeedLink STA/LTA Sismogramı",
+    seismic_events_title: "Sismik Olaylar",
+    voronoi_grid_overlay: "Voronoi Izgara Katmanı",
+    tectonic_fault_stress: "Tektonik Fay Stres Modelleri Katmanı.",
+    fault_stress_low: "Düşük",
+    fault_stress_high: "Yüksek",
+    discussion_title: "Tartışma",
+    group_checklist_title: "Ortak Grup Kontrol Listesi",
+    encrypted_vault_title: "Şifreli Kasa (Yerel HSM)",
+    secured_document: "Güvenli Doküman",
+    emergency_contacts: "Acil Durum Kişileri",
+    dnd_bypass_sirens: "DND-Bypass Sirenleri",
+    dnd_bypass_sub: "Sirenler için DND geçişini ayarla",
+    btn_loschrecht: "Silme Hakkı (KVKK)",
     lblHeaderVault: "Acil Kart",
     lblHeaderQuiz: "Akademi",
     lblAlertSafe: "GÜVENDİYİM",
@@ -1657,6 +2430,27 @@ const STR = {
     prep_item_goggles:"Koruyucu gözlük", prep_why_goggles:"Gözleri duman ve külden korumak için.",
   },
   ru: {
+    seismic_status_nominal: "СЕЙСМИЧЕСКИЙ СТАТУС: НОРМА (ВОРОТА C0)",
+    sos_rescue_5s: "СПАСЕНИЕ SOS (5с)",
+    gobag_readiness_gauge: "Шкала Готовности Тревожного Рюкзака",
+    nav_home: "Главная",
+    nav_activity: "Активность",
+    nav_community: "Сообщество",
+    nav_vault: "Безопасность/Сейф",
+    seis_seedlink_title: "Сейсмограмма SeedLink STA/LTA",
+    seismic_events_title: "Сейсмические события",
+    voronoi_grid_overlay: "Сетка Вороного",
+    tectonic_fault_stress: "Модели тектонического напряжения.",
+    fault_stress_low: "Низкое",
+    fault_stress_high: "Высокое",
+    discussion_title: "Обсуждение",
+    group_checklist_title: "Групповой чек-лист подготовки",
+    encrypted_vault_title: "Зашифрованный Сейф (Локальный HSM)",
+    secured_document: "Защищенный документ",
+    emergency_contacts: "Экстренные контакты",
+    dnd_bypass_sirens: "Сирены в обход ДНД",
+    dnd_bypass_sub: "Настройка сирен в обход режима Не беспокоить",
+    btn_loschrecht: "Право на стирание данных",
     lblHeaderVault: "Карточка",
     lblHeaderQuiz: "Академия",
     lblAlertSafe: "Я В БЕЗОПАСНОСТИ",
@@ -1810,6 +2604,27 @@ const STR = {
     prep_item_goggles:"Защитные очки", prep_why_goggles:"Защита глаз от дыма и пепла.",
   },
   ar: {
+    seismic_status_nominal: "الحالة الزلزالية: طبيعية (بوابة C0)",
+    sos_rescue_5s: "إنقاذ SOS (5 ث)",
+    gobag_readiness_gauge: "مقياس جاهزية حقيبة الطوارئ",
+    nav_home: "الرئيسية",
+    nav_activity: "النشاط",
+    nav_community: "المجتمع",
+    nav_vault: "الأمان/الخزنة",
+    seis_seedlink_title: "رسم SeedLink الزلزالي",
+    seismic_events_title: "الأحداث الزلزالية",
+    voronoi_grid_overlay: "شبكة فورونوي",
+    tectonic_fault_stress: "نماذج الإجهاد التكتوني.",
+    fault_stress_low: "منخفض",
+    fault_stress_high: "مرتفع",
+    discussion_title: "المناقشة",
+    group_checklist_title: "قائمة التحقق الجماعية للاستعداد",
+    encrypted_vault_title: "الخزنة المشفرة (HSM محلي)",
+    secured_document: "مستند مؤمن",
+    emergency_contacts: "جهات اتصال الطوارئ",
+    dnd_bypass_sirens: "تجاوز وضع عدم الإزعاج للتنبيهات",
+    dnd_bypass_sub: "إعداد التنبيهات لتجاوز وضع الصامت",
+    btn_loschrecht: "الحق في مسح البيانات",
     lblHeaderVault: "بطاقة الطوارئ",
     lblHeaderQuiz: "الأكاديمية",
     lblAlertSafe: "أنا في أمان",
@@ -3047,6 +3862,34 @@ function applyLanguage() {
   document.documentElement.dir = (lang==="ar") ? "rtl" : "ltr";
   const set=(id,key)=>{ const el=$(id); if(el) el.textContent=t(key); };
   set("appName","app_name"); set("tagline","tagline");
+  set("lblSeismicStatusNominal", "seismic_status_nominal");
+  set("lblHeroSafe", "lblAlertSafe");
+  set("lblHeroSos", "sos_rescue_5s");
+  set("lblGobagGaugeTitleHome", "gobag_readiness_gauge");
+  set("lblSeisSeedlinkTitle", "seis_seedlink_title");
+  set("lblSeismicEventsTitle", "seismic_events_title");
+  set("lblVoronoiTitle", "voronoi_grid_overlay");
+  set("lblTectonicFaultStress", "tectonic_fault_stress");
+  set("lblStressLow", "fault_stress_low");
+  set("lblStressHigh", "fault_stress_high");
+  set("lblDiscussionTitle", "discussion_title");
+  set("lblGroupChecklistTitle", "group_checklist_title");
+  set("lblEncryptedVaultHsmTitle", "encrypted_vault_title");
+  set("lblSecuredDocTitle", "secured_document");
+  set("lblEmergencyContactsTitle", "emergency_contacts");
+  set("lblDndBypassTitle", "dnd_bypass_sirens");
+  set("lblDndBypassSub", "dnd_bypass_sub");
+  set("btnLoschrecht", "btn_loschrecht");
+  set("lblStickySafeText", "lblAlertSafe");
+  set("lblTabHomeNav", "nav_home");
+  set("lblTabActivityNav", "nav_activity");
+  set("lblTabCommunityNav", "nav_community");
+  set("lblTabVaultNav", "nav_vault");
+  set("pillHome", "subnav_home");
+  set("pillActivity", "subnav_activity");
+  set("pillCommunity", "subnav_community");
+  set("pillBiopet", "subnav_biopet");
+  const hdrLang = $("hdrLangSelect"); if (hdrLang) hdrLang.value = lang;
   set("tabStart","tab_start"); set("tabMap","tab_map"); set("tabDisasters","tab_disasters");
   set("tabNetwork","tab_network"); set("tabVorsorge","tab_vorsorge"); set("tabFaq","tab_faq"); set("tabSettings","tab_settings"); set("startRecentTitle","start_recent");
   renderStartNearest();
@@ -3246,6 +4089,25 @@ function renderObCities() {
   });
 }
 function bind() {
+  const hdrSettings = $("hdrSettingsBtn"); if (hdrSettings) hdrSettings.onclick = () => switchTab("settings");
+  const hdrLang = $("hdrLangSelect"); if (hdrLang) hdrLang.onchange = e => { lang = e.target.value; applyLanguage(); savePrefs(); try { if (window.AndroidBridge && AndroidBridge.setLanguage) AndroidBridge.setLanguage(lang); } catch(err) {} };
+  const subnav = $("subnavPills");
+  if (subnav) {
+    subnav.onclick = e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      const sub = b.dataset.subtab;
+      if (sub === "home") switchTab("start");
+      else if (sub === "activity") switchTab("activity");
+      else if (sub === "community" || sub === "biopet") switchTab("community");
+    };
+  }
+  const btnSafe = $("btnHeroSafe"); if (btnSafe) btnSafe.onclick = () => toast("🛡️ " + t("lblAlertSafe"));
+  const btnSticky = $("btnStickySafe"); if (btnSticky) btnSticky.onclick = () => toast("🛡️ " + t("lblAlertSafe"));
+  const btnSos = $("btnHeroSos"); if (btnSos) btnSos.onclick = () => toast("🆘 " + t("lblAlertSos"));
+  const btnHsm = $("btnCardOpenVaultHsm"); if (btnHsm) btnHsm.onclick = openVaultModal;
+  const btnLosch = $("btnLoschrecht"); if (btnLosch) btnLosch.onclick = () => { if (confirm(t("vault_clear_confirm"))) clearVaultModal(); };
+
   $("btnSettings").onclick = () => switchTab("settings");
   $("btnSetDone").onclick = () => switchTab("start");
   $("tabbar").onclick = e => { const b = e.target.closest("button"); if (b) switchTab(b.dataset.tab); };
