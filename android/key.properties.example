@@ -1,0 +1,8 @@
+# Alert2IQ Production Signing Keystore Template (Back2IQ Studio)
+# Rename this file to key.properties and configure with production credentials.
+# DO NOT COMMIT key.properties TO VERSION CONTROL.
+
+storePassword=YOUR_PRODUCTION_KEYSTORE_PASSWORD
+keyPassword=YOUR_PRODUCTION_KEY_PASSWORD
+keyAlias=alert2iq-release
+storeFile=release-keystore.jks

@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  alert2iq-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alert2iq-python-server
+    restart: always
+    environment:
+      - TDA_SIGNING_KEY=${TDA_SIGNING_KEY:-}
+      - TDA_PUBLIC_KEY=${TDA_PUBLIC_KEY:-}
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    depends_on:
+      - redis
+
+  alert2iq-backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: alert2iq-node-backend
+    restart: always
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379/0
+      - FCM_SERVICE_ACCOUNT_PATH=/app/data/fcm-service-account.json
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: alert2iq-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  nginx:
+    image: nginx:alpine
+    container_name: alert2iq-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/alert2iq.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../webapp:/usr/share/nginx/html:ro
+    depends_on:
+      - alert2iq-server
+      - alert2iq-backend
+
+volumes:
+  redis-data:
