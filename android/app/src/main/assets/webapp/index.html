@@ -51,6 +51,9 @@
     -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
     min-height:100dvh; overflow-x:hidden;
   }
+  /* Simple vs Advanced UI Mode Scoping */
+  body.ui-mode-simple .advanced-only { display: none !important; }
+
   /* ambient ground wash that reacts to status accent, kept quiet */
   .bg-field { position:fixed; inset:0; z-index:-1; overflow:hidden; background:
       radial-gradient(1100px 640px at 82% -8%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%),
@@ -379,7 +382,7 @@
   /* Encrypted Emergency Vault Drawer & Modals */
   .drawer-overlay { position:fixed; inset:0; z-index:100; background:rgba(2,10,13,0.78); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none; place-items:center; padding:16px; opacity:0; transition:opacity .25s ease; }
   .drawer-overlay.show { display:grid; opacity:1; }
-  .drawer-modal { width:100%; max-width:520px; max-height:88vh; overflow-y:auto; background:var(--panel-strong); border:1px solid var(--border-strong); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); position:relative; animation:slide-up .25s cubic-bezier(0.16, 1, 0.3, 1); }
+  .drawer-modal { width:100%; max-width:520px; max-height:85vh; overflow-y:auto; background:var(--panel-strong); border:1px solid var(--border-strong); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); position:relative; animation:slide-up .25s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes slide-up { from { transform:translateY(24px); opacity:0; } to { transform:translateY(0); opacity:1; } }
   
   .vault-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:12px; }
@@ -446,9 +449,11 @@
 <div class="wrap" id="startScreen">
   <div class="brand">
       <div class="header-actions">
+        <button class="hud-badge" id="btnHeaderUiMode" title="UI Mode Switcher">🟢 <span id="lblHeaderUiMode">Einfach</span></button>
         <button class="hud-badge" id="btnOpenVault" title="Encrypted Emergency Vault">🔒 <span id="lblHeaderVault">Pass</span></button>
         <button class="hud-badge" id="btnOpenQuiz" title="Survival Academy Drill">🎓 <span id="lblHeaderQuiz">Academy</span></button>
       </div>
+
 
     <div class="mark">◎</div>
     <div>
@@ -479,7 +484,7 @@
   <!-- GUARDIAN CIRCLE (FAMILY SAFETY NETWORK) -->
   
   <!-- BIO-SEISMOLOGY & PET ANOMALY WATCH -->
-  <div class="panel" id="bioAnomalyPanel" style="margin-top:14px;">
+  <div class="panel advanced-only" id="bioAnomalyPanel" style="margin-top:14px;">
     <h2><span id="lblBioTitle">🐾 Bio-Sensorik — Haustier-Unruhe melden</span></h2>
     <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px;" id="lblBioDesc">
       Tiere spüren piezoelektrische Ionen & Infraschall Stunden vor dem Hauptbeben. Melde auffällige Unruhe deines Tieres.
@@ -492,7 +497,7 @@
   </div>
 
   <!-- FAULT-STRESS & MICRO-SWARM RADAR -->
-  <div class="panel" id="faultStressPanel" style="margin-top:14px;">
+  <div class="panel advanced-only" id="faultStressPanel" style="margin-top:14px;">
     <h2><span id="lblFaultTitle">🌋 Fault-Stress Radar — Tektonischer Spannungsmonitor</span></h2>
     <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px;" id="lblFaultDesc">
       Überwachung der Hauptverwerfungen und Vorbeben-Mikroschwärme.
@@ -544,7 +549,8 @@
   </div>
 
   <!-- B2B & CAP V1.2 ENTERPRISE ECOSYSTEM PANEL (Developers / Industrial Automation) -->
-  <div class="panel" id="enterpriseCapPanel" style="margin-top:14px;">
+  <div class="panel advanced-only" id="enterpriseCapPanel" style="margin-top:14px;">
+
     <h2><span id="lblCapTitle">🏢 Enterprise & Government Interface (OASIS CAP v1.2)</span></h2>
     <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px;" id="lblCapDesc">
       Schnittstellen für Katastrophenschutz-Behörden (AFAD/EMSC/GDACS) und Industrie-Gebäudeautomatisierung.
@@ -768,6 +774,15 @@
         <button data-theme="light" aria-pressed="false" id="thLight">Light</button>
       </div>
     </div>
+    <div class="sheet-field" style="margin-top:14px;">
+      <div class="field-label" id="lblUiModeGroupTitle">UI MODE / ANSICHT</div>
+      <div class="seg" id="segUiMode" style="margin-top:6px;">
+        <button data-ui-mode="simple" aria-pressed="true" id="btnUiModeSimple">🟢 <span id="lblModeSimple">Einfach</span></button>
+        <button data-ui-mode="advanced" aria-pressed="false" id="btnUiModeAdvanced">⚡ <span id="lblModeAdvanced">Fortgeschritten</span></button>
+      </div>
+      <p class="set-desc" id="lblUiModeDesc" style="margin-top:6px;">Übersichtliche Sicherheitsansicht für den Notfall ohne technische Komplexität.</p>
+    </div>
+
     <div class="toggle-row">
       <span id="lblCb">Colorblind-safe colors</span>
       <label class="switch"><input type="checkbox" id="cbSwitch"><span class="slider"></span></label>
@@ -877,8 +892,9 @@
     <div class="instruct" id="instruct">DROP · COVER · HOLD ON</div>
 
     <!-- Real-time 60-FPS Seismic Wavefront Visualizer -->
-    <div class="wave-canvas-wrap">
+    <div class="wave-canvas-wrap advanced-only">
       <canvas id="seismicWaveCanvas" width="480" height="200"></canvas>
+
       <div class="wave-legend">
         <span class="legend-p">P-Wave (~6.0 km/s)</span>
         <span class="legend-s">S-Wave (~3.5 km/s)</span>
@@ -1255,6 +1271,7 @@ const STR = {
     th_system:"System", th_dark:"Dark", th_light:"Light",
     lbl_cb:"Colorblind-safe colors", set_done:"Done",
     lbl_dev:"Developer / test mode", desc_dev:"Shows the live-server test panel in the Network tab.", dev_panel_note:"Test tool — triggers demo/drill alerts only.",
+    lblUiModeGroupTitle:"UI MODE / VIEW", lblModeSimple:"Simple", lblModeAdvanced:"Advanced", lblUiModeDesc:"Streamlined safety view for emergency situations without technical clutter.",
     conf_prelim:"Early warning", conf_confirmed:"Confirmed earthquake",
     alert_title:"EARTHQUAKE", now_confirmed:"Now confirmed",
     cd_unit:"seconds", cd_caption:"until shaking reaches you", cd_arrived:"Shaking is arriving",
@@ -1407,7 +1424,9 @@ const STR = {
     th_system:"System", th_dark:"Dunkel", th_light:"Hell",
     lbl_cb:"Farbenblind-sichere Farben", set_done:"Fertig",
     lbl_dev:"Entwickler-/Testmodus", desc_dev:"Zeigt das Live-Server-Testpanel im Netzwerk-Tab.", dev_panel_note:"Testwerkzeug — löst nur Demo-/Übungsalarme aus.",
+    lblUiModeGroupTitle:"UI-MODUS / ANSICHT", lblModeSimple:"Einfach", lblModeAdvanced:"Fortgeschritten", lblUiModeDesc:"Übersichtliche Sicherheitsansicht für den Notfall ohne technische Komplexität.",
     conf_prelim:"Frühwarnung", conf_confirmed:"Bestätigtes Erdbeben",
+
     alert_title:"ERDBEBEN", now_confirmed:"Jetzt bestätigt",
     cd_unit:"Sekunden", cd_caption:"bis die Erschütterung Sie erreicht", cd_arrived:"Erschütterung trifft ein",
     pwave:"Erste (schwächere) Wellen in ~%1 s",
@@ -1559,6 +1578,7 @@ const STR = {
     th_system:"Sistem", th_dark:"Koyu", th_light:"Açık",
     lbl_cb:"Renk körlüğüne uygun renkler", set_done:"Tamam",
     lbl_dev:"Geliştirici / test modu", desc_dev:"Ağ sekmesinde canlı sunucu test panelini gösterir.", dev_panel_note:"Test aracı — yalnızca demo/tatbikat alarmı üretir.",
+    lblUiModeGroupTitle:"UI MODU / GÖRÜNÜM", lblModeSimple:"Basit", lblModeAdvanced:"Gelişmiş", lblUiModeDesc:"Teknik karmaşa olmadan acil durumlar için sadeleştirilmiş güvenlik görünümü.",
     conf_prelim:"Erken uyarı", conf_confirmed:"Doğrulanmış deprem",
     alert_title:"DEPREM", now_confirmed:"Şimdi doğrulandı",
     cd_unit:"saniye", cd_caption:"sarsıntı size ulaşana kadar", cd_arrived:"Sarsıntı geliyor",
@@ -1637,6 +1657,46 @@ const STR = {
     prep_item_goggles:"Koruyucu gözlük", prep_why_goggles:"Gözleri duman ve külden korumak için.",
   },
   ru: {
+    lblHeaderVault: "Карточка",
+    lblHeaderQuiz: "Академия",
+    lblAlertSafe: "Я В БЕЗОПАСНОСТИ",
+    lblAlertSafeSub: "Уведомить контакты",
+    lblAlertSos: "SOS СИГНАЛ",
+    lblAlertSosSub: "Включить BLE маяк",
+    vaultModalTitle: "Зашифрованная карточка",
+    vaultModalDesc: "Ваши медицинские данные шифруются локально на устройстве (AES-GCM-256). Они никогда не передаются на сервер.",
+    lblVaultName: "Имя Фамилия / Инициалы",
+    lblVaultAge: "Возраст",
+    lblVaultGender: "Пол",
+    lblVaultBlood: "Группа крови",
+    lblVaultTriage: "Медицинские флаги",
+    lblFlagInsulinTitle: "Инсулин / Диабет",
+    lblFlagInsulinDesc: "Приоритет снабжения глюкозой/инсулином",
+    lblFlagHeartTitle: "Заболевание сердца",
+    lblFlagHeartDesc: "Требуется кардиомониторинг",
+    lblFlagAsthmaTitle: "Астма / Дыхание",
+    lblFlagAsthmaDesc: "Высокий риск при задымлении и пыли",
+    lblVaultOptInText: "<strong>Согласие:</strong> При катастрофе передавать группу крови и флаги по BLE спасателям в радиусе 30–50 м.",
+    lblSaveVault: "Сохранить карточку",
+    lblClearVault: "Удалить все данные",
+    quizModalTitle: "Академия выживания",
+    gobag_title: "Готовность рюкзака",
+    gobag_of: "из",
+    gobag_packed_label: "предметов собрано",
+    vault_btn_quick: "Экстренная карточка",
+    quiz_btn_quick: "Тренировка",
+    exp_expired: "Просрочено",
+    exp_soon: "Обновить",
+    exp_ok: "Действительно",
+    quiz_result: "Результат",
+    quiz_retry: "🔄 Повторить",
+    quiz_step: "Сценарий",
+    quiz_correct: "Верно!",
+    quiz_wrong: "Ошибка!",
+    vault_saved: "🔒 Данные зашифрованы AES-GCM-256!",
+    vault_cleared: "🗑️ Данные удалены.",
+    vault_clear_confirm: "Удалить все данные карточки?",
+
     app_name:"Alert2IQ", tagline:"Раннее предупреждение о землетрясениях",
     tab_start:"Начало", tab_map:"Карта", tab_disasters:"Бедствия", tab_network:"Сеть", tab_vorsorge:"Подготовка", tab_faq:"Вопросы", tab_settings:"Настройки", start_recent:"Ближайшее событие",
     hero_ready_t:"Всё спокойно", hero_ready_s:"Система активна — следит за землетрясениями",
@@ -1671,6 +1731,7 @@ const STR = {
     th_system:"Система", th_dark:"Тёмное", th_light:"Светлое",
     lbl_cb:"Цвета для дальтоников", set_done:"Готово",
     lbl_dev:"Режим разработчика", desc_dev:"Показывает тестовую панель сервера во вкладке «Сеть».", dev_panel_note:"Тестовый инструмент — только демо-сигналы.",
+    lblUiModeGroupTitle:"РЕЖИМ ИНТЕРФЕЙСА", lblModeSimple:"Простой", lblModeAdvanced:"Расширенный", lblUiModeDesc:"Упрощенный режим безопасности для экстренных ситуаций без технической сложности.",
     conf_prelim:"Раннее предупреждение", conf_confirmed:"Подтверждённое землетрясение",
     alert_title:"ЗЕМЛЕТРЯСЕНИЕ", now_confirmed:"Теперь подтверждено",
     cd_unit:"секунд", cd_caption:"до прихода тряски", cd_arrived:"Тряска приближается",
@@ -1838,6 +1899,7 @@ const STR = {
     f_minalert:"أدنى مستوى إنذار", al_all:"الكل", al_orange:"برتقالي+", al_red:"أحمر",
     kat_empty:"لا أحداث لهذا المرشح.", src_down:"المصدر %1 غير متاح — عرض الباقي.",
     lbl_dev:"وضع المطور / الاختبار", desc_dev:"يعرض لوحة اختبار الخادم في تبويب الشبكة.", dev_panel_note:"أداة اختبار — تطلق تنبيهات تجريبية فقط.",
+    lblUiModeGroupTitle:"وضع الواجهة / العرض", lblModeSimple:"بسيط", lblModeAdvanced:"متقدم", lblUiModeDesc:"عرض أمان مبسط للحالات الطارئة دون تعقيدات تقنية.",
     ob_next:"التالي", ob_finish:"تم", ob_back:"رجوع", ob_skip:"تخطٍّ",
     ob1_t:"مرحباً بك في Alert2IQ", ob1_b:"يحذرك Alert2IQ قبل ثوانٍ من وصول الاهتزاز ويعرض كل المخاطر الطبيعية القريبة منك.",
     ob2_t:"أين تريد تلقي التحذيرات؟", ob2_b:"اختر موقعك عبر GPS أو بالبحث — يمكنك تغييره في أي وقت.", ob_gps:"استخدم موقعي",
@@ -1893,7 +1955,7 @@ const State = {
   status:"READY", sequence:[], report:null,
   loc:{ name:"Adana", lat:37.00, lon:35.32, source:"preset", id:"adana" },
   places:[],   // weitere beobachtete Orte (z.B. Familienmitglieder): {id,label,name,lat,lon,source}
-  colorblind:false, theme:"system",
+  colorblind:false, theme:"system", uiMode:"simple",
   lastLaunchedAlarmId:null, activeAlert:null, network:null,
   activeTab:"start",
 };
@@ -1910,6 +1972,7 @@ function loadPrefs() {
       Settings.disasterFilter = Object.assign({ typen:[], region:"global", fensterH:24, minMag:0, minAlert:"all", sort:"zeit" }, Settings.disasterFilter); }
     if (p.lang) lang = p.lang;
     if (p.theme) State.theme = p.theme;
+    if (p.uiMode) State.uiMode = p.uiMode; else { const lm = localStorage.getItem("alert2iq_ui_mode"); if (lm) State.uiMode = lm; }
     if (typeof p.colorblind === "boolean") State.colorblind = p.colorblind;
     if (p.loc && typeof p.loc.lat === "number") State.loc = p.loc;
     if (Array.isArray(p.places)) State.places = p.places.filter(x => x && typeof x.lat === "number");
@@ -1920,17 +1983,31 @@ function savePrefs() {
   // Invariante: die Alarm-Schwelle darf nie unter der Benachrichtigungs-Schwelle liegen
   // (sonst wird die leise Stufe unerreichbar und alles alarmiert laut).
   if (Number.isFinite(Settings.minMag) && Number.isFinite(Settings.alarmMinMag) && Settings.alarmMinMag < Settings.minMag) Settings.alarmMinMag = Settings.minMag;
-  try { localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, loc:State.loc, places:State.places, activeTab:State.activeTab })); } catch(e) {}
+  try {
+    localStorage.setItem("alert2iq_ui_mode", State.uiMode || "simple");
+    localStorage.setItem("tda_prefs", JSON.stringify({ settings:Settings, lang, theme:State.theme, colorblind:State.colorblind, uiMode:State.uiMode, loc:State.loc, places:State.places, activeTab:State.activeTab }));
+  } catch(e) {}
   schedulePushSync();
 }
 /* Hintergrund-Push: meldet Heimat + weitere Orte + Schwellen an die native Hülle, die daraus
    (mit FCM-Token) das Backend-Abo bildet. No-op im reinen Browser. Entprellt, da savePrefs oft läuft. */
 let pushSyncTimer=null;
+function getLocDisplayName(loc) {
+  if (!loc || !loc.name) return "";
+  const gpsNames = [
+    "My location (GPS)", "Mein Standort (GPS)", "Konumum (GPS)",
+    "Моё местоположение (GPS)", "موقعي (GPS)"
+  ];
+  if (loc.source === "gps" || gpsNames.includes(loc.name)) {
+    return t("loc_gps_name");
+  }
+  return loc.name;
+}
 function syncPushSubs(){
   try{
     if(!(window.AndroidBridge && AndroidBridge.syncSubscriptions)) return;
     const mk=(lat,lon,label)=>({ lat, lon, label:label||"", notifyMag:Settings.minMag, alarmMag:Settings.alarmMinMag, radiusKm:Settings.radiusKm });
-    const subs=[ mk(State.loc.lat, State.loc.lon, State.loc.name) ];
+    const subs=[ mk(State.loc.lat, State.loc.lon, getLocDisplayName(State.loc)) ];
     for(const p of State.places) subs.push(mk(p.lat, p.lon, p.label||p.name));
     AndroidBridge.syncSubscriptions(JSON.stringify({ lang:lang, subscriptions:subs }));
   }catch(e){}
@@ -1953,16 +2030,21 @@ const Signing = {
     return new TextEncoder().encode(keys.map(k=>`${k}=${p[k]}`).join("\n"));
   },
   async ensureKey() {
-    if (this._supported===false) return null;
-    if (this._key) return this._key;
-    try { this._key = await crypto.subtle.importKey("raw", this.b64(this.SERVER_PUBLIC_KEY_B64), {name:"Ed25519"}, false, ["verify"]); this._supported=true; return this._key; }
-    catch(e) { this._supported=false; return null; }
+    if (this._supported !== null) return this._supported;
+    try {
+      if (!window.crypto || !crypto.subtle) return (this._supported = false);
+      const raw = this.b64(this.SERVER_PUBLIC_KEY_B64);
+      this._key = await crypto.subtle.importKey("raw", raw, { name:"Ed25519" }, true, ["verify"]);
+      return (this._supported = true);
+    } catch(e) { return (this._supported = false); }
   },
   async verify(p) {
-    const key = await this.ensureKey(); if (!key) return null;
-    try { return await crypto.subtle.verify("Ed25519", key, this.b64(p.sig||""), this.canonicalBytes(p)); }
-    catch(e) { return false; }
-  },
+    try {
+      if (!p.sig || !(await this.ensureKey())) return false;
+      const sig = this.b64(p.sig), bytes = this.canonicalBytes(p);
+      return await crypto.subtle.verify("Ed25519", this._key, sig, bytes);
+    } catch(e) { return false; }
+  }
 };
 
 /* ==========================================================================
@@ -1992,7 +2074,7 @@ function renderHero() {
   $("heroGlyph").textContent = m.glyph;
   $("heroTitle").textContent = t(m.t);
   $("heroSub").textContent = t(m.s);
-  $("heroLoc").textContent = State.loc.name;
+  $("heroLoc").textContent = getLocDisplayName(State.loc);
 }
 function setStatus(s) { State.status=s; applyAccent(); renderHero(); }
 
@@ -2927,6 +3009,28 @@ function renderPrep() {
 /* ==========================================================================
    Theme / language
    ========================================================================== */
+function applyUiMode(mode) {
+  if (mode !== "advanced") mode = "simple";
+  State.uiMode = mode;
+  if (mode === "simple") {
+    document.body.classList.add("ui-mode-simple");
+    document.body.classList.remove("ui-mode-advanced");
+  } else {
+    document.body.classList.remove("ui-mode-simple");
+    document.body.classList.add("ui-mode-advanced");
+  }
+  const seg = $("segUiMode");
+  if (seg) {
+    for (const b of seg.querySelectorAll("button")) {
+      b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+    }
+  }
+  const btnHeader = $("btnHeaderUiMode");
+  if (btnHeader) {
+    btnHeader.textContent = mode === "simple" ? `🏷️ ${t("lblModeSimple")}` : `⚙️ ${t("lblModeAdvanced")}`;
+    btnHeader.setAttribute("title", t("lblUiModeDesc"));
+  }
+}
 function applyTheme() {
   const root=document.documentElement;
   if (State.theme==="system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", State.theme);
@@ -2963,6 +3067,8 @@ function applyLanguage() {
   set("thSystem","th_system"); set("thDark","th_dark"); set("thLight","th_light");
   set("lblCb","lbl_cb"); set("btnSetDone","set_done");
   set("lblDev","lbl_dev"); set("descDev","desc_dev"); set("devPanelNote","dev_panel_note");
+  set("lblUiModeGroupTitle","lblUiModeGroupTitle"); set("lblModeSimple","lblModeSimple"); set("lblModeAdvanced","lblModeAdvanced"); set("lblUiModeDesc","lblUiModeDesc");
+  applyUiMode(State.uiMode || "simple");
   // map + list + advanced settings labels
   set("mapTitle","map_title"); set("listTitle","list_title"); set("listSource","list_source");
   set("vwNearby","vw_nearby"); set("vwFelt","vw_felt"); set("vwGlobal","vw_global");
@@ -3161,6 +3267,23 @@ function bind() {
   $("langSelect").onchange=e=>{ lang=e.target.value; applyLanguage(); savePrefs(); try { if (window.AndroidBridge && AndroidBridge.setLanguage) AndroidBridge.setLanguage(lang); } catch(err) {} };
   $("themeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; State.theme=b.dataset.theme; applyTheme(); savePrefs(); };
   $("cbSwitch").onchange=e=>{ State.colorblind=e.target.checked; applyTheme(); savePrefs(); };
+  const btnH = $("btnHeaderUiMode");
+  if (btnH) {
+    btnH.onclick = () => {
+      const nextMode = State.uiMode === "simple" ? "advanced" : "simple";
+      applyUiMode(nextMode);
+      savePrefs();
+    };
+  }
+  const segM = $("segUiMode");
+  if (segM) {
+    segM.onclick = e => {
+      const b = e.target.closest("button");
+      if (!b || !b.dataset.mode) return;
+      applyUiMode(b.dataset.mode);
+      savePrefs();
+    };
+  }
   // advanced settings
   $("unitSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; Settings.units=b.dataset.unit; applySettingsUI(); renderFeed(); savePrefs(); if($("alertOverlay").classList.contains("show")) renderAlert(); };
   $("rngRadius").oninput=e=>{ Settings.radiusKm=parseInt(e.target.value,10); $("valRadius").textContent=`${Math.round(kmToDisplay(Settings.radiusKm))} ${unitLabel()}`; renderFeed(); };
