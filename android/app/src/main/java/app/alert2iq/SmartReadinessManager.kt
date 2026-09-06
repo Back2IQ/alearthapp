@@ -1,4 +1,4 @@
-﻿package app.alert2iq
+package app.alert2iq
 
 import android.content.Context
 import org.json.JSONArray
@@ -71,7 +71,7 @@ object SmartReadinessManager {
         }
     }
 
-    private fun saveItems(context: Context, items: List<ReadinessSupplyItem>) {
+    fun saveItems(context: Context, items: List<ReadinessSupplyItem>) {
         val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
         val array = JSONArray()
         items.forEach { array.put(it.toJson()) }

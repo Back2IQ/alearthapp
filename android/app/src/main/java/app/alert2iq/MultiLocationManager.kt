@@ -1,4 +1,4 @@
-﻿package app.alert2iq
+package app.alert2iq
 
 import android.content.Context
 import org.json.JSONArray
@@ -71,7 +71,7 @@ object MultiLocationManager {
         return removed
     }
 
-    private fun saveLocations(context: Context, locations: List<MonitoredLocation>) {
+    fun saveLocations(context: Context, locations: List<MonitoredLocation>) {
         val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
         val array = JSONArray()
         locations.forEach { array.put(it.toJson()) }

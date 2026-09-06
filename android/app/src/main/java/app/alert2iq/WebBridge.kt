@@ -1,4 +1,4 @@
-﻿package app.alert2iq
+package app.alert2iq
 
 import android.app.Activity
 import android.content.Intent
@@ -252,5 +252,90 @@ class WebBridge(private val activity: Activity) {
             Alarm.clearDedup(activity)
             runCatching { AlarmService.stop(activity) }
         }
+    }
+
+    /** Speichert Notfallprofil im verschlüsselten AES-GCM-256 Tresor. */
+    @JavascriptInterface
+    fun saveVaultProfile(json: String): Boolean {
+        return runCatching {
+            val obj = JSONObject(json)
+            val profile = EmergencyProfile.fromJson(obj)
+            EmergencyVaultManager.saveProfile(activity, profile)
+        }.getOrDefault(false)
+    }
+
+    /** Lädt Notfallprofil aus dem verschlüsselten AES-GCM-256 Tresor. */
+    @JavascriptInterface
+    fun loadVaultProfile(): String {
+        return runCatching {
+            EmergencyVaultManager.loadProfile(activity).toJson().toString()
+        }.getOrDefault("{}")
+    }
+
+    /** Löscht Notfallprofil restlos (DSGVO-Recht auf Vergessenwerden). */
+    @JavascriptInterface
+    fun clearVaultProfile(): Boolean {
+        return EmergencyVaultManager.clearProfile(activity)
+    }
+
+    /** Ermittelt den aktuellen kryptografisch geschützten AppTier (FREE, PRO, GUARDIAN). */
+    @JavascriptInterface
+    fun getTier(): String {
+        Prefs.init(activity)
+        return TierSecurityManager.getActiveTier(activity).name
+    }
+
+    /** Lädt überwachte Multi-Location Orte. */
+    @JavascriptInterface
+    fun getMonitoredLocations(): String {
+        return runCatching {
+            val list = MultiLocationManager.getLocations(activity)
+            val arr = org.json.JSONArray()
+            for (loc in list) {
+                arr.put(loc.toJson())
+            }
+            arr.toString()
+        }.getOrDefault("[]")
+    }
+
+    /** Speichert überwachte Multi-Location Orte. */
+    @JavascriptInterface
+    fun saveMonitoredLocations(json: String): Boolean {
+        return runCatching {
+            val arr = org.json.JSONArray(json)
+            val list = mutableListOf<MonitoredLocation>()
+            for (i in 0 until arr.length()) {
+                list.add(MonitoredLocation.fromJson(arr.getJSONObject(i)))
+            }
+            MultiLocationManager.saveLocations(activity, list)
+            true
+        }.getOrDefault(false)
+    }
+
+    /** Lädt den Zustand des Smart Go-Bag Notfallrucksacks. */
+    @JavascriptInterface
+    fun getGoBagStatus(): String {
+        return runCatching {
+            val items = SmartReadinessManager.getItems(activity)
+            val arr = org.json.JSONArray()
+            for (item in items) {
+                arr.put(item.toJson())
+            }
+            arr.toString()
+        }.getOrDefault("[]")
+    }
+
+    /** Speichert den Zustand des Smart Go-Bag Notfallrucksacks. */
+    @JavascriptInterface
+    fun saveGoBagStatus(json: String): Boolean {
+        return runCatching {
+            val arr = org.json.JSONArray(json)
+            val list = mutableListOf<ReadinessSupplyItem>()
+            for (i in 0 until arr.length()) {
+                list.add(ReadinessSupplyItem.fromJson(arr.getJSONObject(i)))
+            }
+            SmartReadinessManager.saveItems(activity, list)
+            true
+        }.getOrDefault(false)
     }
 }
